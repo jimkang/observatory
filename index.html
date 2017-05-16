@@ -1,0 +1,67 @@
+<html>
+<head>
+  <title>observationdeck</title>
+  <link rel="stylesheet" href="app.css"></link>
+</head>
+<body>
+
+<section class="project-editor">
+
+  <div class="form-pair">
+    <label>Project name</label>
+    <div class="value-container">
+      <input type="text" id="project-name" value="Project name"></input>
+    </div>
+  </div>
+
+  <div class="form-pair">
+    <label>Project id</label>
+    <div class="value-container">
+      <input type="text" id="project-id" value="project-id"></input>
+    </div>
+  </div>
+
+  <div class="form-pair">
+    <label>Conception date</label>
+    <div class="value-container">
+      <input type="date" id="project-stamp"></input>
+    </div>
+  </div>
+
+  <div class="form-pair">
+    <label>Description</label>
+    <div class="value-container">
+      <div contenteditable id="project-description">Describe the project here</div>
+    </div>
+  </div>
+
+  <div class="form-pair">
+    <label>Things done</label>
+    <div class="value-container things-done-value-container">
+      <div class="project-dots">...</div>
+      <button id="add-dot-button">Add dot</button>
+    </div>
+  </div>
+
+  <div class="form-pair">
+    <label>Urgency</label>
+    <div class="value-container">
+      <input type="number" id="project-urgency"></input>
+    </div>
+  </div>
+
+  <div id="status-message" class="annotation hidden warning">
+  </div>
+
+</section>
+
+<button id="export-projects-button">Export projects to console</button>
+
+<div id="success-message" class="annotation hidden">
+  <span class="message">Projects exported!</span>
+</div>
+
+<script src="index.js"></script>
+
+</body>
+</html>
