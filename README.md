@@ -1,4 +1,4 @@
-observationdeck
+observatory
 ==================
 
 Observes the work you've done; kind of an anti-planner.
