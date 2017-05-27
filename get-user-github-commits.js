@@ -18,7 +18,7 @@ function getUserGitHubCommits(
 
   function callGetCommits() {
     var repoNames = pluck(repos, 'name');
-    var repoGroups = splitArray(repoNames, 50);
+    var repoGroups = splitArray(repoNames, 10);
     var q = queue();
     repoGroups.forEach(queueGet);
     q.awaitAll(sb(passRepos, allDone));
@@ -167,6 +167,7 @@ function getCommitQuery(repoNames, lastCursorsForRepos) {
     }
     edges {
       node {
+        abbreviatedOid
         message
         committedDate
       }
@@ -188,7 +189,7 @@ function getCommitQuery(repoNames, lastCursorsForRepos) {
         target {
           ... on Commit {
             id
-            history(first: 100${afterSegment}) {
+            history(first: 20${afterSegment}) {
               ...CommitHistoryFields
             }
           }
