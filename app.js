@@ -25,9 +25,17 @@ function listFlow() {
 }
 
 function callRenderList(projects) {
-  listEmAll.render({thingList: projects, rootId: 'list',  thingClass: 'project'});
+  listEmAll.render({
+    thingList: projects.filter(projectIsValid),
+    rootId: 'list', 
+    thingClass: 'project'
+  });
 }
 
 function newProjectFlow() {
   renderProjectEditor();
+}
+
+function projectIsValid(project) {
+  return !project.disown && !project.parent;
 }

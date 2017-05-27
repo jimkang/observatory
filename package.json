@@ -18,20 +18,29 @@
   },
   "homepage": "https://github.com/jimkang/observatory",
   "devDependencies": {
+    "assert-no-error": "^1.0.0",
     "babel-preset-es2015": "^6.9.0",
     "babelify": "^7.3.0",
     "browserify": "^8.1.3",
     "eslint": "^3.4.0",
     "purify-css": "^1.1.9",
-    "tape": "^3.0.3",
+    "request": "^2.81.0",
+    "tape": "^4.6.3",
     "uglify-js": "^2.4.17"
   },
   "dependencies": {
+    "basic-browser-request": "^7.1.0",
+    "call-next-tick": "^2.0.1",
+    "d3-queue": "^3.0.7",
     "d3-selection": "^1.1.0",
     "handle-error-web": "^1.0.1",
+    "idmaker": "^0.1.1",
     "list-em-all": "^1.2.0",
+    "lodash.findwhere": "^3.1.0",
+    "lodash.pluck": "^3.1.2",
     "qs": "^6.3.0",
     "route-state": "^1.0.2",
+    "split-array": "^1.0.1",
     "standard-bail": "^2.0.1"
   }
 }
