@@ -14,6 +14,7 @@ function getUserGitHubCommitsTest(t) {
   var opts = {
     token: config.githubTestToken,
     username: 'jimkang',
+    userEmail: 'jimkang@gmail.com',
     request: request,
     onRepo: checkRepo,
     onCommit: checkCommit,
@@ -26,12 +27,14 @@ function getUserGitHubCommitsTest(t) {
     repoCount += 1;
     t.ok(repo.name, 'Repo has a name.');
     t.ok(repo.description, 'Repo has a description.');
+    t.ok(repo.lastCheckedDate, 'Repo has a lastCheckedDate.');
   }
 
   function checkCommit(commit) {
     commitCount += 1;
     t.ok(commit.message, 'Commit has a message.');
-    t.ok(commit.commitedDate, 'Commit has a date.');
+    t.ok(commit.abbreviatedOid, 'Commit has an abbreviatedOid.');
+    t.ok(commit.committedDate, 'Commit has a date.');
     t.ok(commit.repoName, 'Commit has a repoName');
   }
 

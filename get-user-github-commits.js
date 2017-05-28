@@ -10,7 +10,7 @@ const apiURL = 'https://api.github.com/graphql';
 const nonAlphanumericRegex = /[^\w]/g;
 
 function getUserGitHubCommits(
-  {token, username, request, onRepo, onCommit, userAgent}, allDone) {
+  {token, username, userEmail, request, onRepo, onCommit, userAgent}, allDone) {
 
   var repos = [];
 
@@ -33,22 +33,27 @@ function getUserGitHubCommits(
   }
 
   function collectRepository(repo) {
+    repo.lastCheckedDate = (new Date()).toISOString();
     repos.push(repo);
     if (onRepo) {
       onRepo(repo);
     }
   }
 
-  function collectCommit(repoName, commit) {
+  function collectCommits(repoName, edges) {
     var repo = findWhere(repos, {name: repoName});
     if (!repo.commits) {
       repo.commits = [];
     }
-    commit.repoName = repoName;
-    repo.commits.push(commit);
 
-    if (onCommit) {
-      onCommit(commit);
+    edges.forEach(addCommit);
+
+    function addCommit(edge) {
+      edge.node.repoName = repoName;
+      repo.commits.push(edge.node);
+      if (onCommit) {
+        onCommit(edge.node);
+      }
     }
   }
 
@@ -89,7 +94,7 @@ function getUserGitHubCommits(
 
     function postNextQuery() {
       var query = getCommitQuery(
-        reposThatHaveCommitsToGet, lastCursorsForRepos
+        reposThatHaveCommitsToGet, lastCursorsForRepos, userEmail
       );
       console.log('query', query);
       request(
@@ -99,19 +104,29 @@ function getUserGitHubCommits(
     }
 
     function handleCommitResponse(res, body) {
-      // WAS ABOUT TO WORK ON THIS.
-      console.log('body', JSON.stringify(body, null, '  '));
-      // if (body.data.user.repositories.pageInfo.hasNextPage) {
-      //   lastRepoCursor = body.data.user.repositories.pageInfo.endCursor;
-      //   callNextTick(postNextQuery);
-      // }
-      // else {
-      //   callNextTick(done);
-      // }
+      for (var queryId in body.data.viewer) {
+        let queryResult = body.data.viewer[queryId];
+        if (queryResult) {
+          let repoName = queryResult.defaultBranchRef.repository.name;
+          let pageInfo = queryResult.defaultBranchRef.target.history.pageInfo;
+          if (pageInfo.hasNextPage) {
+            lastCursorsForRepos[repoName] = pageInfo.endCursor;
+          }
+          else {
+            delete lastCursorsForRepos[repoName];
+          }
+          collectCommits(repoName, queryResult.defaultBranchRef.target.history.edges);
+        }
+      }
+      
+      if (Object.keys(lastCursorsForRepos).length > 0) {
+        callNextTick(postNextQuery);
+      }
+      else {
+        callNextTick(done);
+      }
     }
   }
-
-
 
   function getGQLReqOpts(query) {
     return {
@@ -153,7 +168,7 @@ function getRepoQuery(username, lastCursor) {
   }`;
 }
 
-function getCommitQuery(repoNames, lastCursorsForRepos) {
+function getCommitQuery(repoNames, lastCursorsForRepos, userEmail) {
   return `{
     viewer {
       ${repoNames.map(getRepoCommitSubquery).join('\n')}
@@ -189,7 +204,7 @@ function getCommitQuery(repoNames, lastCursorsForRepos) {
         target {
           ... on Commit {
             id
-            history(first: 20${afterSegment}) {
+            history(author: {emails: "${userEmail}"}, first: 20${afterSegment}) {
               ...CommitHistoryFields
             }
           }
