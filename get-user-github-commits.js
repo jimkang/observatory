@@ -5,31 +5,43 @@ var pluck = require('lodash.pluck');
 var randomId = require('idmaker').randomId;
 var splitArray = require('split-array');
 var queue = require('d3-queue').queue;
+var pathExists = require('object-path-exists');
 
 const apiURL = 'https://api.github.com/graphql';
 const nonAlphanumericRegex = /[^\w]/g;
 
 function getUserGitHubCommits(
-  {token, username, userEmail, request, onRepo, onCommit, userAgent}, allDone) {
+  {
+    token,
+    username,
+    userEmail,
+    request,
+    onRepo,
+    onCommit,
+    onNonFatalError,
+    userAgent
+  },
+  allDone) {
 
   var repos = [];
 
-  getRepos(sb(callGetCommits, allDone));
+  getRepos(callGetCommits, passRepos);
 
   function callGetCommits() {
     var repoNames = pluck(repos, 'name');
     var repoGroups = splitArray(repoNames, 10);
-    var q = queue();
+    var q = queue(1);
     repoGroups.forEach(queueGet);
-    q.awaitAll(sb(passRepos, allDone));
+
+    q.awaitAll(passRepos);
 
     function queueGet(repoNameGroup) {
       q.defer(getCommits, repoNameGroup);
     }
   }
 
-  function passRepos() {
-    callNextTick(allDone, null, repos);
+  function passRepos(error) {
+    callNextTick(allDone, error, repos);
   }
 
   function collectRepository(repo) {
@@ -70,14 +82,22 @@ function getUserGitHubCommits(
 
     function handleRepoResponse(res, body) {
       if (body.errors) {
-        callNextTick(done, new Error(pluck(body.errors, 'message').join('|')));
-        return;
+        if (onNonFatalError) {
+          onNonFatalError(new Error(JSON.stringify(body.errors, null, 2)));
+        }
+        if (body.errors.some(isAGitHubRateLimitErrorMessage)) {
+          // No point in continuing
+          done(new Error('Rate limit error'));
+          return;
+        }
+      }
+      else if (pathExists(body, ['data', 'user', 'repositories', 'nodes'])) {
+        body.data.user.repositories.nodes.forEach(collectRepository);
       }
 
-      console.log('body', JSON.stringify(body, null, '  '));
+      if (pathExists(body, ['data', 'user', 'repositories', 'pageInfo']) &&
+        body.data.user.repositories.pageInfo.hasNextPage) {
 
-      body.data.user.repositories.nodes.forEach(collectRepository);
-      if (body.data.user.repositories.pageInfo.hasNextPage) {
         lastRepoCursor = body.data.user.repositories.pageInfo.endCursor;
         callNextTick(postNextQuery);
       }
@@ -96,7 +116,7 @@ function getUserGitHubCommits(
       var query = getCommitQuery(
         reposThatHaveCommitsToGet, lastCursorsForRepos, userEmail
       );
-      console.log('query', query);
+      // console.log('query', query);
       request(
         getGQLReqOpts(query),
         sb(handleCommitResponse, done)
@@ -104,18 +124,42 @@ function getUserGitHubCommits(
     }
 
     function handleCommitResponse(res, body) {
-      for (var queryId in body.data.viewer) {
-        let queryResult = body.data.viewer[queryId];
-        if (queryResult) {
-          let repoName = queryResult.defaultBranchRef.repository.name;
-          let pageInfo = queryResult.defaultBranchRef.target.history.pageInfo;
-          if (pageInfo.hasNextPage) {
-            lastCursorsForRepos[repoName] = pageInfo.endCursor;
+      if (!body) {
+        if (onNonFatalError) {
+          onNonFatalError(new Error('Empty body received from commit reqeust.'));
+        }
+      }
+      else if (body.errors) {
+        if (body.errors.some(isAGitHubRateLimitErrorMessage)) {
+          // No point in continuing
+          callNextTick(done, new Error('Rate limit error'));
+          return;
+        }
+        if (onNonFatalError) {
+          onNonFatalError(new Error(JSON.stringify(body.errors, null, 2)));
+        }
+      }
+      else if (!pathExists(body, ['data', 'viewer'])) {
+        if (onNonFatalError) {
+          onNonFatalError(
+            new Error('Could not get data/viewer from commit query response body.')
+          );
+        }
+      }
+      else {
+        for (var queryId in body.data.viewer) {
+          let queryResult = body.data.viewer[queryId];
+          if (queryResult) {
+            let repoName = queryResult.defaultBranchRef.repository.name;
+            let pageInfo = queryResult.defaultBranchRef.target.history.pageInfo;
+            if (pageInfo.hasNextPage) {
+              lastCursorsForRepos[repoName] = pageInfo.endCursor;
+            }
+            else {
+              delete lastCursorsForRepos[repoName];
+            }
+            collectCommits(repoName, queryResult.defaultBranchRef.target.history.edges);
           }
-          else {
-            delete lastCursorsForRepos[repoName];
-          }
-          collectCommits(repoName, queryResult.defaultBranchRef.target.history.edges);
         }
       }
       
@@ -216,6 +260,11 @@ function getCommitQuery(repoNames, lastCursorsForRepos, userEmail) {
 
 function sanitizeAsGQLId(s) {
   return s.replace(nonAlphanumericRegex, '');
+}
+
+function isAGitHubRateLimitErrorMessage(messageObject) {
+  return messageObject && messageObject.message &&
+    messageObject.message.startsWith('API rate limit exceeded for');
 }
 
 module.exports = getUserGitHubCommits;

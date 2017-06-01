@@ -39,6 +39,7 @@
     "lodash.curry": "^4.1.1",
     "lodash.findwhere": "^3.1.0",
     "lodash.pluck": "^3.1.2",
+    "object-path-exists": "^1.0.0",
     "qs": "^6.3.0",
     "route-state": "^1.0.2",
     "split-array": "^1.0.1",
