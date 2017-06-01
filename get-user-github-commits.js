@@ -19,7 +19,8 @@ function getUserGitHubCommits(
     onRepo,
     onCommit,
     onNonFatalError,
-    userAgent
+    userAgent,
+    shouldIncludeRepo
   },
   allDone) {
 
@@ -28,7 +29,8 @@ function getUserGitHubCommits(
   getRepos(callGetCommits, passRepos);
 
   function callGetCommits() {
-    var repoNames = pluck(repos, 'name');
+    var reposNewestToOldest = repos.sort(compareRepoDates);
+    var repoNames = pluck(reposNewestToOldest, 'name');
     var repoGroups = splitArray(repoNames, 10);
     var q = queue(1);
     repoGroups.forEach(queueGet);
@@ -45,10 +47,12 @@ function getUserGitHubCommits(
   }
 
   function collectRepository(repo) {
-    repo.lastCheckedDate = (new Date()).toISOString();
-    repos.push(repo);
-    if (onRepo) {
-      onRepo(repo);
+    if (typeof shouldIncludeRepo !== 'function' || shouldIncludeRepo(repo)) {
+      repo.lastCheckedDate = (new Date()).toISOString();
+      repos.push(repo);
+      if (onRepo) {
+        onRepo(repo);
+      }
     }
   }
 
@@ -199,6 +203,7 @@ function getRepoQuery(username, lastCursor) {
         nodes {
           name
           id
+          pushedAt
           description
         },
         pageInfo {
@@ -265,6 +270,11 @@ function sanitizeAsGQLId(s) {
 function isAGitHubRateLimitErrorMessage(messageObject) {
   return messageObject && messageObject.message &&
     messageObject.message.startsWith('API rate limit exceeded for');
+}
+
+// Newer dates are to come earlier in the array.
+function compareRepoDates(a, b) {
+  return a.pushedAt > b.pushedAt ? -1 : 1;
 }
 
 module.exports = getUserGitHubCommits;

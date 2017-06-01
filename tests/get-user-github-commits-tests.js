@@ -7,6 +7,44 @@ var getUserGitHubCommits = require('../get-user-github-commits');
 
 test('Get repos and commits', getUserGitHubCommitsTest);
 
+var reposToDisown = [
+  'oauthconsumer',
+  'KIF',
+  'OARequestHeader',
+  'objectiveflickr',
+  'facebook-ios-sdk',
+  'ShakeKit',
+  'asi-http-request',
+  'node-ci',
+  'forever-monitor',
+  'collection-interference',
+  'node-braque',
+  'search-index',
+  'fortune',
+  'node-ab',
+  'sublime-user-package',
+  'node-level-cache-tools',
+  'mstranslator',
+  'IDEAS',
+  'paella',
+  'dce-4.1.1-paella-master-diffs',
+  'prezto',
+  'mh-opsworks',
+  'node-webkit-screenshot',
+  'svg-pencil',
+  'mapquest',
+  'javascript-karplus-strong',
+  'ally-design',
+  'bucket-runner',
+  'quantize',
+  'corpora',
+  'protobuf',
+  'openelections-sources-ma',
+  'node-github',
+  'jamchops',
+  'secretknowledge'
+];
+
 function getUserGitHubCommitsTest(t) {
   var repoCount = 0;
   var commitCount = 0;
@@ -19,7 +57,8 @@ function getUserGitHubCommitsTest(t) {
     onRepo: checkRepo,
     onCommit: checkCommit,
     userAgent: 'observatory-tests',
-    onNonFatalError: logNonFatalError
+    onNonFatalError: logNonFatalError,
+    shouldIncludeRepo: filterRepo
   };
 
   getUserGitHubCommits(opts, checkFinalResults);
@@ -27,6 +66,12 @@ function getUserGitHubCommitsTest(t) {
   function checkRepo(repo) {
     repoCount += 1;
     t.ok(repo.name, 'Repo has a name.');
+    t.equal(
+      reposToDisown.indexOf(repo.name),
+      -1,
+      'Repo name is not in the repos to be filtered.'
+    );
+    t.ok(repo.pushedAt, 'Repo has a pushedAt date.');
     // t.ok(repo.description, 'Repo has a description.');
     t.ok(repo.lastCheckedDate, 'Repo has a lastCheckedDate.');
   }
@@ -69,4 +114,8 @@ function addToCommitCount(count, repo) {
     newCount += repo.commits.length;
   }
   return newCount;
+}
+
+function filterRepo(repo) {
+  return reposToDisown.indexOf(repo.name) === -1;
 }
