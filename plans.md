@@ -31,4 +31,4 @@ For each update:
         history(since: "2017-03-10T04:49:51Z", until: "2017-03-10T19:29:55Z", author:{emails: "jimkang@gmail.com"}, first: 100) {
 
 How do we tell people a repo's history is incomplete?
-  - Put an "incomplete" flag on it if a cursor was not resolved,
+  - Put an "incomplete" flag on it if a cursor was not resolved.
