@@ -11,7 +11,8 @@ build:
 	$(BROWSERIFY) $(TRANSFORM_SWITCH) app.js | $(UGLIFY) -c -m -o index.js
 
 test:
-	node tests/get-user-github-commits-tests.js
+	node tests/get-user-github-commits-with-state-tests.js
+	node tests/live/get-user-github-commits-tests.js
 
 pushall:
 	git push origin gh-pages

@@ -6,6 +6,8 @@ var pathExists = require('object-path-exists');
 var getGQLReqOpts = require('./get-gql-req-opts');
 var pluck = require('lodash.pluck');
 var curry = require('lodash.curry');
+var findWhere = require('lodash.findwhere');
+var compact = require('lodash.compact');
 
 function GetCommitsForRepos({
     baseURL = 'https://api.github.com',
@@ -20,22 +22,23 @@ function GetCommitsForRepos({
 
   function getCommitsForRepos(
     {
-      repoNames,
       onCommitsForRepo,
-      onNonFatalError
-      // TODO: start and end dates.
+      onNonFatalError,
+      repos // Objects with a `name` and optional `since` and `until` properties.
     },
     done) {
 
-    var reposThatHaveCommitsToGet = repoNames.slice();
-    var lastCursorsForRepos = {};
+    var reposThatHaveCommitsToGet = repos.slice();
+    // reposThatHaveCommitsToGet.forEach(addCursorList)
+    // var lastCursorsForRepos = {};
     postNextQuery();
 
     function postNextQuery() {
       var query = getCommitQuery(
-        reposThatHaveCommitsToGet, lastCursorsForRepos, userEmail
+        reposThatHaveCommitsToGet, userEmail
       );
-      // console.log('query', query);
+      console.log('query', query);
+      debugger;
       request(
         getGQLReqOpts({apiURL: apiURL, token: token, userAgent: userAgent, query: query}),
         sb(handleCommitResponse, done)
@@ -61,11 +64,12 @@ function GetCommitsForRepos({
       }
       else {
         extractCommitsFromQueryResult(
-          body.data.viewer, lastCursorsForRepos, onCommitsForRepo
+          body.data.viewer, reposThatHaveCommitsToGet, onCommitsForRepo
         );
       }
       
-      if (Object.keys(lastCursorsForRepos).length > 0) {
+      debugger;
+      if (compact(pluck(reposThatHaveCommitsToGet, 'lastCursor')).length > 0) {
         callNextTick(postNextQuery);
       }
       else {
@@ -82,23 +86,24 @@ function GetCommitsForRepos({
 }
 
 function extractCommitsFromQueryResult(
-  viewer, lastCursorsForRepos, onCommitsForRepo) {
+  viewer, reposThatHaveCommitsToGet, onCommitsForRepo) {
 
   for (var queryId in viewer) {
     let queryResult = viewer[queryId];
     if (queryResult) {
       let repoName = queryResult.defaultBranchRef.repository.name;
       let pageInfo = queryResult.defaultBranchRef.target.history.pageInfo;
+      let repo = findWhere(reposThatHaveCommitsToGet, {name: repoName});
       if (pageInfo.hasNextPage) {
-        lastCursorsForRepos[repoName] = pageInfo.endCursor;
+        repo.lastCursor = pageInfo.endCursor;
       }
       else {
-        delete lastCursorsForRepos[repoName];
+        delete repo.lastCursor;
       }
 
-      let commits = pluck(queryResult.defaultBranchRef.target.history.edges, 'node')
-      commits.forEach(curry(appendRepoNameToCommit)(repoName));
-      onCommitsForRepo(repoName, commits);
+      let commits = pluck(queryResult.defaultBranchRef.target.history.edges, 'node');
+      commits.forEach(curry(appendRepoNameToCommit)(repo.name));
+      onCommitsForRepo(repo.name, commits);
     }
   }
 }

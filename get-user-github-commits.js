@@ -2,13 +2,13 @@ var sb = require('standard-bail')();
 var callNextTick = require('call-next-tick');
 var findWhere = require('lodash.findwhere');
 var pluck = require('lodash.pluck');
-var randomId = require('idmaker').randomId;
+var defaults = require('lodash.defaults');
 var splitArray = require('split-array');
 var queue = require('d3-queue').queue;
 var pathExists = require('object-path-exists');
-
-const apiURL = 'https://api.github.com/graphql';
-const nonAlphanumericRegex = /[^\w]/g;
+var getCommitsForRepos = require('./get-commits-for-repos');
+var isAGitHubRateLimitErrorMessage = require('./is-a-github-rate-limit-error-message');
+var getGQLReqOpts = request('./get-gql-req-opts');
 
 function getUserGitHubCommits(
   {
@@ -38,7 +38,18 @@ function getUserGitHubCommits(
     q.awaitAll(passRepos);
 
     function queueGet(repoNameGroup) {
-      q.defer(getCommits, repoNameGroup);
+      q.defer(
+        getCommitsForRepos,
+        defaults({
+          repoNames: repoNameGroup,
+          onCommitsForRepo: collectCommits,
+          token: token,
+          userEmail: userEmail,
+          request: request,
+          onNonFatalError: onNonFatalError,
+          userAgent: userAgent
+        })
+      );
     }
   }
 
@@ -79,7 +90,12 @@ function getUserGitHubCommits(
 
     function postNextQuery() {
       request(
-        getGQLReqOpts(getRepoQuery(username, lastRepoCursor)),
+        getGQLReqOpts({
+          apiURL: apiURL,
+          token: token,
+          userAgent: userAgent,
+          query: query
+        })
         sb(handleRepoResponse, done)
       );
     }
@@ -110,86 +126,6 @@ function getUserGitHubCommits(
       }
     }
   }
-
-  function getCommits(repoNames, done) {
-    var reposThatHaveCommitsToGet = repoNames.slice();
-    var lastCursorsForRepos = {};
-    postNextQuery();
-
-    function postNextQuery() {
-      var query = getCommitQuery(
-        reposThatHaveCommitsToGet, lastCursorsForRepos, userEmail
-      );
-      // console.log('query', query);
-      request(
-        getGQLReqOpts(query),
-        sb(handleCommitResponse, done)
-      );
-    }
-
-    function handleCommitResponse(res, body) {
-      if (!body) {
-        if (onNonFatalError) {
-          onNonFatalError(new Error('Empty body received from commit reqeust.'));
-        }
-      }
-      else if (body.errors) {
-        if (body.errors.some(isAGitHubRateLimitErrorMessage)) {
-          // No point in continuing
-          callNextTick(done, new Error('Rate limit error'));
-          return;
-        }
-        if (onNonFatalError) {
-          onNonFatalError(new Error(JSON.stringify(body.errors, null, 2)));
-        }
-      }
-      else if (!pathExists(body, ['data', 'viewer'])) {
-        if (onNonFatalError) {
-          onNonFatalError(
-            new Error('Could not get data/viewer from commit query response body.')
-          );
-        }
-      }
-      else {
-        for (var queryId in body.data.viewer) {
-          let queryResult = body.data.viewer[queryId];
-          if (queryResult) {
-            let repoName = queryResult.defaultBranchRef.repository.name;
-            let pageInfo = queryResult.defaultBranchRef.target.history.pageInfo;
-            if (pageInfo.hasNextPage) {
-              lastCursorsForRepos[repoName] = pageInfo.endCursor;
-            }
-            else {
-              delete lastCursorsForRepos[repoName];
-            }
-            collectCommits(repoName, queryResult.defaultBranchRef.target.history.edges);
-          }
-        }
-      }
-      
-      if (Object.keys(lastCursorsForRepos).length > 0) {
-        callNextTick(postNextQuery);
-      }
-      else {
-        callNextTick(done);
-      }
-    }
-  }
-
-  function getGQLReqOpts(query) {
-    return {
-      method: 'POST',
-      url: apiURL,
-      headers: {
-        Authorization: 'Bearer ' + token,
-        'User-Agent': userAgent
-      },
-      body: {
-        query: query
-      },
-      json: true
-    };
-  }
 }
 
 function getRepoQuery(username, lastCursor) {
@@ -215,61 +151,6 @@ function getRepoQuery(username, lastCursor) {
       }
     }
   }`;
-}
-
-function getCommitQuery(repoNames, lastCursorsForRepos, userEmail) {
-  return `{
-    viewer {
-      ${repoNames.map(getRepoCommitSubquery).join('\n')}
-    }
-  }
-
-  fragment CommitHistoryFields on CommitHistoryConnection {
-    pageInfo {
-      hasNextPage
-      endCursor
-    }
-    edges {
-      node {
-        abbreviatedOid
-        message
-        committedDate
-      }
-    }
-  }`;
-
-  function getRepoCommitSubquery(repoName) {
-    var afterSegment = '';
-    if (lastCursorsForRepos[repoName]) {
-      afterSegment = `, after: "${lastCursorsForRepos[repoName]}"`;
-    }
-
-    return `${randomId(4)}_${sanitizeAsGQLId(repoName)}: repository(name: "${repoName}") {
-      defaultBranchRef {
-        id
-        repository {
-          name
-        }
-        target {
-          ... on Commit {
-            id
-            history(author: {emails: "${userEmail}"}, first: 20${afterSegment}) {
-              ...CommitHistoryFields
-            }
-          }
-        }
-      }
-    }`;
-  }
-}
-
-function sanitizeAsGQLId(s) {
-  return s.replace(nonAlphanumericRegex, '');
-}
-
-function isAGitHubRateLimitErrorMessage(messageObject) {
-  return messageObject && messageObject.message &&
-    messageObject.message.startsWith('API rate limit exceeded for');
 }
 
 // Newer dates are to come earlier in the array.

@@ -1,9 +1,9 @@
 var test = require('tape');
 var assertNoError = require('assert-no-error');
 var request = require('request');
-var config = require('../config');
+var config = require('../../config');
 
-var getUserGitHubCommits = require('../get-user-github-commits');
+var getUserGitHubCommits = require('../../get-user-github-commits');
 
 test('Get repos and commits', getUserGitHubCommitsTest);
 
@@ -117,5 +117,6 @@ function addToCommitCount(count, repo) {
 }
 
 function filterRepo(repo) {
-  return reposToDisown.indexOf(repo.name) === -1;
+  return repo.name === 'exogenite';
+  // return reposToDisown.indexOf(repo.name) === -1;
 }

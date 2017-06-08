@@ -2,10 +2,11 @@ var randomId = require('idmaker').randomId;
 
 const nonAlphanumericRegex = /[^\w]/g;
 
-function getCommitQuery(repoNames, lastCursorsForRepos, userEmail) {
+// repos are objects with a `name` and optional `since` , `until`, and `lastCursor` properties.
+function getCommitQuery(repos, userEmail) {
   return `{
     viewer {
-      ${repoNames.map(getRepoCommitSubquery).join('\n')}
+      ${repos.map(getRepoCommitSubquery).join('\n')}
     }
   }
 
@@ -23,13 +24,22 @@ function getCommitQuery(repoNames, lastCursorsForRepos, userEmail) {
     }
   }`;
 
-  function getRepoCommitSubquery(repoName) {
+  function getRepoCommitSubquery(repo) {
     var afterSegment = '';
-    if (lastCursorsForRepos[repoName]) {
-      afterSegment = `, after: "${lastCursorsForRepos[repoName]}"`;
+    if (repo.lastCursor) {
+      afterSegment = `, after: "${repo.lastCursor}"`;
+    }
+    var sinceClause = '';
+    var untilClause = '';
+
+    if (repo.since) {
+      sinceClause = ` since: "${repo.since}"`;
+    }
+    if (repo.until) {
+      untilClause = ` until: "${repo.until}"`;
     }
 
-    return `${randomId(4)}_${sanitizeAsGQLId(repoName)}: repository(name: "${repoName}") {
+    return `${randomId(4)}_${sanitizeAsGQLId(repo.name)}: repository(name: "${repo.name}") {
       defaultBranchRef {
         id
         repository {
@@ -38,7 +48,7 @@ function getCommitQuery(repoNames, lastCursorsForRepos, userEmail) {
         target {
           ... on Commit {
             id
-            history(author: {emails: "${userEmail}"}, first: 20${afterSegment}) {
+            history(author: {emails: "${userEmail}"}, first: 20${afterSegment}${sinceClause}${untilClause}) {
               ...CommitHistoryFields
             }
           }
