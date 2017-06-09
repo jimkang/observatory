@@ -24,21 +24,19 @@ function GetCommitsForRepos({
     {
       onCommitsForRepo,
       onNonFatalError,
-      repos // Objects with a `name` and optional `since` and `until` properties.
+      repos // Objects with a `name` property.
     },
     done) {
 
     var reposThatHaveCommitsToGet = repos.slice();
-    // reposThatHaveCommitsToGet.forEach(addCursorList)
-    // var lastCursorsForRepos = {};
+    reposThatHaveCommitsToGet.forEach(addDateFilterProperties);
     postNextQuery();
 
     function postNextQuery() {
       var query = getCommitQuery(
         reposThatHaveCommitsToGet, userEmail
       );
-      console.log('query', query);
-      debugger;
+      // console.log('query', query);
       request(
         getGQLReqOpts({apiURL: apiURL, token: token, userAgent: userAgent, query: query}),
         sb(handleCommitResponse, done)
@@ -67,8 +65,7 @@ function GetCommitsForRepos({
           body.data.viewer, reposThatHaveCommitsToGet, onCommitsForRepo
         );
       }
-      
-      debugger;
+
       if (compact(pluck(reposThatHaveCommitsToGet, 'lastCursor')).length > 0) {
         callNextTick(postNextQuery);
       }
@@ -110,6 +107,18 @@ function extractCommitsFromQueryResult(
 
 function appendRepoNameToCommit(name, commit) {
   commit.repoName = name;
+}
+
+function addDateFilterProperties(repo) {
+  if (repo.commits && repo.commits.length > 0) {
+    var oldestToNewestDates = pluck(repo.commits, 'committedDate').sort();
+    repo.until = adjustDateString(oldestToNewestDates[0], -1);
+  }
+}
+
+function adjustDateString(isoString, adjustmentInSeconds) {
+  return (new Date((new Date(isoString)).getTime() + adjustmentInSeconds * 1000))
+    .toISOString();
 }
 
 module.exports = GetCommitsForRepos;

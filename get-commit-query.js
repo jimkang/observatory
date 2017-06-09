@@ -2,7 +2,7 @@ var randomId = require('idmaker').randomId;
 
 const nonAlphanumericRegex = /[^\w]/g;
 
-// repos are objects with a `name` and optional `since` , `until`, and `lastCursor` properties.
+// repos are objects with a `name` and optional `until`, and `lastCursor` properties.
 function getCommitQuery(repos, userEmail) {
   return `{
     viewer {
@@ -29,17 +29,14 @@ function getCommitQuery(repos, userEmail) {
     if (repo.lastCursor) {
       afterSegment = `, after: "${repo.lastCursor}"`;
     }
-    var sinceClause = '';
     var untilClause = '';
 
-    if (repo.since) {
-      sinceClause = ` since: "${repo.since}"`;
-    }
     if (repo.until) {
-      untilClause = ` until: "${repo.until}"`;
+      untilClause = `, until: "${repo.until}"`;
     }
 
-    return `${randomId(4)}_${sanitizeAsGQLId(repo.name)}: repository(name: "${repo.name}") {
+    return `
+    ${randomId(4)}_${sanitizeAsGQLId(repo.name)}: repository(name: "${repo.name}") {
       defaultBranchRef {
         id
         repository {
@@ -48,13 +45,14 @@ function getCommitQuery(repos, userEmail) {
         target {
           ... on Commit {
             id
-            history(author: {emails: "${userEmail}"}, first: 20${afterSegment}${sinceClause}${untilClause}) {
+            history(author: {emails: "${userEmail}"}, first: 20${afterSegment}${untilClause}) {
               ...CommitHistoryFields
             }
           }
         }
       }
-    }`;
+    }
+  `;
   }
 }
 
