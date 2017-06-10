@@ -1,11 +1,11 @@
 var test = require('tape');
 var assertNoError = require('assert-no-error');
 var request = require('request');
-var config = require('../config');
+var config = require('../../config');
 
-var getUserGitHubCommits = require('../get-user-github-commits');
+var getUserCommits = require('../../get-user-commits');
 
-test('Get repos and commits', getUserGitHubCommitsTest);
+test('Get repos and commits', getUserCommitsTest);
 
 var reposToDisown = [
   'oauthconsumer',
@@ -45,7 +45,7 @@ var reposToDisown = [
   'secretknowledge'
 ];
 
-function getUserGitHubCommitsTest(t) {
+function getUserCommitsTest(t) {
   var repoCount = 0;
   var commitCount = 0;
 
@@ -61,7 +61,7 @@ function getUserGitHubCommitsTest(t) {
     shouldIncludeRepo: filterRepo
   };
 
-  getUserGitHubCommits(opts, checkFinalResults);
+  getUserCommits(opts, checkFinalResults);
 
   function checkRepo(repo) {
     repoCount += 1;
