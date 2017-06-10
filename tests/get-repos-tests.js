@@ -4,9 +4,9 @@ var request = require('request');
 var config = require('../config');
 var GetRepos = require('../get-repos');
 
-test('Get repos', getUserReposTest);
+test('Get repos', getReposTest);
 
-function getUserReposTest(t) {
+function getReposTest(t) {
   var repoCount = 0;
 
   var createOpts = {

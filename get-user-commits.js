@@ -7,7 +7,7 @@ var queue = require('d3-queue').queue;
 var GetCommitsForRepos = require('./get-commits-for-repos');
 var GetRepos = require('./get-repos');
 
-function getUserGitHubCommits(
+function getUserCommits(
   {
     baseURL = 'https://api.github.com',
     token,
@@ -104,4 +104,4 @@ function compareRepoDates(a, b) {
   return a.pushedAt > b.pushedAt ? -1 : 1;
 }
 
-module.exports = getUserGitHubCommits;
+module.exports = getUserCommits;

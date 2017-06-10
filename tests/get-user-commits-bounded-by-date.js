@@ -5,9 +5,9 @@ var config = require('../config');
 var findWhere = require('lodash.findwhere');
 require('longjohn');
 
-var getUserGitHubCommits = require('../get-user-github-commits');
+var getUserCommits = require('../get-user-commits');
 
-test('Get repos and commits', getUserGitHubCommitsTest);
+test('Get repos and commits', getUserCommitsTest);
 
 var reposToCareAbout = [
   'exogenite',
@@ -60,7 +60,7 @@ var existingRepos = [
   }
 ];
 
-function getUserGitHubCommitsTest(t) {
+function getUserCommitsTest(t) {
   var repoCount = 0;
   var commitCount = 0;
 
@@ -77,7 +77,7 @@ function getUserGitHubCommitsTest(t) {
     existingRepos: existingRepos
   };
 
-  getUserGitHubCommits(opts, checkFinalResults);
+  getUserCommits(opts, checkFinalResults);
 
   function checkRepo(repo) {
     repoCount += 1;
