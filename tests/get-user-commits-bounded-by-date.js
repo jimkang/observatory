@@ -3,6 +3,7 @@ var assertNoError = require('assert-no-error');
 var request = require('request');
 var config = require('../config');
 var findWhere = require('lodash.findwhere');
+require('longjohn');
 
 var getUserGitHubCommits = require('../get-user-github-commits');
 
@@ -19,7 +20,7 @@ var existingRepos = [
     name: 'exogenite',
     commits: [
       {
-        committedDate: isoStringForDateString('2017-03-10')
+        committedDate: isoStringForDateString('2017-03-09')
       },
       {
         committedDate: isoStringForDateString('2017-03-13')
@@ -33,7 +34,7 @@ var existingRepos = [
     name: 'godtributes',
     commits: [
       {
-        committedDate: isoStringForDateString('2014-09-20')
+        committedDate: isoStringForDateString('2014-06-30')
       },
       {
         committedDate: isoStringForDateString('2014-09-22')
@@ -47,7 +48,7 @@ var existingRepos = [
     name: 'off-brand-vine',
     commits: [
       {
-        committedDate: isoStringForDateString('2017-04-11')
+        committedDate: isoStringForDateString('2017-04-06')
       },
       {
         committedDate: isoStringForDateString('2017-04-30')
@@ -92,17 +93,17 @@ function getUserGitHubCommitsTest(t) {
     t.ok(commit.committedDate, 'Commit has a date.');
     t.ok(commit.repoName, 'Commit has a repoName');
 
-    var existingRepo = findWhere(existingRepos, {name: commit.repoName});
+    var existingRepo = findWhere(existingRepos, {name: commit.repoName});    
     t.ok(
-      new Date(commit.pushedAt) < new Date(existingRepo.commits[0]),
-      'Commit date is older than the oldest existingRepo commit date'
+      new Date(commit.committedDate) < new Date(existingRepo.commits[0].committedDate),
+      'Commit date is older than the oldest existingRepo commit date.'
     );
   }
 
   function checkFinalResults(error, repos) {
-    console.log('Repos dump:');
-    console.log(JSON.stringify(repos, null, '  '));
-    console.log('End repos dump.');
+    // console.log('Repos dump:');
+    // console.log(JSON.stringify(repos, null, '  '));
+    // console.log('End repos dump.');
 
     assertNoError(t.ok, error, 'No error while getting commits.');
     t.equal(
@@ -112,7 +113,7 @@ function getUserGitHubCommitsTest(t) {
     );
     t.equal(
       repos.reduce(addToCommitCount, 0),
-      commitCount,
+      commitCount + 9, // There's nine fake existing commits.
       'Final commit count is the same as the emitted commit count.'
     );
     t.end();

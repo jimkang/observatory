@@ -1,156 +1,102 @@
 var sb = require('standard-bail')();
 var callNextTick = require('call-next-tick');
 var findWhere = require('lodash.findwhere');
-var pluck = require('lodash.pluck');
 var defaults = require('lodash.defaults');
 var splitArray = require('split-array');
 var queue = require('d3-queue').queue;
-var pathExists = require('object-path-exists');
-var getCommitsForRepos = require('./get-commits-for-repos');
-var isAGitHubRateLimitErrorMessage = require('./is-a-github-rate-limit-error-message');
-var getGQLReqOpts = request('./get-gql-req-opts');
+var GetCommitsForRepos = require('./get-commits-for-repos');
+var GetRepos = require('./get-repos');
 
 function getUserGitHubCommits(
   {
+    baseURL = 'https://api.github.com',
     token,
     username,
     userEmail,
     request,
+    existingRepos = [],
     onRepo,
     onCommit,
     onNonFatalError,
     userAgent,
-    shouldIncludeRepo
+    shouldIncludeRepo,
+    getCommitsForRepos
   },
   allDone) {
 
-  var repos = [];
+  var collectedRepos = [];
 
-  getRepos(callGetCommits, passRepos);
+  var getRepos = GetRepos({
+    baseURL,
+    token,
+    userAgent,
+    request
+  });
 
-  function callGetCommits() {
+  if (!getCommitsForRepos) {
+    getCommitsForRepos = GetCommitsForRepos({
+      token: token,
+      userEmail: userEmail,
+      request: request,
+      userAgent: userAgent
+    });
+  }
+
+  getRepos(
+    {username, shouldIncludeRepo, onRepo, onNonFatalError},
+    sb(callGetCommits, passRepos)
+  );
+
+  function callGetCommits(repos) {
     var reposNewestToOldest = repos.sort(compareRepoDates);
-    var repoNames = pluck(reposNewestToOldest, 'name');
-    var repoGroups = splitArray(repoNames, 10);
+    reposNewestToOldest.forEach(reconcileRepo);
+    collectedRepos = collectedRepos.concat(reposNewestToOldest);
+    var repoGroups = splitArray(reposNewestToOldest, 10);
     var q = queue(1);
     repoGroups.forEach(queueGet);
 
     q.awaitAll(passRepos);
 
-    function queueGet(repoNameGroup) {
+    function queueGet(repoGroup) {
       q.defer(
         getCommitsForRepos,
-        defaults({
-          repoNames: repoNameGroup,
+        {
+          repos: repoGroup,
           onCommitsForRepo: collectCommits,
-          token: token,
-          userEmail: userEmail,
-          request: request,
-          onNonFatalError: onNonFatalError,
-          userAgent: userAgent
-        })
+          onNonFatalError: onNonFatalError
+        }
       );
     }
+
+    function collectCommits(repoName, commits) {
+      var repo = findWhere(repos, {name: repoName});
+      if (!repo.commits) {
+        repo.commits = [];
+      }
+
+      commits.forEach(addCommit);
+
+      function addCommit(commit) {
+        commit.repoName = repoName;
+        repo.commits.push(commit);
+        if (onCommit) {
+          onCommit(commit);
+        }
+      }
+    }    
+  }
+
+  function reconcileRepo(repo) {
+    var existingRepo = findWhere(existingRepos, {name: repo.name});
+    if (existingRepo) {
+      repo = defaults(repo, existingRepo);
+    }
+    return repo;
   }
 
   function passRepos(error) {
-    callNextTick(allDone, error, repos);
+    callNextTick(allDone, error, collectedRepos);
   }
-
-  function collectRepository(repo) {
-    if (typeof shouldIncludeRepo !== 'function' || shouldIncludeRepo(repo)) {
-      repo.lastCheckedDate = (new Date()).toISOString();
-      repos.push(repo);
-      if (onRepo) {
-        onRepo(repo);
-      }
-    }
-  }
-
-  function collectCommits(repoName, edges) {
-    var repo = findWhere(repos, {name: repoName});
-    if (!repo.commits) {
-      repo.commits = [];
-    }
-
-    edges.forEach(addCommit);
-
-    function addCommit(edge) {
-      edge.node.repoName = repoName;
-      repo.commits.push(edge.node);
-      if (onCommit) {
-        onCommit(edge.node);
-      }
-    }
-  }
-
-  function getRepos(done) {
-    var lastRepoCursor;
-    postNextQuery();
-
-    function postNextQuery() {
-      request(
-        getGQLReqOpts({
-          apiURL: apiURL,
-          token: token,
-          userAgent: userAgent,
-          query: query
-        })
-        sb(handleRepoResponse, done)
-      );
-    }
-
-    function handleRepoResponse(res, body) {
-      if (body.errors) {
-        if (onNonFatalError) {
-          onNonFatalError(new Error(JSON.stringify(body.errors, null, 2)));
-        }
-        if (body.errors.some(isAGitHubRateLimitErrorMessage)) {
-          // No point in continuing
-          done(new Error('Rate limit error'));
-          return;
-        }
-      }
-      else if (pathExists(body, ['data', 'user', 'repositories', 'nodes'])) {
-        body.data.user.repositories.nodes.forEach(collectRepository);
-      }
-
-      if (pathExists(body, ['data', 'user', 'repositories', 'pageInfo']) &&
-        body.data.user.repositories.pageInfo.hasNextPage) {
-
-        lastRepoCursor = body.data.user.repositories.pageInfo.endCursor;
-        callNextTick(postNextQuery);
-      }
-      else {
-        callNextTick(done);
-      }
-    }
-  }
-}
-
-function getRepoQuery(username, lastCursor) {
-  var afterSegment = '';
-  if (lastCursor) {
-    afterSegment = `, after: "${lastCursor}"`;
-  }
-  return `{
-    user(login: "${username}") {
-      repositories(first: 100${afterSegment}) {
-        nodes {
-          name
-          id
-          pushedAt
-          description
-        },
-        pageInfo {
-          endCursor
-          hasNextPage
-          hasPreviousPage
-          startCursor
-        }
-      }
-    }
-  }`;
 }
 
 // Newer dates are to come earlier in the array.
