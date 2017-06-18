@@ -3,24 +3,35 @@ var assertNoError = require('assert-no-error');
 var request = require('request');
 var config = require('../config');
 var findWhere = require('lodash.findwhere');
+var cloneDeep = require('lodash.clonedeep');
+
 require('longjohn');
 
 var getUserCommits = require('../get-user-commits');
 
 test('Get repos and commits', getUserCommitsTest);
 
-var reposToCareAbout = [
-  'exogenite',
-  'godtributes',
-  'off-brand-vine'
-];
+var reposToCareAbout = {
+  'exogenite': {
+    shouldGetOlderAndNewerCommits: true,
+    shouldHaveTheOldestCommitFlagSet: true
+  },
+  'godtributes': {
+    shouldGetOlderCommits: true,
+    shouldHaveTheOldestCommitFlagSet: true
+  },
+  'off-brand-vine': {
+    shouldGetOlderCommits: false,
+    shouldHaveTheOldestCommitFlagSet: true
+  }
+};
 
 var existingRepos = [
   {
     name: 'exogenite',
     commits: [
       {
-        committedDate: isoStringForDateString('2017-03-09')
+        committedDate: isoStringForDateString('2017-03-10')
       },
       {
         committedDate: isoStringForDateString('2017-03-13')
@@ -51,12 +62,13 @@ var existingRepos = [
         committedDate: isoStringForDateString('2017-04-06')
       },
       {
-        committedDate: isoStringForDateString('2017-04-30')
+        committedDate: isoStringForDateString('2017-05-06')
       },
       {
         committedDate: isoStringForDateString('2017-04-20')
       }
-    ]
+    ],
+    weHaveTheOldestCommit: true
   }
 ];
 
@@ -74,7 +86,7 @@ function getUserCommitsTest(t) {
     userAgent: 'observatory-tests',
     onNonFatalError: logNonFatalError,
     shouldIncludeRepo: filterRepo,
-    existingRepos: existingRepos
+    existingRepos: cloneDeep(existingRepos)
   };
 
   getUserCommits(opts, checkFinalResults);
@@ -88,16 +100,28 @@ function getUserCommitsTest(t) {
 
   function checkCommit(commit) {
     commitCount += 1;
-    t.ok(commit.message, 'Commit has a message.');
-    t.ok(commit.abbreviatedOid, 'Commit has an abbreviatedOid.');
-    t.ok(commit.committedDate, 'Commit has a date.');
-    t.ok(commit.repoName, 'Commit has a repoName');
+    t.ok(commit.message, commit.repoName + ' commit has a message.');
+    t.ok(commit.abbreviatedOid, commit.repoName + ' commit has an abbreviatedOid.');
+    t.ok(commit.committedDate, commit.repoName + ' commit has a date.');
+    t.ok(commit.repoName, commit.repoName + ' commit has a repoName');
 
-    var existingRepo = findWhere(existingRepos, {name: commit.repoName});    
-    t.ok(
-      new Date(commit.committedDate) < new Date(existingRepo.commits[0].committedDate),
-      'Commit date is older than the oldest existingRepo commit date.'
-    );
+    var existingRepo = findWhere(existingRepos, {name: commit.repoName});
+    if (!reposToCareAbout[commit.repoName].shouldGetOlderAndNewerCommits) {
+      if (reposToCareAbout[commit.repoName].shouldGetOlderCommits) {
+        t.ok(
+          new Date(commit.committedDate) <
+            new Date(existingRepo.commits[0].committedDate),
+          commit.repoName + ' commit date is older than the oldest existingRepo commit date.'
+        );
+      }
+      else {
+        t.ok(
+          new Date(commit.committedDate) >
+            new Date(existingRepo.commits[existingRepo.commits.length - 1].committedDate),
+          commit.repoName + ' commit date is newer than the newest existingRepo commit date.'
+        );
+      }
+    }
   }
 
   function checkFinalResults(error, repos) {
@@ -116,7 +140,16 @@ function getUserCommitsTest(t) {
       commitCount + 9, // There's nine fake existing commits.
       'Final commit count is the same as the emitted commit count.'
     );
+    repos.forEach(checkOldestCommitFlagOnRepo);
     t.end();
+  }
+
+  function checkOldestCommitFlagOnRepo(repo) {
+    t.equal(
+      repo.weHaveTheOldestCommit,
+      reposToCareAbout[repo.name].shouldHaveTheOldestCommitFlagSet,
+      'weHaveTheOldestCommit commit flag is set appropriately.'
+    );
   }
 }
 
@@ -133,7 +166,7 @@ function addToCommitCount(count, repo) {
 }
 
 function filterRepo(repo) {
-  return reposToCareAbout.indexOf(repo.name) !== -1;
+  return Object.keys(reposToCareAbout).indexOf(repo.name) !== -1;
 }
 
 function isoStringForDateString(s) {

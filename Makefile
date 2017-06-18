@@ -13,7 +13,7 @@ build:
 test:
 	node tests/get-commits-for-repos-tests.js
 	node tests/get-repos-tests.js
-	node tests/get-user-commits-bounded-by-date.js
+	node tests/get-user-commits-bounded-by-date-tests.js
 
 test-long:
 	node tests/long/get-user-commits-tests.js

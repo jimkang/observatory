@@ -1,8 +1,8 @@
 var randomId = require('idmaker').randomId;
+var pluck = require('lodash.pluck');
 
 const nonAlphanumericRegex = /[^\w]/g;
 
-// repos are objects with a `name` and optional `until`, and `lastCursor` properties.
 function getCommitQuery(repos, userEmail) {
   return `{
     viewer {
@@ -25,15 +25,7 @@ function getCommitQuery(repos, userEmail) {
   }`;
 
   function getRepoCommitSubquery(repo) {
-    var afterSegment = '';
-    if (repo.lastCursor) {
-      afterSegment = `, after: "${repo.lastCursor}"`;
-    }
-    var untilClause = '';
-
-    if (repo.until) {
-      untilClause = `, until: "${repo.until}"`;
-    }
+    var whereClause = getWhereClause(repo);
 
     return `
     ${randomId(4)}_${sanitizeAsGQLId(repo.name)}: repository(name: "${repo.name}") {
@@ -45,7 +37,7 @@ function getCommitQuery(repos, userEmail) {
         target {
           ... on Commit {
             id
-            history(author: {emails: "${userEmail}"}, first: 20${afterSegment}${untilClause}) {
+            history(author: {emails: "${userEmail}"}, first: 20 ${whereClause}) {
               ...CommitHistoryFields
             }
           }
@@ -58,6 +50,37 @@ function getCommitQuery(repos, userEmail) {
 
 function sanitizeAsGQLId(s) {
   return s.replace(nonAlphanumericRegex, '');
+}
+
+function getWhereClause(repo) {
+  var whereClause = '';
+
+  if (repo.commits && repo.commits.length > 0) {
+    var oldestToNewestDates = pluck(repo.commits, 'committedDate').sort();
+    // If repo.weHaveTheOldestCommit is set, always seek new commits.
+    // Otherwise, seek older commits.
+    if (repo.weHaveTheOldestCommit) {
+      if (repo.lastCursor) {
+        whereClause = `after: "${repo.lastCursor}"`;
+      }
+      else {
+        var since = adjustDateString(
+          oldestToNewestDates[oldestToNewestDates.length -1], 1
+        );
+        whereClause = `since: "${since}"`;
+      }
+    }
+    else {
+      var until = adjustDateString(oldestToNewestDates[0], -1);
+      whereClause = `until: "${until}"`;
+    }
+  }
+  return whereClause;
+}
+
+function adjustDateString(isoString, adjustmentInSeconds) {
+  return (new Date((new Date(isoString)).getTime() + adjustmentInSeconds * 1000))
+    .toISOString();
 }
 
 module.exports = getCommitQuery;

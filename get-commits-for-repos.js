@@ -29,7 +29,6 @@ function GetCommitsForRepos({
     done) {
 
     var reposThatHaveCommitsToGet = repos.slice();
-    reposThatHaveCommitsToGet.forEach(addDateFilterProperties);
     postNextQuery();
 
     function postNextQuery() {
@@ -61,12 +60,13 @@ function GetCommitsForRepos({
         );
       }
       else {
-        extractCommitsFromQueryResult(
+        updateStateWithQueryResult(
           body.data.viewer, reposThatHaveCommitsToGet, onCommitsForRepo
         );
       }
 
       if (compact(pluck(reposThatHaveCommitsToGet, 'lastCursor')).length > 0) {
+        // console.log('last cursors:', compact(pluck(reposThatHaveCommitsToGet, 'lastCursor')));
         callNextTick(postNextQuery);
       }
       else {
@@ -82,7 +82,7 @@ function GetCommitsForRepos({
   }
 }
 
-function extractCommitsFromQueryResult(
+function updateStateWithQueryResult(
   viewer, reposThatHaveCommitsToGet, onCommitsForRepo) {
 
   for (var queryId in viewer) {
@@ -96,6 +96,7 @@ function extractCommitsFromQueryResult(
       }
       else {
         delete repo.lastCursor;
+        repo.weHaveTheOldestCommit = true;
       }
 
       let commits = pluck(queryResult.defaultBranchRef.target.history.edges, 'node');
@@ -107,18 +108,6 @@ function extractCommitsFromQueryResult(
 
 function appendRepoNameToCommit(name, commit) {
   commit.repoName = name;
-}
-
-function addDateFilterProperties(repo) {
-  if (repo.commits && repo.commits.length > 0) {
-    var oldestToNewestDates = pluck(repo.commits, 'committedDate').sort();
-    repo.until = adjustDateString(oldestToNewestDates[0], -1);
-  }
-}
-
-function adjustDateString(isoString, adjustmentInSeconds) {
-  return (new Date((new Date(isoString)).getTime() + adjustmentInSeconds * 1000))
-    .toISOString();
 }
 
 module.exports = GetCommitsForRepos;

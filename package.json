@@ -38,6 +38,7 @@
     "handle-error-web": "^1.0.1",
     "idmaker": "^0.1.1",
     "list-em-all": "^1.2.0",
+    "lodash.clonedeep": "^4.5.0",
     "lodash.curry": "^4.1.1",
     "lodash.findwhere": "^3.1.0",
     "lodash.pluck": "^3.1.2",
