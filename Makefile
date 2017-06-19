@@ -18,6 +18,10 @@ test:
 test-long:
 	node tests/long/get-user-commits-tests.js
 
+test-long-sequential:
+	node tests/long/get-user-commits-tests.js previous-run-repo-states.json
+	node tests/long/get-user-commits-tests.js previous-run-repo-states-2.json
+
 pushall:
 	git push origin gh-pages
 

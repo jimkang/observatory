@@ -1,9 +1,19 @@
+/* global process, __dirname */
+
 var test = require('tape');
 var assertNoError = require('assert-no-error');
 var request = require('request');
 var config = require('../../config');
+var fs = require('fs');
 
 var getUserCommits = require('../../get-user-commits');
+var previousRunRepos;
+
+if (process.argv.length > 2) {
+  previousRunRepos = JSON.parse(
+    fs.readFileSync(__dirname + '/data/' + process.argv[2])
+  );
+}
 
 test('Get repos and commits', getUserCommitsTest);
 
@@ -58,7 +68,8 @@ function getUserCommitsTest(t) {
     onCommit: checkCommit,
     userAgent: 'observatory-tests',
     onNonFatalError: logNonFatalError,
-    shouldIncludeRepo: filterRepo
+    shouldIncludeRepo: filterRepo,
+    existingRepos: previousRunRepos
   };
 
   getUserCommits(opts, checkFinalResults);
