@@ -2,6 +2,12 @@ BROWSERIFY = ./node_modules/.bin/browserify
 UGLIFY = ./node_modules/.bin/uglifyjs
 TRANSFORM_SWITCH = -t [ babelify --presets [ es2015 ] ]
 
+SMOKECHROME = node_modules/.bin/tap-closer | \
+	node_modules/.bin/smokestack -b chrome
+
+SMOKEFIREFOX = node_modules/.bin/tap-closer | \
+	node_modules/.bin/smokestack -b firefox
+
 run:
 	wzrd app.js:index.js -- \
 		-d \
@@ -14,6 +20,12 @@ test:
 	node tests/get-commits-for-repos-tests.js
 	node tests/get-repos-tests.js
 	node tests/get-user-commits-bounded-by-date-tests.js
+
+test-chrome:
+	$(BROWSERIFY) tests/browser/storage-tests.js | $(SMOKECHROME)
+
+test-firefox:
+	$(BROWSERIFY) tests/browser/storage-tests.js | $(SMOKEFIREFOX)
 
 test-long:
 	node tests/long/get-user-commits-tests.js
