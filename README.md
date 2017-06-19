@@ -28,7 +28,7 @@ Run `eslint .` before committing.
 Tests
 -----
 
-Run tests with `make test`.
+Run tests with `make test`, `make test-chrome`, and `make test-firefox`.
 
 ## Testing whether or not updating existing repos works on large numbers of repos ##
 
