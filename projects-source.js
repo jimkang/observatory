@@ -4,9 +4,17 @@ var levelup = require('levelup');
 var Sublevel = require('level-sublevel');
 var queue = require('d3-queue').queue;
 
-function ProjectsSource({user, onDeed, onProject}) {
+function ProjectsSource(
+  {
+    user,
+    onDeed,
+    onProject,
+    dbName = 'observatory',
+    projectsToCareAbout
+  }) {
+
   var db = levelup(
-    'observatory',
+    dbName,
     {
       db: leveljs,
       valueEncoding: 'json'
@@ -46,6 +54,10 @@ function ProjectsSource({user, onDeed, onProject}) {
     if (sources.indexOf('local') !== -1) {
       q.defer(streamLocalEntities, deedDb, onDeed);
       q.defer(streamLocalEntities, projectDb, onProject);
+    }
+
+    if (sources.indexOf('API') !== -1) {
+      // TODO: Connect to getUserCommits.
     }
 
     q.awaitAll(done);
