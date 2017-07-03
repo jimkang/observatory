@@ -1,16 +1,19 @@
 function getGQLReqOpts({apiURL, token, userAgent, query}) {
-  return {
+  var opts = {
     method: 'POST',
     url: apiURL,
     headers: {
       Authorization: 'Bearer ' + token,
-      'User-Agent': userAgent
     },
     body: {
       query: query
     },
     json: true
   };
+  if (userAgent) {
+    opts.headers['User-Agent'] = userAgent;
+  }
+  return opts;
 }
 
 module.exports = getGQLReqOpts;

@@ -4,11 +4,15 @@ var test = require('tape');
 var ProjectsSource = require('../../projects-source');
 var assertNoError = require('assert-no-error');
 var queue = require('d3-queue').queue;
-var findWhere = require('lodash.findwhere');
+var values = require('lodash.values');
 var config = require('../../config');
 var request = require('basic-browser-request');
 var defaults = require('lodash.defaults');
-var omit = require('lodash.omit');
+var pluck = require('lodash.pluck');
+
+var projectsToCareAbout = ['iemxrre', 'attnbot', 'slack-gis'];
+// Set projectsToCareAbout to undefined to test it against *every* project.
+// Warning: That's a long test.
 
 var defaultCtorOpts = {
   user: 'jimkang',
@@ -19,62 +23,25 @@ var defaultCtorOpts = {
   onNonFatalError: logNonFatalError
 };
 
-// test('Pause', (t) => {window.c = t.end; console.log('After setting breakpoints, type c() to continue.')});
-test('Update db with deed.', deedUpdateTest);
-test('Stream deeds.', localDeedStreamTest);
+test('Stream from API.', apiDeedStreamTest);
+// test('Pause', (t) => {window.c = t.end; console.log('After setting breakpoints, type c() to continue.');});
 
-function deedUpdateTest(t) {
-  t.plan(4);
-  var projectsSource = ProjectsSource(defaults(
-    {
-      dbName: 'deed-update-test',
-      onDeed: checkDeed
-    },
-    defaultCtorOpts
-  ));
-
-  var deed = {
-    'abbreviatedOid': '30a7e8c',
-    id: '30a7e8c',
-    'message': 'Refactored mishear module to export a createMishear function that sets up  to use the probable given to createMishear.',
-    'committedDate': '2015-10-05T01:42:19Z',
-    'repoName': 'mishear',
-    projectName: 'mishear',
-    type: 'commit'
-  };
-
-  projectsSource.putDeed(deed, checkPutError);
-
-  function checkDeed(emittedDeed) {
-    t.deepEqual(emittedDeed, deed, 'Correct deed is emitted.');
-  }
-
-  function checkPutError(error) {
-    assertNoError(t.ok, error, 'No error while putting deed.');
-    projectsSource.getDeed('30a7e8c', checkGet);
-  }
-
-  function checkGet(error, gottenDeed) {
-    assertNoError(t.ok, error, 'No error while getting deed.');
-    checkDeed(gottenDeed);
-  }
-}
-
-function localDeedStreamTest(t) {
+function apiDeedStreamTest(t) {
   var shouldListenToEvents = false;
-  var emittedDeeds = [];
-  var emittedProjects = [];
+  var emittedDeeds = {};
+  var emittedProjects = {};
 
   var projectsSource = ProjectsSource(defaults(
     {
-      dbName: 'local-deed-stream-test',
       onDeed: collectDeed,
-      onProject: collectProject
+      onProject: collectProject,
+      filterProject: weCareAboutThisProject,
+      dbName: 'api-deed-stream-test'
     },
     defaultCtorOpts
   ));
 
-  var deeds = [
+  var existingDeeds = [
     {
       'abbreviatedOid': '30a7e8c',
       id: '30a7e8c',
@@ -104,7 +71,7 @@ function localDeedStreamTest(t) {
     }
   ];
 
-  var projects = [
+  var existingProjects = [
     {
       'name': 'mishear',
       'id': 'MDEwOlJlcG9zaXRvcnk0MzEwMTQ0Mg==',
@@ -123,11 +90,11 @@ function localDeedStreamTest(t) {
   ];
 
   var q = queue();
-  deeds.forEach(queuePut);
-  projects.forEach(queuePutProject);
+  existingProjects.forEach(queuePutProject);
+  existingDeeds.forEach(queuePutDeed);
   q.awaitAll(streamDeeds);
 
-  function queuePut(deed) {
+  function queuePutDeed(deed) {
     q.defer(projectsSource.putDeed, deed);
   }
 
@@ -138,45 +105,67 @@ function localDeedStreamTest(t) {
   function streamDeeds(error) {
     assertNoError(t.ok, error, 'No error while putting deeds and projects.');
     shouldListenToEvents = true;
-    projectsSource.startStream({sources: ['local']}, checkStreamEnd);
+    projectsSource.startStream({sources: ['local', 'API']}, checkStreamEnd);
   }
 
   function collectDeed(deed) {
     if (shouldListenToEvents) {
-      emittedDeeds.push(deed);
+      emittedDeeds[deed.id] = deed;
     }
   }
 
   function collectProject(project) {
     if (shouldListenToEvents) {
-      emittedProjects.push(project);
+      emittedProjects[project.id] = project;
     }
   }
 
   function checkStreamEnd(error) {
     assertNoError(t.ok, error, 'No error while streaming local stuff.');
-    t.equal(emittedDeeds.length, deeds.length, 'Correct number of deeds was emitted');
-    deeds.forEach(checkEmittedForDeed);
-    t.equal(emittedProjects.length, projects.length, 'Correct number of projects was emitted.');
-    projects.forEach(checkEmittedForProject);
+    var uniqueDeedsEmitted = Object.keys(emittedDeeds).length;
+    // console.log('uniqueDeedsEmitted:', uniqueDeedsEmitted);
+
+    t.ok(
+      uniqueDeedsEmitted > existingDeeds.length,
+      'Correct number of deeds was emitted.'
+    );
+    values(emittedDeeds).forEach(checkDeed);
+    
+    t.equal(
+      Object.keys(emittedProjects).length,
+      projectsToCareAbout.length,
+      'Correct number of projects was emitted.'
+    );
+    values(emittedProjects).forEach(checkProject);
     t.end();
   }
 
-  function checkEmittedForDeed(deed) {
-    var correspondingEmittedDeed = findWhere(emittedDeeds, {id: deed.id});
-    t.deepEqual(correspondingEmittedDeed, deed, 'Emitted deed is correct.');
+  function checkDeed(deed) {
+    t.ok(deed.message, 'Deed has a message.');
+    t.ok(deed.id, 'Deed has an id.');
+    t.ok(deed.committedDate, 'Deed has a date.');
+    t.ok(deed.projectName, 'deed has a projectName');
   }
 
-  function checkEmittedForProject(project) {
-    var correspondingEmittedProject = findWhere(emittedProjects, {id: project.id});
-    t.deepEqual(
-      omit(correspondingEmittedProject, 'deeds'),
-      project,
-      'Emitted project is correct.'
-    );
+  function checkProject(project) {
+    t.ok(project.name, 'Project has a name.');
+    t.ok(project.pushedAt, 'Project has a pushedAt date.');
+    t.ok(project.lastCheckedDate, 'Project has a lastCheckedDate.');
+
+    if (projectsToCareAbout) {
+      t.ok(
+        projectsToCareAbout.indexOf(project.name) !== -1 ||
+        pluck(existingProjects, 'name').indexOf(project.name) !== -1,
+        'Project is in projectsToCareAbout'
+      );
+    }
   }
 }
 
 function logNonFatalError(error) {
   console.error('Non-fatal error:', error);
+}
+
+function weCareAboutThisProject(project) {
+  return projectsToCareAbout.indexOf(project.name) !== -1;
 }

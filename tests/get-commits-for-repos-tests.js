@@ -57,7 +57,7 @@ function getCommitsTest(t) {
     t.ok(commit.abbreviatedOid, 'Commit has an abbreviatedOid.');
     t.ok(commit.committedDate, 'Commit has a date.');
     t.ok(commit.repoName, 'Commit has a repoName');
-    console.log('commit', commit);
+    // console.log('commit', commit);
   }
 
   function checkFinalResults(error) {    

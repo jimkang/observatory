@@ -23,6 +23,7 @@ test:
 
 test-chrome:
 	$(BROWSERIFY) tests/browser/storage-tests.js | $(SMOKECHROME)
+	$(BROWSERIFY) tests/browser/api-storage-tests.js | $(SMOKECHROME)
 
 test-firefox:
 	$(BROWSERIFY) tests/browser/storage-tests.js | $(SMOKEFIREFOX)

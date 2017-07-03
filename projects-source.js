@@ -3,6 +3,9 @@ var leveljs = require('level-js');
 var levelup = require('levelup');
 var Sublevel = require('level-sublevel');
 var queue = require('d3-queue').queue;
+var getUserCommits = require('./get-user-commits');
+var sb = require('standard-bail')();
+var findWhere = require('lodash.findwhere');
 
 function ProjectsSource(
   {
@@ -10,7 +13,13 @@ function ProjectsSource(
     onDeed,
     onProject,
     dbName = 'observatory',
-    projectsToCareAbout
+    filterProject,
+    githubToken,
+    username,
+    userEmail,
+    request,
+    userAgent,
+    onNonFatalError
   }) {
 
   var db = levelup(
@@ -49,18 +58,74 @@ function ProjectsSource(
   }
 
   function startStream({sources = ['local', 'API']}, done) {
-    var q = queue();
+    startLocalStream(sb(proceedAfterStreamingLocal, done));
 
-    if (sources.indexOf('local') !== -1) {
-      q.defer(streamLocalEntities, deedDb, onDeed);
-      q.defer(streamLocalEntities, projectDb, onProject);
+    function proceedAfterStreamingLocal(localProjects) {
+      if (sources.indexOf('API') !== -1) {
+        var getUserCommitsOpts = {
+          token: githubToken,
+          username,
+          userEmail,
+          request,
+          userAgent,
+          onNonFatalError,
+          shouldIncludeRepo: filterProject,
+          existingRepos: localProjects,
+          onRepo: putAndEmitProject,
+          onCommit: putAndEmitDeed
+        };
+        // console.log('localProjects', localProjects);
+
+        getUserCommits(getUserCommitsOpts, done);
+      }
+      else {
+        callNextTick(done);
+      }
+    }
+  }
+
+  function putAndEmitProject(project) {
+    // console.log('putAndEmitProject', project);
+    putProject(project, handlePutError);
+  }
+
+  function putAndEmitDeed(deed) {
+    // console.log('putAndEmitDeed', deed);
+    deed.id = deed.abbreviatedOid;
+    deed.projectName = deed.repoName;
+    putDeed(deed, handlePutError);
+  }
+
+  function handlePutError(error) {
+    if (error) {
+      onNonFatalError(error);
+    }
+  }
+
+  function startLocalStream(done) {
+    var projects = [];
+    var q = queue(1);
+    q.defer(streamLocalEntities, projectDb, collectLocalProject);
+    q.defer(streamLocalEntities, deedDb, collectLocalDeed);
+    q.awaitAll(sb(passProjects, done));
+
+    function collectLocalDeed(deed) {
+      var containingProject = findWhere(projects, {name: deed.projectName});
+      if (!containingProject.deeds) {
+        containingProject.deeds = [];
+      }
+      containingProject.deeds.push(deed);
+      onDeed(deed);
     }
 
-    if (sources.indexOf('API') !== -1) {
-      // TODO: Connect to getUserCommits.
+    function collectLocalProject(project) {
+      projects.push(project);
+      onProject(project);
     }
 
-    q.awaitAll(done);
+    function passProjects() {
+      done(null, projects);
+    }
   }
 }
 
