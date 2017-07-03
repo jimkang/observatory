@@ -6,6 +6,7 @@ var queue = require('d3-queue').queue;
 var getUserCommits = require('./get-user-commits');
 var sb = require('standard-bail')();
 var findWhere = require('lodash.findwhere');
+var shamble = require('./shamble');
 
 function ProjectsSource(
   {
@@ -72,7 +73,11 @@ function ProjectsSource(
           shouldIncludeRepo: filterProject,
           existingRepos: localProjects,
           onRepo: putAndEmitProject,
-          onCommit: putAndEmitDeed
+          onCommit: shamble([
+            ['s', convertCommitToDeed],
+            ['a', putDeed],
+            ['a', handlePutError]
+          ])
         };
         // console.log('localProjects', localProjects);
 
@@ -89,15 +94,15 @@ function ProjectsSource(
     putProject(project, handlePutError);
   }
 
-  function putAndEmitDeed(deed) {
-    // console.log('putAndEmitDeed', deed);
-    deed.id = deed.abbreviatedOid;
-    deed.projectName = deed.repoName;
-    putDeed(deed, handlePutError);
+  function convertCommitToDeed(commit) {
+    // Is it OK to mutate here? Probably.
+    commit.id = commit.abbreviatedOid;
+    commit.projectName = commit.repoName;
+    return commit;
   }
 
   function handlePutError(error) {
-    if (error) {
+    if (error && error instanceof Error) {
       onNonFatalError(error);
     }
   }

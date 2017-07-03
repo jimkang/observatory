@@ -23,8 +23,8 @@ var defaultCtorOpts = {
   onNonFatalError: logNonFatalError
 };
 
-test('Stream from API.', apiDeedStreamTest);
 // test('Pause', (t) => {window.c = t.end; console.log('After setting breakpoints, type c() to continue.');});
+test('Stream from API.', apiDeedStreamTest);
 
 function apiDeedStreamTest(t) {
   var shouldListenToEvents = false;
