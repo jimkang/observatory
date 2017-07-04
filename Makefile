@@ -22,7 +22,7 @@ test:
 	node tests/get-user-commits-bounded-by-date-tests.js
 
 test-chrome:
-	# $(BROWSERIFY) tests/browser/storage-tests.js | $(SMOKECHROME)
+	$(BROWSERIFY) tests/browser/storage-tests.js | $(SMOKECHROME)
 	$(BROWSERIFY) tests/browser/api-storage-tests.js | $(SMOKECHROME)
 
 test-firefox:
