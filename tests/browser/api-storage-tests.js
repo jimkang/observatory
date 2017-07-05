@@ -11,6 +11,7 @@ var defaults = require('lodash.defaults');
 var pluck = require('lodash.pluck');
 
 var projectsToCareAbout = ['iemxrre', 'attnbot', 'slack-gis'];
+// projectsToCareAbout = undefined;
 // Set projectsToCareAbout to undefined to test it against *every* project.
 // Warning: That's a long test.
 
@@ -35,7 +36,7 @@ function apiDeedStreamTest(t) {
     {
       onDeed: collectDeed,
       onProject: collectProject,
-      filterProject: weCareAboutThisProject,
+      filterProject: projectsToCareAbout ? weCareAboutThisProject : undefined,
       dbName: 'api-deed-stream-test'
     },
     defaultCtorOpts
@@ -131,11 +132,13 @@ function apiDeedStreamTest(t) {
     );
     values(emittedDeeds).forEach(checkDeed);
     
-    t.equal(
-      Object.keys(emittedProjects).length,
-      projectsToCareAbout.length,
-      'Correct number of projects was emitted.'
-    );
+    if (projectsToCareAbout) {
+      t.equal(
+        Object.keys(emittedProjects).length,
+        projectsToCareAbout.length,
+        'Correct number of projects was emitted.'
+      );
+    }
     values(emittedProjects).forEach(checkProject);
     t.end();
   }
