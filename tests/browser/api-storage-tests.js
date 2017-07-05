@@ -3,12 +3,12 @@
 var test = require('tape');
 var ProjectsSource = require('../../projects-source');
 var assertNoError = require('assert-no-error');
-var queue = require('d3-queue').queue;
+// var queue = require('d3-queue').queue;
 var values = require('lodash.values');
 var config = require('../../config');
 var request = require('basic-browser-request');
 var defaults = require('lodash.defaults');
-var pluck = require('lodash.pluck');
+// var pluck = require('lodash.pluck');
 
 var streamEndEventReceived = false;
 var projectsToCareAbout = ['iemxrre', 'attnbot', 'slack-gis'];
@@ -48,6 +48,9 @@ function apiDeedStreamTest(t) {
 
   function collectDeed(deed) {
     t.ok(!streamEndEventReceived, 'Did not receive deed event after end of stream.');
+    // if (streamEndEventReceived) {
+    //   debugger;
+    // }
     if (shouldListenToEvents) {
       emittedDeeds[deed.id] = deed;
     }
@@ -97,14 +100,6 @@ function apiDeedStreamTest(t) {
     t.ok(project.name, 'Project has a name.');
     t.ok(project.pushedAt, 'Project has a pushedAt date.');
     t.ok(project.lastCheckedDate, 'Project has a lastCheckedDate.');
-
-    if (projectsToCareAbout) {
-      t.ok(
-        projectsToCareAbout.indexOf(project.name) !== -1 ||
-        pluck(existingProjects, 'name').indexOf(project.name) !== -1,
-        'Project is in projectsToCareAbout'
-      );
-    }
   }
 }
 

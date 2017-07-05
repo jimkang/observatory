@@ -59,6 +59,7 @@ function ProjectsSource(
   }
 
   function startStream({sources = ['local', 'API']}, done) {
+    var outstandingPuts = 0;
     startLocalStream(sb(proceedAfterStreamingLocal, done));
 
     function proceedAfterStreamingLocal(localProjects) {
@@ -72,26 +73,54 @@ function ProjectsSource(
           onNonFatalError,
           shouldIncludeRepo: filterProject,
           existingRepos: localProjects,
-          onRepo: putAndEmitProject,
+          onRepo: shamble([
+            ['s', incrementOutstandingPuts],
+            ['a', putProject],
+            ['s', handlePutError],
+            ['s', decrementOutstandingPuts]
+          ]),
           onCommit: shamble([
             ['s', convertCommitToDeed],
+            ['s', incrementOutstandingPuts],
             ['a', putDeed],
-            ['a', handlePutError]
+            ['s', handlePutError],
+            ['s', decrementOutstandingPuts]
           ])
         };
         // console.log('localProjects', localProjects);
 
-        getUserCommits(getUserCommitsOpts, done);
+        getUserCommits(
+          getUserCommitsOpts,
+          callDoneWhenOutstandingPutsComplete
+        );
       }
       else {
         callNextTick(done);
       }
     }
-  }
 
-  function putAndEmitProject(project) {
-    // console.log('putAndEmitProject', project);
-    putProject(project, handlePutError);
+    function incrementOutstandingPuts(deed) {
+      outstandingPuts += 1;
+      console.log('incrementOutstandingPuts', outstandingPuts);
+      // Pass this for the next function in the chain.
+      // TODO: Revisit this awkwardness.
+      return deed;
+    }
+
+    function decrementOutstandingPuts() {
+      outstandingPuts -= 1;
+      console.log('decrementOutstandingPuts', outstandingPuts);
+    }
+
+    function callDoneWhenOutstandingPutsComplete() {
+      console.log('callDoneWhenOutstandingPutsComplete outstandingPuts', outstandingPuts);
+      if (outstandingPuts < 1) {
+        callNextTick(done);
+      }
+      else {
+        setTimeout(callDoneWhenOutstandingPutsComplete, 200);
+      }
+    }
   }
 
   function convertCommitToDeed(commit) {
