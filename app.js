@@ -8,6 +8,7 @@ var request = require('basic-browser-request');
 var config = require('./config');
 
 var projectsToCareAbout = ['iemxrre', 'attnbot', 'slack-gis'];
+var streamEndEventReceived = false;
 
 ((function go() {
   var routeState = RouteState({
@@ -43,16 +44,23 @@ function projectsFlow(routeDict) {
   projectsSource.startStream({sources: ['local', 'API']}, onStreamEnd);
 
   function collectDeed(deed) {
+    if (streamEndEventReceived) {
+      console.log('Received deed after stream end!');
+    }
     console.log('Received deed:', deed);
     collectedDeeds[deed.id] = deed;
   }
 
   function collectProject(project) {
+    if (streamEndEventReceived) {
+      console.log('Received project after stream end!');
+    }
     console.log('Received project:', project);
     collectedProjects[project.id] = project;
   }
 
   function onStreamEnd(error) {
+    streamEndEventReceived = true;
     if (error) {
       handleError(error);
     }

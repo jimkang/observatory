@@ -10,6 +10,7 @@ var request = require('basic-browser-request');
 var defaults = require('lodash.defaults');
 var pluck = require('lodash.pluck');
 
+var streamEndEventReceived = false;
 var projectsToCareAbout = ['iemxrre', 'attnbot', 'slack-gis'];
 // projectsToCareAbout = undefined;
 // Set projectsToCareAbout to undefined to test it against *every* project.
@@ -42,94 +43,33 @@ function apiDeedStreamTest(t) {
     defaultCtorOpts
   ));
 
-  var existingDeeds = [
-    {
-      'abbreviatedOid': '30a7e8c',
-      id: '30a7e8c',
-      'message': 'Refactored mishear module to export a createMishear function that sets up  to use the probable given to createMishear.',
-      'committedDate': '2015-10-05T01:42:19Z',
-      'repoName': 'mishear',
-      projectName: 'mishear',
-      type: 'commit'
-    },
-    {
-      'abbreviatedOid': '1d35d45',
-      id: '1d35d45',
-      'message': '1.0.1',
-      'committedDate': '2015-09-28T13:07:55Z',
-      'repoName': 'mishear',
-      projectName: 'mishear',
-      type: 'commit'
-    },
-    {
-      id: '1e273c2',
-      'abbreviatedOid': '1e273c2',
-      'message': 'Nominally working.',
-      'committedDate': '2015-09-26T04:48:26Z',
-      'repoName': 'attnbot',
-      projectName: 'attnbot',
-      type: 'commit'
-    }
-  ];
-
-  var existingProjects = [
-    {
-      'name': 'mishear',
-      'id': 'MDEwOlJlcG9zaXRvcnk0MzEwMTQ0Mg==',
-      'pushedAt': '2015-10-18T16:53:27Z',
-      'description': 'Finds possible mishearings for a given word.',
-      'lastCheckedDate': '2017-06-19T01:39:22.345Z',
-      'weHaveTheOldestCommit': true
-    },
-    {
-      'name': 'attnbot',
-      'id': 'MDEwOlJlcG9zaXRvcnk0MzA2NjIwMA==',
-      'pushedAt': '2015-10-18T17:09:10Z',
-      'description': 'A bot that doesn\'t always hear things correctly.',
-      'lastCheckedDate': '2017-06-19T01:39:22.344Z'
-    }
-  ];
-
-  var q = queue();
-  existingProjects.forEach(queuePutProject);
-  existingDeeds.forEach(queuePutDeed);
-  q.awaitAll(streamDeeds);
-
-  function queuePutDeed(deed) {
-    q.defer(projectsSource.putDeed, deed);
-  }
-
-  function queuePutProject(project) {
-    q.defer(projectsSource.putProject, project);
-  }
-
-  function streamDeeds(error) {
-    assertNoError(t.ok, error, 'No error while putting deeds and projects.');
-    shouldListenToEvents = true;
-    projectsSource.startStream({sources: ['local', 'API']}, checkStreamEnd);
-  }
+  shouldListenToEvents = true;
+  projectsSource.startStream({sources: ['local', 'API']}, checkStreamEnd);
 
   function collectDeed(deed) {
+    t.ok(!streamEndEventReceived, 'Did not receive deed event after end of stream.');
     if (shouldListenToEvents) {
       emittedDeeds[deed.id] = deed;
     }
   }
 
   function collectProject(project) {
+    t.ok(!streamEndEventReceived, 'Did not receive project event after end of stream.');
     if (shouldListenToEvents) {
       emittedProjects[project.id] = project;
     }
   }
 
   function checkStreamEnd(error) {
+    streamEndEventReceived = true;
     assertNoError(t.ok, error, 'No error while streaming local stuff.');
-    var uniqueDeedsEmitted = Object.keys(emittedDeeds).length;
+    // var uniqueDeedsEmitted = Object.keys(emittedDeeds).length;
     // console.log('uniqueDeedsEmitted:', uniqueDeedsEmitted);
 
-    t.ok(
-      uniqueDeedsEmitted > existingDeeds.length,
-      'Correct number of deeds was emitted.'
-    );
+    // t.ok(
+    //   uniqueDeedsEmitted > existingDeeds.length,
+    //   'Correct number of deeds was emitted.'
+    // );
     values(emittedDeeds).forEach(checkDeed);
     
     if (projectsToCareAbout) {
@@ -140,7 +80,10 @@ function apiDeedStreamTest(t) {
       );
     }
     values(emittedProjects).forEach(checkProject);
-    t.end();
+
+    // Allow a chance for events to be erroneously emitted after the
+    // stream end event.
+    setTimeout(t.end, 1000);
   }
 
   function checkDeed(deed) {
