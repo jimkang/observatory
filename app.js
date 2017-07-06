@@ -7,7 +7,7 @@ var ProjectsSource = require('./projects-source');
 var request = require('basic-browser-request');
 var config = require('./config');
 
-var projectsToCareAbout = ['iemxrre', 'attnbot', 'slack-gis'];
+var projectsToCareAbout = ['transform-word-bot', 'attnbot', 'slack-gis'];
 var streamEndEventReceived = false;
 
 ((function go() {

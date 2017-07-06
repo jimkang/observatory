@@ -11,7 +11,7 @@ var defaults = require('lodash.defaults');
 // var pluck = require('lodash.pluck');
 
 var streamEndEventReceived = false;
-var projectsToCareAbout = ['iemxrre', 'attnbot', 'slack-gis'];
+var projectsToCareAbout = ['transform-word-bot', 'attnbot', 'slack-gis'];
 // projectsToCareAbout = undefined;
 // Set projectsToCareAbout to undefined to test it against *every* project.
 // Warning: That's a long test.
