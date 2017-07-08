@@ -8,7 +8,7 @@ var sb = require('standard-bail')();
 var findWhere = require('lodash.findwhere');
 var shamble = require('./shamble');
 
-function ProjectsSource(
+function GitHubProjectsSource(
   {
     user,
     onDeed,
@@ -191,4 +191,4 @@ function streamLocalEntities(db, listener, done) {
 }
 
 
-module.exports = ProjectsSource;
+module.exports = GitHubProjectsSource;

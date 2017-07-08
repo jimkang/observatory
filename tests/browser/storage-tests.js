@@ -1,7 +1,7 @@
 /* global window */
 
 var test = require('tape');
-var ProjectsSource = require('../../projects-source');
+var GitHubProjectsSource = require('../../github-projects-source');
 var assertNoError = require('assert-no-error');
 var queue = require('d3-queue').queue;
 var findWhere = require('lodash.findwhere');
@@ -25,7 +25,7 @@ test('Stream deeds.', localDeedStreamTest);
 
 function deedUpdateTest(t) {
   t.plan(4);
-  var projectsSource = ProjectsSource(defaults(
+  var githubProjectsSource = GitHubProjectsSource(defaults(
     {
       dbName: 'deed-update-test',
       onDeed: checkDeed
@@ -43,7 +43,7 @@ function deedUpdateTest(t) {
     type: 'commit'
   };
 
-  projectsSource.putDeed(deed, checkPutError);
+  githubProjectsSource.putDeed(deed, checkPutError);
 
   function checkDeed(emittedDeed) {
     t.deepEqual(emittedDeed, deed, 'Correct deed is emitted.');
@@ -51,7 +51,7 @@ function deedUpdateTest(t) {
 
   function checkPutError(error) {
     assertNoError(t.ok, error, 'No error while putting deed.');
-    projectsSource.getDeed('30a7e8c', checkGet);
+    githubProjectsSource.getDeed('30a7e8c', checkGet);
   }
 
   function checkGet(error, gottenDeed) {
@@ -65,7 +65,7 @@ function localDeedStreamTest(t) {
   var emittedDeeds = [];
   var emittedProjects = [];
 
-  var projectsSource = ProjectsSource(defaults(
+  var githubProjectsSource = GitHubProjectsSource(defaults(
     {
       dbName: 'local-deed-stream-test',
       onDeed: collectDeed,
@@ -128,17 +128,17 @@ function localDeedStreamTest(t) {
   q.awaitAll(streamDeeds);
 
   function queuePut(deed) {
-    q.defer(projectsSource.putDeed, deed);
+    q.defer(githubProjectsSource.putDeed, deed);
   }
 
   function queuePutProject(project) {
-    q.defer(projectsSource.putProject, project);
+    q.defer(githubProjectsSource.putProject, project);
   }
 
   function streamDeeds(error) {
     assertNoError(t.ok, error, 'No error while putting deeds and projects.');
     shouldListenToEvents = true;
-    projectsSource.startStream({sources: ['local']}, checkStreamEnd);
+    githubProjectsSource.startStream({sources: ['local']}, checkStreamEnd);
   }
 
   function collectDeed(deed) {

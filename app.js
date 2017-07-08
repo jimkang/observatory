@@ -3,7 +3,7 @@ var RouteState = require('route-state');
 // var listEmAll = require('list-em-all');
 var sb = require('standard-bail')();
 var handleError = require('handle-error-web');
-var ProjectsSource = require('./projects-source');
+var GitHubProjectsSource = require('./github-projects-source');
 var request = require('basic-browser-request');
 var config = require('./config');
 var findToken = require('./find-token');
@@ -45,7 +45,6 @@ var streamEndEventReceived = false;
 
 function followRoute(routeDict) {
   console.log(routeDict);
-  // TODO: Get user info from API.
   if (routeDict.user && routeDict.userEmail) {
     projectsFlow(routeDict);
   }
@@ -55,7 +54,7 @@ function projectsFlow(routeDict) {
   var collectedDeeds = {};
   var collectedProjects = {};
 
-  var projectsSource = ProjectsSource({
+  var githubProjectsSource = GitHubProjectsSource({
     user: routeDict.user,
     githubToken: routeDict.token,
     username: routeDict.user,
@@ -67,7 +66,7 @@ function projectsFlow(routeDict) {
     filterProject: weCareAboutThisProject,
     dbName: 'observatory-deeds'
   });
-  projectsSource.startStream({sources: ['local', 'API']}, onStreamEnd);
+  githubProjectsSource.startStream({sources: ['local', 'API']}, onStreamEnd);
 
   function collectDeed(deed) {
     if (streamEndEventReceived) {

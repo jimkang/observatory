@@ -35,6 +35,7 @@ test-chrome:
 
 test-firefox:
 	$(BROWSERIFY) tests/browser/storage-tests.js | $(SMOKEFIREFOX)
+	$(BROWSERIFY) tests/browser/api-storage-tests.js | $(SMOKEFIREFOX)
 
 test-long:
 	node tests/long/get-user-commits-tests.js

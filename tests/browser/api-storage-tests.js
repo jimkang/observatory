@@ -1,7 +1,7 @@
 /* global window */
 
 var test = require('tape');
-var ProjectsSource = require('../../projects-source');
+var GitHubProjectsSource = require('../../github-projects-source');
 var assertNoError = require('assert-no-error');
 // var queue = require('d3-queue').queue;
 var values = require('lodash.values');
@@ -33,7 +33,7 @@ function apiDeedStreamTest(t) {
   var emittedDeeds = {};
   var emittedProjects = {};
 
-  var projectsSource = ProjectsSource(defaults(
+  var githubProjectsSource = GitHubProjectsSource(defaults(
     {
       onDeed: collectDeed,
       onProject: collectProject,
@@ -44,7 +44,7 @@ function apiDeedStreamTest(t) {
   ));
 
   shouldListenToEvents = true;
-  projectsSource.startStream({sources: ['local', 'API']}, checkStreamEnd);
+  githubProjectsSource.startStream({sources: ['local', 'API']}, checkStreamEnd);
 
   function collectDeed(deed) {
     t.ok(!streamEndEventReceived, 'Did not receive deed event after end of stream.');
