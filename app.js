@@ -6,20 +6,46 @@ var handleError = require('handle-error-web');
 var ProjectsSource = require('./projects-source');
 var request = require('basic-browser-request');
 var config = require('./config');
+var findToken = require('./find-token');
+var qs = require('qs');
 
 var projectsToCareAbout = ['transform-word-bot', 'attnbot', 'slack-gis'];
 var streamEndEventReceived = false;
 
 ((function go() {
-  var routeState = RouteState({
-    followRoute: followRoute,
-    windowObject: window
-  });
-  routeState.routeFromHash();
+  var queryStringParsed = qs.parse(window.location.search.slice(1));
+  findToken(
+    {
+      routeDict: queryStringParsed,
+      store: window.localStorage,
+      currentDate: new Date()
+    },
+    decideOnToken
+  );
+
+  function decideOnToken(error, retrievedToken) {
+    if (error) {
+      if (error.message === 'No token or code found.') {
+        redirectToGitHubAuth();
+      }
+      else {
+        handleError(error);
+      }
+    }
+    else {
+      var routeState = RouteState({
+        followRoute: followRoute,
+        windowObject: window
+      });
+      routeState.addToRoute({token: retrievedToken});
+    }
+  }
+
 })());
 
 function followRoute(routeDict) {
   console.log(routeDict);
+  // TODO: Get user info from API.
   if (routeDict.user && routeDict.userEmail) {
     projectsFlow(routeDict);
   }
@@ -31,7 +57,7 @@ function projectsFlow(routeDict) {
 
   var projectsSource = ProjectsSource({
     user: routeDict.user,
-    githubToken: config.githubTestToken,
+    githubToken: routeDict.token,
     username: routeDict.user,
     userEmail: routeDict.userEmail,
     request: request,
@@ -94,4 +120,12 @@ function projectsFlow(routeDict) {
 
 function weCareAboutThisProject(project) {
   return projectsToCareAbout.indexOf(project.name) !== -1;
+}
+
+function redirectToGitHubAuth() {
+  var authURI = 'https://github.com/login/oauth/authorize?' +
+    'client_id=' + config.github.clientId +
+    '&scope=repo';
+
+  window.location.href = authURI;
 }

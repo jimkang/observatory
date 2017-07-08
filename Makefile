@@ -13,6 +13,14 @@ run:
 		-d \
 		$(TRANSFORM_SWITCH)
 
+# It needs to run at port 80 for the Github API auth token process to work.
+run-on-80:
+	sudo wzrd app.js:index.js \
+	--port 80 \
+	-- \
+	-d \
+	$(TRANSFORM_SWITCH)
+
 build:
 	$(BROWSERIFY) $(TRANSFORM_SWITCH) app.js | $(UGLIFY) -c -m -o index.js
 
