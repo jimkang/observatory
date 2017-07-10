@@ -8,6 +8,7 @@ var request = require('basic-browser-request');
 var config = require('./config');
 var findToken = require('./find-token');
 var qs = require('qs');
+var curry = require('lodash.curry');
 
 var projectsToCareAbout = ['transform-word-bot', 'attnbot', 'slack-gis'];
 var streamEndEventReceived = false;
@@ -48,6 +49,13 @@ function followRoute(routeDict) {
   if (routeDict.user && routeDict.userEmail) {
     projectsFlow(routeDict);
   }
+  else {
+    githubUserInfoFlow(sb(curry(projectsFlow)(routeDict), handleError));
+  }
+}
+
+function githubUserInfoFlow(routeDict, done) {
+
 }
 
 function projectsFlow(routeDict) {
@@ -122,8 +130,12 @@ function weCareAboutThisProject(project) {
 }
 
 function redirectToGitHubAuth() {
+  var clientId = config.github.clientId;
+  if (window.location.hostname === 'localhost') {
+    clientId = config.githubTest.clientId;
+  }
   var authURI = 'https://github.com/login/oauth/authorize?' +
-    'client_id=' + config.github.clientId +
+    'client_id=' + clientId +
     '&scope=repo';
 
   window.location.href = authURI;
