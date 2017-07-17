@@ -49,3 +49,13 @@ div[contenteditable] {
 .things-done-value-container {
   flex-direction: column;
 }
+
+.hidden {
+  display: none !important;
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+#status-message {
+  background-color: #ffffee;
+}

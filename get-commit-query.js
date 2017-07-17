@@ -54,7 +54,6 @@ function sanitizeAsGQLId(s) {
 
 function getWhereClause(repo) {
   var whereClause = '';
-
   if (repo.commits && repo.commits.length > 0) {
     var oldestToNewestDates = pluck(repo.commits, 'committedDate').sort();
     // If repo.weHaveTheOldestCommit is set, always seek new commits.

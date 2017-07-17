@@ -8,8 +8,9 @@ var request = require('basic-browser-request');
 var config = require('./config');
 var findToken = require('./find-token');
 var qs = require('qs');
-var curry = require('lodash.curry');
+// var curry = require('lodash.curry');
 
+var routeState;
 var projectsToCareAbout = ['transform-word-bot', 'attnbot', 'slack-gis'];
 var streamEndEventReceived = false;
 
@@ -34,7 +35,7 @@ var streamEndEventReceived = false;
       }
     }
     else {
-      var routeState = RouteState({
+      routeState = RouteState({
         followRoute: followRoute,
         windowObject: window
       });
@@ -50,13 +51,14 @@ function followRoute(routeDict) {
     projectsFlow(routeDict);
   }
   else {
-    githubUserInfoFlow(sb(curry(projectsFlow)(routeDict), handleError));
+    // githubUserInfoFlow(sb(curry(projectsFlow)(routeDict), handleError));
+    routeState.addToRoute({
+      user: document.getElementById('github-username').value,
+      userEmail: document.getElementById('github-user-email').value
+    });
   }
 }
 
-function githubUserInfoFlow(routeDict, done) {
-
-}
 
 function projectsFlow(routeDict) {
   var collectedDeeds = {};
@@ -74,21 +76,23 @@ function projectsFlow(routeDict) {
     filterProject: weCareAboutThisProject,
     dbName: 'observatory-deeds'
   });
+
+  streamEndEventReceived = false;
   githubProjectsSource.startStream({sources: ['local', 'API']}, onStreamEnd);
 
-  function collectDeed(deed) {
+  function collectDeed(deed, source) {
     if (streamEndEventReceived) {
       console.log('Received deed after stream end!');
     }
-    console.log('Received deed:', deed);
+    console.log('Received deed:', deed, 'from', source);
     collectedDeeds[deed.id] = deed;
   }
 
-  function collectProject(project) {
+  function collectProject(project, source) {
     if (streamEndEventReceived) {
       console.log('Received project after stream end!');
     }
-    console.log('Received project:', project);
+    console.log('Received project:', project, 'from', source);
     collectedProjects[project.id] = project;
   }
 
@@ -99,8 +103,10 @@ function projectsFlow(routeDict) {
     }
     else {
       console.log('Finished streaming.');
-      console.log('projects', collectedProjects);
-      console.log('deeds', collectedDeeds);
+      // console.log('projects', collectedProjects);
+      // console.log('deeds', collectedDeeds);
+      console.log('project count', Object.keys(collectedProjects).length);
+      console.log('deed count', Object.keys(collectedDeeds).length);
     }
   }
 }
@@ -126,7 +132,8 @@ function projectsFlow(routeDict) {
 // }
 
 function weCareAboutThisProject(project) {
-  return projectsToCareAbout.indexOf(project.name) !== -1;
+  return true;
+  // return projectsToCareAbout.indexOf(project.name) !== -1;
 }
 
 function redirectToGitHubAuth() {

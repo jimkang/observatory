@@ -6,6 +6,7 @@ var queue = require('d3-queue').queue;
 var getUserCommits = require('./get-user-commits');
 var sb = require('standard-bail')();
 var findWhere = require('lodash.findwhere');
+var curry = require('lodash.curry');
 var shamble = require('./shamble');
 
 function GitHubProjectsSource(
@@ -46,12 +47,28 @@ function GitHubProjectsSource(
     put(deedDb, deed, onDeed, done);
   }
 
+  function putDeedFromSource(source, deed, done) {
+    put(deedDb, deed, onDeedWithSource, done);
+
+    function onDeedWithSource(deed) {
+      onDeed(deed, source);
+    }
+  }
+
   function getDeed(id, done) {
     deedDb.get(id, done);
   }
 
   function putProject(project, done) {
     put(projectDb, project, onProject, done);
+  }
+
+  function putProjectFromSource(source, project, done) {
+    put(projectDb, project, onProjectWithSource, done);
+
+    function onProjectWithSource(project) {
+      onProject(project, source);
+    }
   }
 
   function getProject(id, done) {
@@ -63,6 +80,8 @@ function GitHubProjectsSource(
     startLocalStream(sb(proceedAfterStreamingLocal, done));
 
     function proceedAfterStreamingLocal(localProjects) {
+      localProjects.forEach(convertDeedsToCommits);
+
       if (sources.indexOf('API') !== -1) {
         var getUserCommitsOpts = {
           token: githubToken,
@@ -75,14 +94,14 @@ function GitHubProjectsSource(
           existingRepos: localProjects,
           onRepo: shamble([
             ['s', incrementOutstandingPuts],
-            ['a', putProject],
+            ['a', curry(putProjectFromSource)('API')],
             ['s', handlePutError],
             ['s', decrementOutstandingPuts]
           ]),
           onCommit: shamble([
             ['s', convertCommitToDeed],
             ['s', incrementOutstandingPuts],
-            ['a', putDeed],
+            ['a', curry(putDeedFromSource)('API')],
             ['s', handlePutError],
             ['s', decrementOutstandingPuts]
           ])
@@ -101,7 +120,7 @@ function GitHubProjectsSource(
 
     function incrementOutstandingPuts(deed) {
       outstandingPuts += 1;
-      console.log('incrementOutstandingPuts', outstandingPuts);
+      // console.log('incrementOutstandingPuts', outstandingPuts);
       // Pass this for the next function in the chain.
       // TODO: Revisit this awkwardness.
       return deed;
@@ -109,12 +128,15 @@ function GitHubProjectsSource(
 
     function decrementOutstandingPuts() {
       outstandingPuts -= 1;
-      console.log('decrementOutstandingPuts', outstandingPuts);
+      // console.log('decrementOutstandingPuts', outstandingPuts);
     }
 
-    function callDoneWhenOutstandingPutsComplete() {
+    function callDoneWhenOutstandingPutsComplete(error) {
       console.log('callDoneWhenOutstandingPutsComplete outstandingPuts', outstandingPuts);
-      if (outstandingPuts < 1) {
+      if (error) {
+        done(error);
+      }
+      else if (outstandingPuts < 1) {
         callNextTick(done);
       }
       else {
@@ -149,7 +171,7 @@ function GitHubProjectsSource(
         containingProject.deeds = [];
       }
       containingProject.deeds.push(deed);
-      onDeed(deed);
+      onDeed(deed, 'local');
     }
 
     function collectLocalProject(project) {
@@ -190,5 +212,8 @@ function streamLocalEntities(db, listener, done) {
   }
 }
 
+function convertDeedsToCommits(project) {
+  project.commits = project.deeds;
+}
 
 module.exports = GitHubProjectsSource;

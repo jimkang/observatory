@@ -36,7 +36,7 @@
     "uglify-js": "^2.4.17"
   },
   "dependencies": {
-    "basic-browser-request": "^7.1.0",
+    "basic-browser-request": "^7.3.0",
     "call-next-tick": "^2.0.1",
     "d3-queue": "^3.0.7",
     "d3-selection": "^1.1.0",
