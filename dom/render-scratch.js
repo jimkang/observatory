@@ -1,23 +1,12 @@
 var d3 = require('d3-selection');
 var accessor = require('accessor');
+var GetPropertySafely = require('get-property-safely');
 
 var idKey = accessor();
 var nameKey = accessor('name');
 var messageKey = accessor('message');
 
 var basicProjectListRoot = d3.select('#basic-project-list');
-
-// TODO: Put in own package.
-function GetPropertySafely(prop, defaultValue) {
-  return function getPropertySafely(thing) {
-    if (thing && thing[prop]) {
-      return thing[prop];
-    }
-    else {
-      return defaultValue;
-    }
-  };
-}
 
 var deedsKey = GetPropertySafely('deeds', []);
 

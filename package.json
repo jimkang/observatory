@@ -41,6 +41,7 @@
     "call-next-tick": "^2.0.1",
     "d3-queue": "^3.0.7",
     "d3-selection": "^1.1.0",
+    "get-property-safely": "^1.0.0",
     "handle-error-web": "^1.0.1",
     "idmaker": "^0.1.1",
     "level-js": "^2.2.4",
