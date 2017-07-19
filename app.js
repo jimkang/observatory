@@ -8,7 +8,10 @@ var request = require('basic-browser-request');
 var config = require('./config');
 var findToken = require('./find-token');
 var qs = require('qs');
+var render = require('./dom/render-scratch');
+
 // var curry = require('lodash.curry');
+var verbose = false;
 
 var routeState;
 var projectsToCareAbout = ['transform-word-bot', 'attnbot', 'slack-gis'];
@@ -61,8 +64,8 @@ function followRoute(routeDict) {
 
 
 function projectsFlow(routeDict) {
-  var collectedDeeds = {};
-  var collectedProjects = {};
+  var collectedDeeds = [];
+  var collectedProjects = [];
 
   var githubProjectsSource = GitHubProjectsSource({
     user: routeDict.user,
@@ -84,16 +87,20 @@ function projectsFlow(routeDict) {
     if (streamEndEventReceived) {
       console.log('Received deed after stream end!');
     }
-    console.log('Received deed:', deed, 'from', source);
-    collectedDeeds[deed.id] = deed;
+    if (verbose) {
+      console.log('Received deed:', deed, 'from', source);
+    }
+    collectedDeeds.push(deed);
   }
 
   function collectProject(project, source) {
     if (streamEndEventReceived) {
       console.log('Received project after stream end!');
     }
-    console.log('Received project:', project, 'from', source);
-    collectedProjects[project.id] = project;
+    if (verbose) {
+      console.log('Received project:', project, 'from', source);
+    }
+    collectedProjects.push(project);
   }
 
   function onStreamEnd(error) {
@@ -105,8 +112,9 @@ function projectsFlow(routeDict) {
       console.log('Finished streaming.');
       // console.log('projects', collectedProjects);
       // console.log('deeds', collectedDeeds);
-      console.log('project count', Object.keys(collectedProjects).length);
-      console.log('deed count', Object.keys(collectedDeeds).length);
+      console.log('project count', collectedProjects);
+      console.log('deed count', collectedDeeds);
+      render({projectData: collectedProjects});
     }
   }
 }
