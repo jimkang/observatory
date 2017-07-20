@@ -49,7 +49,8 @@ var streamEndEventReceived = false;
 })());
 
 function followRoute(routeDict) {
-  console.log(routeDict);
+  verbose = routeDict.verbose;
+  // console.log(routeDict);
   if (routeDict.user && routeDict.userEmail) {
     projectsFlow(routeDict);
   }
@@ -91,6 +92,7 @@ function projectsFlow(routeDict) {
       console.log('Received deed:', deed, 'from', source);
     }
     collectedDeeds.push(deed);
+    render({projectData: collectedProjects});
   }
 
   function collectProject(project, source) {
@@ -101,6 +103,7 @@ function projectsFlow(routeDict) {
       console.log('Received project:', project, 'from', source);
     }
     collectedProjects.push(project);
+    render({projectData: collectedProjects});
   }
 
   function onStreamEnd(error) {
