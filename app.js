@@ -8,7 +8,9 @@ var request = require('basic-browser-request');
 var config = require('./config');
 var findToken = require('./find-token');
 var qs = require('qs');
-var render = require('./dom/render-scratch');
+var throttle = require('lodash.throttle');
+// var render = require('./dom/render-scratch');
+var render = throttle(require('./dom/render-scratch'), 300);
 var values = require('lodash.values');
 var addDeedToProject = require('./add-deed-to-project');
 
