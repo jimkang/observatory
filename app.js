@@ -9,6 +9,8 @@ var config = require('./config');
 var findToken = require('./find-token');
 var qs = require('qs');
 var render = require('./dom/render-scratch');
+var values = require('lodash.values');
+var addDeedToProject = require('./add-deed-to-project');
 
 // var curry = require('lodash.curry');
 var verbose = false;
@@ -65,7 +67,8 @@ function followRoute(routeDict) {
 
 
 function projectsFlow(routeDict) {
-  var collectedDeeds = [];
+  // Using name instead of id because deeds/commits do not have project ids.
+  var collectedProjectsByName = {};
   var collectedProjects = [];
 
   var githubProjectsSource = GitHubProjectsSource({
@@ -91,7 +94,7 @@ function projectsFlow(routeDict) {
     if (verbose) {
       console.log('Received deed:', deed, 'from', source);
     }
-    collectedDeeds.push(deed);
+    addDeedToProject(handleError, collectedProjectsByName, deed);
     render({projectData: collectedProjects});
   }
 
@@ -102,7 +105,8 @@ function projectsFlow(routeDict) {
     if (verbose) {
       console.log('Received project:', project, 'from', source);
     }
-    collectedProjects.push(project);
+    collectedProjectsByName[project.name] = project;
+    collectedProjects = values(collectedProjectsByName);
     render({projectData: collectedProjects});
   }
 
@@ -116,7 +120,9 @@ function projectsFlow(routeDict) {
       // console.log('projects', collectedProjects);
       // console.log('deeds', collectedDeeds);
       console.log('project count', collectedProjects);
-      console.log('deed count', collectedDeeds);
+      console.log('deed count', 
+        collectedProjects.map(p => p.deeds.length).reduce((sum, l) => sum + l)
+      );
       render({projectData: collectedProjects});
     }
   }

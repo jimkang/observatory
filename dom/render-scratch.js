@@ -12,15 +12,16 @@ var deedsKey = GetPropertySafely('deeds', []);
 
 function render({projectData}) {
   var projects = basicProjectListRoot.selectAll('.project').data(projectData, idKey);
-  projects.exit().remove();
+  // projects.exit().remove();
   var newProjects = projects.enter().append('li').classed('project', true);
   newProjects.append('div').classed('project-name', true);
   newProjects.append('ul').classed('deeds-root', true);
   var allProjects = newProjects.merge(projects);
   allProjects.select('.project-name').text(nameKey);
 
-  var deeds = allProjects.select('.deeds-root').selectAll('.deed').data(deedsKey, idKey);
-  deeds.exit().remove();
+  var deedsRoot = allProjects.select('.deeds-root');
+  var deeds = deedsRoot.selectAll('.deed').data(deedsKey, idKey);
+  // deeds.exit().remove();
   var newDeeds = deeds.enter().append('li').classed('deed', true);
   newDeeds.append('div').classed('deed-name', true);
   var allDeeds = newDeeds.merge(deeds);
