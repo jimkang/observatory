@@ -121,7 +121,7 @@ function projectsFlow(routeDict) {
       // console.log('deeds', collectedDeeds);
       console.log('project count', collectedProjects);
       console.log('deed count', 
-        collectedProjects.map(p => p.deeds.length).reduce((sum, l) => sum + l)
+        collectedProjects.map(p => p.deeds ? p.deeds.length : 0).reduce((sum, l) => sum + l)
       );
       render({projectData: collectedProjects});
     }
