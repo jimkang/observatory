@@ -42,8 +42,8 @@ function apiDeedStreamTest(t) {
 
   var githubProjectsSource = GitHubProjectsSource(defaults(
     {
-      onDeed: collectDeed,
-      onProject: collectProject,
+      onDeeds: collectDeeds,
+      onProjects: collectProjects,
       filterProject: projectsToCareAbout ? weCareAboutThisProject : undefined,
       dbName: 'api-deed-stream-test'
     },
@@ -53,25 +53,33 @@ function apiDeedStreamTest(t) {
   shouldListenToEvents = true;
   githubProjectsSource.startStream({sources: ['local', 'API']}, checkStreamEnd);
 
-  function collectDeed(deed, source) {
+  function collectDeeds(deeds, source) {
     t.ok(!streamEndEventReceived, 'Did not receive deed event after end of stream.');
     // if (streamEndEventReceived) {
     //   debugger;
     // }
 
     if (source === 'API') {
-      numberOfDeedsEmittedFromAPISource += 1;
+      numberOfDeedsEmittedFromAPISource += deeds.length;
     }
     if (shouldListenToEvents) {
-      emittedDeeds[deed.id] = deed;
+      deeds.forEach(addDeedToEmittedCollection);
     }
   }
 
-  function collectProject(project, source) {
+  function addDeedToEmittedCollection(deed) {
+    emittedDeeds[deed.id] = deed;
+  }
+
+  function collectProjects(projects, source) {
     t.ok(!streamEndEventReceived, 'Did not receive project event after end of stream.');
     if (shouldListenToEvents) {
-      emittedProjects[project.id] = project;
+      projects.forEach(addProjectToEmittedCollection);
     }
+  }
+
+  function addProjectToEmittedCollection(project) {
+    emittedProjects[project.id] = project;
   }
 
   function checkStreamEnd(error) {
@@ -97,6 +105,7 @@ function apiDeedStreamTest(t) {
       );
     }
     values(emittedProjects).forEach(checkProject);
+    // console.log(emittedProjects);
 
     // Allow a chance for events to be erroneously emitted after the
     // stream end event.

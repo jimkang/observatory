@@ -38,6 +38,7 @@
   "dependencies": {
     "accessor": "^1.1.1",
     "basic-browser-request": "^7.3.0",
+    "batch-json-parser": "^1.0.0",
     "call-next-tick": "^2.0.1",
     "d3-queue": "^3.0.7",
     "d3-selection": "^1.1.0",
@@ -51,6 +52,7 @@
     "lodash.clonedeep": "^4.5.0",
     "lodash.curry": "^4.1.1",
     "lodash.pluck": "^3.1.2",
+    "lodash.throttle": "^4.1.1",
     "lodash.values": "^4.3.0",
     "object-path-exists": "^1.0.0",
     "qs": "^6.3.0",

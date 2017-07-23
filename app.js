@@ -8,8 +8,12 @@ var request = require('basic-browser-request');
 var config = require('./config');
 var findToken = require('./find-token');
 var qs = require('qs');
-var render = require('./dom/render-scratch');
-
+var addDeedToProject = require('./add-deed-to-project');
+var curry = require('lodash.curry');
+var throttle = require('lodash.throttle');
+// var render = require('./dom/render-scratch');
+var render = throttle(require('./dom/render-scratch'), 1000);
+debugger;
 // var curry = require('lodash.curry');
 var verbose = false;
 
@@ -65,8 +69,13 @@ function followRoute(routeDict) {
 
 
 function projectsFlow(routeDict) {
-  var collectedDeeds = [];
+  // var collectedDeeds = [];
+  var deedCount = 0;
   var collectedProjects = [];
+  var addDeedToCollectedProject = curry(addDeedToProject)(
+    handleError,
+    collectedProjects
+  );
 
   var githubProjectsSource = GitHubProjectsSource({
     user: routeDict.user,
@@ -75,8 +84,8 @@ function projectsFlow(routeDict) {
     userEmail: routeDict.userEmail,
     request: request,
     onNonFatalError: handleError,
-    onDeed: collectDeed,
-    onProject: collectProject,
+    onDeeds: collectDeeds,
+    onProjects: collectProjects,
     filterProject: weCareAboutThisProject,
     dbName: 'observatory-deeds'
   });
@@ -84,26 +93,34 @@ function projectsFlow(routeDict) {
   streamEndEventReceived = false;
   githubProjectsSource.startStream({sources: ['local', 'API']}, onStreamEnd);
 
-  function collectDeed(deed, source) {
+  function collectDeeds(deeds, source) {
     if (streamEndEventReceived) {
       console.log('Received deed after stream end!');
     }
     if (verbose) {
-      console.log('Received deed:', deed, 'from', source);
+      console.log('Received deeds:', deeds, 'from', source);
     }
-    collectedDeeds.push(deed);
+    deedCount += deeds.length;
+    deeds.forEach(addDeedToCollectedProject);
+
     render({projectData: collectedProjects});
   }
 
-  function collectProject(project, source) {
+  function collectProjects(projects, source) {
     if (streamEndEventReceived) {
       console.log('Received project after stream end!');
     }
     if (verbose) {
-      console.log('Received project:', project, 'from', source);
+      console.log('Received projects:', projects, 'from', source);
     }
-    collectedProjects.push(project);
+    // concat does not update collectedProjects references previously
+    // passed.
+    projects.forEach(addToCollection);
     render({projectData: collectedProjects});
+  }
+
+  function addToCollection(project) {
+    collectedProjects.push(project);
   }
 
   function onStreamEnd(error) {
@@ -116,7 +133,7 @@ function projectsFlow(routeDict) {
       // console.log('projects', collectedProjects);
       // console.log('deeds', collectedDeeds);
       console.log('project count', collectedProjects);
-      console.log('deed count', collectedDeeds);
+      console.log('deed count', deedCount);
       render({projectData: collectedProjects});
     }
   }

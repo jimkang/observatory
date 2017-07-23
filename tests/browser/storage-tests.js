@@ -28,7 +28,7 @@ function deedUpdateTest(t) {
   var githubProjectsSource = GitHubProjectsSource(defaults(
     {
       dbName: 'deed-update-test',
-      onDeed: checkDeed
+      onDeeds: checkDeeds
     },
     defaultCtorOpts
   ));
@@ -44,6 +44,10 @@ function deedUpdateTest(t) {
   };
 
   githubProjectsSource.putDeed(deed, checkPutError);
+
+  function checkDeeds(deeds) {
+    deeds.forEach(checkDeed);
+  }
 
   function checkDeed(emittedDeed) {
     t.deepEqual(emittedDeed, deed, 'Correct deed is emitted.');
@@ -68,8 +72,8 @@ function localDeedStreamTest(t) {
   var githubProjectsSource = GitHubProjectsSource(defaults(
     {
       dbName: 'local-deed-stream-test',
-      onDeed: collectDeed,
-      onProject: collectProject
+      onDeeds: collectDeeds,
+      onProjects: collectProjects
     },
     defaultCtorOpts
   ));
@@ -141,16 +145,17 @@ function localDeedStreamTest(t) {
     githubProjectsSource.startStream({sources: ['local']}, checkStreamEnd);
   }
 
-  function collectDeed(deed) {
+  function collectDeeds(deeds) {
     if (shouldListenToEvents) {
-      emittedDeeds.push(deed);
+      emittedDeeds = emittedDeeds.concat(deeds);
     }
   }
 
-  function collectProject(project) {
+  function collectProjects(projects) {
     if (shouldListenToEvents) {
-      emittedProjects.push(project);
+      emittedProjects = emittedProjects.concat(projects);
     }
+    // console.log('emittedProjects now', emittedProjects)
   }
 
   function checkStreamEnd(error) {

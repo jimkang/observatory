@@ -5,15 +5,16 @@ var Sublevel = require('level-sublevel');
 var queue = require('d3-queue').queue;
 var getUserCommits = require('./get-user-commits');
 var sb = require('standard-bail')();
-var findWhere = require('lodash.findwhere');
 var curry = require('lodash.curry');
 var shamble = require('./shamble');
+var BatchJSONParser = require('batch-json-parser');
+var addDeedToProject = require('./add-deed-to-project');
 
 function GitHubProjectsSource(
   {
     user,
-    onDeed,
-    onProject,
+    onDeeds,
+    onProjects,
     dbName = 'observatory',
     filterProject,
     githubToken,
@@ -28,7 +29,7 @@ function GitHubProjectsSource(
     dbName,
     {
       db: leveljs,
-      valueEncoding: 'json'
+      valueEncoding: 'utf8'
     }
   );
   var userDb = Sublevel(db).sublevel('user').sublevel(user);
@@ -44,30 +45,35 @@ function GitHubProjectsSource(
   };
 
   function putDeed(deed, done) {
-    put(deedDb, deed, onDeed, done);
+    put(deedDb, deed, onDeeds, done);
   }
 
-  function putDeedFromSource(source, deed, done) {
-    put(deedDb, deed, onDeedWithSource, done);
+  function putDeedFromSource(source, projects, deed, done) {
+    put(deedDb, deed, onDeedsWithSource, done);
 
-    function onDeedWithSource(deed) {
-      onDeed(deed, source);
+    function onDeedsWithSource(deeds) {
+      onDeeds(deeds, source);
     }
   }
 
   function getDeed(id, done) {
-    deedDb.get(id, done);
+    deedDb.get(id, curry(parseSingleGetResult)(done));
+  }
+
+  function parseSingleGetResult(done, error, result) {
+    handleDbError(error);
+    callNextTick(done, null, JSON.parse(result));
   }
 
   function putProject(project, done) {
-    put(projectDb, project, onProject, done);
+    put(projectDb, project, onProjects, done);
   }
 
   function putProjectFromSource(source, project, done) {
-    put(projectDb, project, onProjectWithSource, done);
+    put(projectDb, project, onProjectsWithSource, done);
 
-    function onProjectWithSource(project) {
-      onProject(project, source);
+    function onProjectsWithSource(projects) {
+      onProjects(projects, source);
     }
   }
 
@@ -80,9 +86,13 @@ function GitHubProjectsSource(
     startLocalStream(sb(proceedAfterStreamingLocal, done));
 
     function proceedAfterStreamingLocal(localProjects) {
-      localProjects.forEach(convertDeedsToCommits);
-
       if (sources.indexOf('API') !== -1) {
+        // We need to do this so that when getUserCommits looks at what
+        // commits are needed from GitHub, they'll see the existing deeds
+        // as commits.
+        localProjects.forEach(convertDeedsToCommits);
+        // console.log('existingRepos', localProjects);
+
         var getUserCommitsOpts = {
           token: githubToken,
           username,
@@ -95,14 +105,14 @@ function GitHubProjectsSource(
           onRepo: shamble([
             ['s', incrementOutstandingPuts],
             ['a', curry(putProjectFromSource)('API')],
-            ['s', handlePutError],
+            ['s', handleDbError],
             ['s', decrementOutstandingPuts]
           ]),
           onCommit: shamble([
             ['s', convertCommitToDeed],
             ['s', incrementOutstandingPuts],
-            ['a', curry(putDeedFromSource)('API')],
-            ['s', handlePutError],
+            ['a', curry(putDeedFromSource)('API', localProjects)],
+            ['s', handleDbError],
             ['s', decrementOutstandingPuts]
           ])
         };
@@ -132,7 +142,7 @@ function GitHubProjectsSource(
     }
 
     function callDoneWhenOutstandingPutsComplete(error) {
-      console.log('callDoneWhenOutstandingPutsComplete outstandingPuts', outstandingPuts);
+      // console.log('callDoneWhenOutstandingPutsComplete outstandingPuts', outstandingPuts);
       if (error) {
         done(error);
       }
@@ -152,31 +162,47 @@ function GitHubProjectsSource(
     return commit;
   }
 
-  function handlePutError(error) {
+  function handleDbError(error) {
     if (error && error instanceof Error) {
       onNonFatalError(error);
     }
   }
 
   function startLocalStream(done) {
+    var batchProjectJSONParser = BatchJSONParser({
+      batchSize: 10,
+      onBatchParsed: collectLocalProjects
+    });
+    var batchDeedJSONParser = BatchJSONParser({
+      batchSize: 100,
+      onBatchParsed: collectLocalDeeds
+    });
+
     var projects = [];
+    var addDeedToLocalProject = curry(addDeedToProject)(
+      onNonFatalError, projects
+    );
+
     var q = queue(1);
-    q.defer(streamLocalEntities, projectDb, collectLocalProject);
-    q.defer(streamLocalEntities, deedDb, collectLocalDeed);
+    q.defer(streamLocalEntities, projectDb, batchProjectJSONParser.write);
+    q.defer(asyncWrap(batchProjectJSONParser.flush));
+    q.defer(streamLocalEntities, deedDb, batchDeedJSONParser.write);
+    q.defer(asyncWrap(batchDeedJSONParser.flush));
     q.awaitAll(sb(passProjects, done));
 
-    function collectLocalDeed(deed) {
-      var containingProject = findWhere(projects, {name: deed.projectName});
-      if (!containingProject.deeds) {
-        containingProject.deeds = [];
-      }
-      containingProject.deeds.push(deed);
-      onDeed(deed, 'local');
+    function collectLocalDeeds(deeds) {
+      deeds.forEach(addDeedToLocalProject);
+      onDeeds(deeds, 'local');
     }
 
-    function collectLocalProject(project) {
+    function collectLocalProjects(incomingProjects) {
+      incomingProjects.forEach(addToProjects);
+      // console.log('update projects', projects);
+      onProjects(incomingProjects);
+    }
+
+    function addToProjects(project) {
       projects.push(project);
-      onProject(project);
     }
 
     function passProjects() {
@@ -185,16 +211,16 @@ function GitHubProjectsSource(
   }
 }
 
-function put(db, entity, listener, done) {
-  db.put(entity.id, entity, processEntity);
+function put(db, entity, batchListener, done) {
+  db.put(entity.id, JSON.stringify(entity), processEntity);
 
   function processEntity(error) {
     if (error) {
       done(error);
     }
     else {
-      if (listener) {
-        listener(entity);
+      if (batchListener) {
+        batchListener([entity]);
       }
       done();
     }
@@ -214,6 +240,13 @@ function streamLocalEntities(db, listener, done) {
 
 function convertDeedsToCommits(project) {
   project.commits = project.deeds;
+}
+
+function asyncWrap(syncFn) {
+  return function runSync(done) {
+    syncFn();
+    callNextTick(done);
+  };
 }
 
 module.exports = GitHubProjectsSource;
