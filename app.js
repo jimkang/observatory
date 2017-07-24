@@ -10,9 +10,15 @@ var findToken = require('./find-token');
 var qs = require('qs');
 var throttle = require('lodash.throttle');
 // var render = require('./dom/render-scratch');
-var render = throttle(require('./dom/render-scratch'), 300);
+var renderPlain = throttle(require('./dom/render-scratch'), 300);
+var renderGarden = throttle(require('./dom/render-garden'), 300);
 var values = require('lodash.values');
 var addDeedToProject = require('./add-deed-to-project');
+
+var renderers = {
+  'plain': renderPlain,
+  'garden': renderGarden
+};
 
 // var curry = require('lodash.curry');
 var verbose = false;
@@ -67,11 +73,14 @@ function followRoute(routeDict) {
   }
 }
 
-
 function projectsFlow(routeDict) {
   // Using name instead of id because deeds/commits do not have project ids.
   var collectedProjectsByName = {};
   var collectedProjects = [];
+  var render = renderers[routeDict.view];
+  if (!render) {
+    render = renderPlain;
+  }
 
   var githubProjectsSource = GitHubProjectsSource({
     user: routeDict.user,
