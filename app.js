@@ -11,7 +11,7 @@ var qs = require('qs');
 var throttle = require('lodash.throttle');
 // var render = require('./dom/render-scratch');
 var renderPlain = throttle(require('./dom/render-scratch'), 300);
-var renderGarden = throttle(require('./dom/render-garden'), 300);
+var renderGarden = require('./dom/render-garden');
 var values = require('lodash.values');
 var addDeedToProject = require('./add-deed-to-project');
 
