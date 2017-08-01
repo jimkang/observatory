@@ -22,7 +22,9 @@ var fader = function(color) { return interpolate.interpolateRgb(color, '#fff')(0
 var color = scale.scaleOrdinal(scale.schemeCategory20.map(fader));
 var format = d3Format.format(',d');
 
-var board = d3.select('#garden-board');
+var plantLayer = d3.select('#garden-board .plant-layer');
+var labelLayer = d3.select('#garden-board .field-label-layer');
+
 var treemap = hierarchy.treemap()
     .tile(hierarchy.treemapResquarify.ratio(1))
     .size([width, height])
@@ -34,6 +36,7 @@ function renderGarden({projectData}) {
     name: 'root',
     deeds: projectData
   };
+  var boundsForProjects = {};
 
   var root = hierarchy.hierarchy(rootData, deedsKey)
       // .eachBefore(function(d) {
@@ -58,12 +61,17 @@ function renderGarden({projectData}) {
   treemap(root);
   // }
 
-  var cells = board.selectAll('g')
+  // console.log('projects?', root.children);
+
+  var cells = plantLayer.selectAll('g')
     .data(root.leaves(), getNestedId);
   
   console.log('leaf example:', root.leaves()[0])
   console.log('exit size', cells.exit().size());
   cells.exit().each(exitCellIsAProject);
+  // TODO: Why are non-projects being removed from the leaves?
+  // Validate before rendering that nothing's being removed.
+
   // console.log(cells.exit());
   // debugger;
   cells.exit().remove();
@@ -85,6 +93,7 @@ function renderGarden({projectData}) {
       .attr('width', function(d) { return d.x1 - d.x0; })
       .attr('height', function(d) { return d.y1 - d.y0; })
       .attr('fill', function(d) { return color(d.parent.data.id); });
+      // .each(addToProjectBounds);
 
   // updateCells.select('clipPath')
   //   .attr('id', function(d) { return 'clip-' + d.data.id; })
@@ -105,6 +114,22 @@ function renderGarden({projectData}) {
 
   // updateCells.select('title')
   //     .text(function(d) { return d.data.id + '\n' + format(d.value); });
+  // function addToProjectBounds(cell) {
+  //   // if (cell.data.projectName)
+  // }
+
+  // Temp code to outline the project bounds.
+  var projectOutlines = labelLayer.selectAll('rect').data(root.children, getNestedId);
+  projectOutlines.exit().remove();
+  projectOutlines.enter().append('rect')
+      .attr('width', d => d.x1 - d.x0)
+      .attr('height', d => d.y1 - d.y0)
+      .attr('fill', 'hsla(0, 0%, 100%, 0.5)')
+      .attr('stroke', 'black')
+      .attr('stroke-width', 1)
+      .merge(projectOutlines)
+        .attr('x', accessor('x0'))
+        .attr('y', accessor('y0'));
 }
 
 function sumBySize() {
