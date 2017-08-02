@@ -122,14 +122,14 @@ function renderGarden({projectData}) {
   var projectOutlines = labelLayer.selectAll('rect').data(root.children, getNestedId);
   projectOutlines.exit().remove();
   projectOutlines.enter().append('rect')
-      .attr('width', d => d.x1 - d.x0)
-      .attr('height', d => d.y1 - d.y0)
       .attr('fill', 'hsla(0, 0%, 100%, 0.5)')
       .attr('stroke', 'black')
       .attr('stroke-width', 1)
       .merge(projectOutlines)
         .attr('x', accessor('x0'))
-        .attr('y', accessor('y0'));
+        .attr('y', accessor('y0'))
+        .attr('width', d => d.x1 - d.x0)
+        .attr('height', d => d.y1 - d.y0)
 }
 
 function sumBySize() {
