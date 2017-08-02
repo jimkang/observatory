@@ -118,18 +118,34 @@ function renderGarden({projectData}) {
   //   // if (cell.data.projectName)
   // }
 
-  // Temp code to outline the project bounds.
-  var projectOutlines = labelLayer.selectAll('rect').data(root.children, getNestedId);
-  projectOutlines.exit().remove();
-  projectOutlines.enter().append('rect')
-      .attr('fill', 'hsla(0, 0%, 100%, 0.5)')
-      .attr('stroke', 'black')
-      .attr('stroke-width', 1)
-      .merge(projectOutlines)
-        .attr('x', accessor('x0'))
-        .attr('y', accessor('y0'))
-        .attr('width', d => d.x1 - d.x0)
-        .attr('height', d => d.y1 - d.y0)
+  var projectRegions = labelLayer.selectAll('.project-region')
+    .data(root.children, getNestedId);
+
+  projectRegions.exit().remove();
+  
+  var newRegions = projectRegions.enter().append('g').classed('project-region', true);
+
+  newRegions.append('rect')
+    .attr('fill', 'hsla(0, 0%, 100%, 0.5)')
+    .attr('stroke', 'black')
+    .attr('stroke-width', 1);
+  newRegions.append('text')
+    .attr('text-anchor', 'middle');
+
+  var updateRegions = projectRegions.merge(newRegions);
+
+  var projectOutlines = updateRegions.select('rect')
+    .attr('x', accessor('x0'))
+    .attr('y', accessor('y0'))
+    .attr('width', d => d.x1 - d.x0)
+    .attr('height', d => d.y1 - d.y0);
+
+  var projectLabels = updateRegions.select('text');
+  // TODO: Size text appropriately.
+  projectLabels
+    .attr('x', d => d.x0 + (d.x1 -  d.x0)/2)
+    .attr('y', d => d.y0 + (d.y1 - d.y0)/2)
+    .text(getNestedName);
 }
 
 function sumBySize() {
@@ -143,6 +159,10 @@ function sumBySize() {
 
 function getNestedId(d) {
   return d.data.id;
+}
+
+function getNestedName(d) {
+  return d.data.name;
 }
 
 function exitCellIsAProject(exitingCell) {
