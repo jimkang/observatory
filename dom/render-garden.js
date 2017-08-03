@@ -137,14 +137,13 @@ function renderGarden({projectData}) {
   var projectOutlines = updateRegions.select('rect')
     .attr('x', accessor('x0'))
     .attr('y', accessor('y0'))
-    .attr('width', d => d.x1 - d.x0)
-    .attr('height', d => d.y1 - d.y0);
+    .attr('width', getRegionWidth)
+    .attr('height', getRegionHeight);
 
   var projectLabels = updateRegions.select('text');
   // TODO: Size text appropriately.
   projectLabels
-    .attr('x', d => d.x0 + (d.x1 -  d.x0)/2)
-    .attr('y', d => d.y0 + (d.y1 - d.y0)/2)
+    .attr('transform', getLabelTransform)
     .text(getNestedName);
 }
 
@@ -163,6 +162,26 @@ function getNestedId(d) {
 
 function getNestedName(d) {
   return d.data.name;
+}
+
+function getRegionWidth(d) {
+  return d.x1 - d.x0;
+}
+
+function getRegionHeight(d) {
+  return d.y1 - d.y0;
+}
+
+function getLabelTransform(d) {
+  var x = d.x0 + (d.x1 -  d.x0)/2;
+  var y = d.y0 + (d.y1 - d.y0)/2;
+
+  var rotation = 0;
+  if (getRegionWidth(d) < getRegionHeight(d)) {
+    rotation = -90;
+  }
+
+  return `translate(${x} ${y}) rotate(${rotation})`;
 }
 
 function exitCellIsAProject(exitingCell) {
