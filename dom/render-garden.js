@@ -8,7 +8,7 @@ var d3Format = require('d3-format');
 var interpolate = require('d3-interpolate');
 var throttle = require('lodash.throttle');
 
-var idKey = accessor();
+// var idKey = accessor();
 // var nameKey = accessor('name');
 // var messageKey = accessor('message');
 var deedsKey = GetPropertySafely('deeds', []);
@@ -20,7 +20,7 @@ const height = 1000;
 
 var fader = function(color) { return interpolate.interpolateRgb(color, '#fff')(0.2); };
 var color = scale.scaleOrdinal(scale.schemeCategory20.map(fader));
-var format = d3Format.format(',d');
+// var format = d3Format.format(',d');
 
 var plantLayer = d3.select('#garden-board .plant-layer');
 var labelLayer = d3.select('#garden-board .field-label-layer');
@@ -36,7 +36,7 @@ function renderGarden({projectData}) {
     name: 'root',
     deeds: projectData
   };
-  var boundsForProjects = {};
+  // var boundsForProjects = {};
 
   var root = hierarchy.hierarchy(rootData, deedsKey)
       // .eachBefore(function(d) {
@@ -66,8 +66,8 @@ function renderGarden({projectData}) {
   var cells = plantLayer.selectAll('g')
     .data(root.leaves(), getNestedId);
   
-  console.log('leaf example:', root.leaves()[0])
-  console.log('exit size', cells.exit().size());
+  // console.log('leaf example:', root.leaves()[0]);
+  // console.log('exit size', cells.exit().size());
   cells.exit().each(exitCellIsAProject);
   // TODO: Why are non-projects being removed from the leaves?
   // Validate before rendering that nothing's being removed.
@@ -134,15 +134,13 @@ function renderGarden({projectData}) {
 
   var updateRegions = projectRegions.merge(newRegions);
 
-  var projectOutlines = updateRegions.select('rect')
+  updateRegions.select('rect')
     .attr('x', accessor('x0'))
     .attr('y', accessor('y0'))
     .attr('width', getRegionWidth)
     .attr('height', getRegionHeight);
 
-  var projectLabels = updateRegions.select('text');
-  // TODO: Size text appropriately.
-  projectLabels
+  updateRegions.select('text')
     .attr('transform', getLabelTransform)
     .text(getNestedName);
 }
@@ -175,13 +173,25 @@ function getRegionHeight(d) {
 function getLabelTransform(d) {
   var x = d.x0 + (d.x1 -  d.x0)/2;
   var y = d.y0 + (d.y1 - d.y0)/2;
+  var maxWidth = getRegionWidth(d);
+  var maxHeight = getRegionHeight(d);
+
+  var currentWidth = this.getBBox().width;
+  var scale = 1.0;
 
   var rotation = 0;
-  if (getRegionWidth(d) < getRegionHeight(d)) {
+  if (maxWidth < maxHeight) {
     rotation = -90;
+    if (currentWidth > maxHeight) {
+      scale = maxHeight/currentWidth;
+    }
+  }
+  else if (currentWidth > maxWidth) {
+    scale = maxWidth/currentWidth;
   }
 
-  return `translate(${x} ${y}) rotate(${rotation})`;
+
+  return `translate(${x} ${y}) rotate(${rotation}) scale(${scale}, ${scale})`;
 }
 
 function exitCellIsAProject(exitingCell) {
