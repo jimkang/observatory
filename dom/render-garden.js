@@ -16,7 +16,7 @@ var deedsKey = GetPropertySafely('deeds', []);
 // var firstRender = true;
 
 const width = 1000;
-const height = 1000;
+const height = 3000;
 
 var fader = function(color) { return interpolate.interpolateRgb(color, '#fff')(0.2); };
 var color = scale.scaleOrdinal(scale.schemeCategory20.map(fader));
