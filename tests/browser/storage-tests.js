@@ -5,7 +5,7 @@ var GitHubProjectsSource = require('../../github-projects-source');
 var assertNoError = require('assert-no-error');
 var queue = require('d3-queue').queue;
 var findWhere = require('lodash.findwhere');
-var config = require('../../config');
+var config = require('../../test-config');
 var request = require('basic-browser-request');
 var defaults = require('lodash.defaults');
 var omit = require('lodash.omit');
@@ -170,7 +170,7 @@ function localDeedStreamTest(t) {
   function checkEmittedForProject(project) {
     var correspondingEmittedProject = findWhere(emittedProjects, {id: project.id});
     t.deepEqual(
-      omit(correspondingEmittedProject, 'deeds'),
+      omit(correspondingEmittedProject, 'deeds', 'commits'),
       project,
       'Emitted project is correct.'
     );

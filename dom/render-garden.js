@@ -157,7 +157,6 @@ function getLabelTransform(d) {
     scale = maxWidth/currentWidth;
   }
 
-
   return `translate(${x} ${y}) rotate(${rotation}) scale(${scale}, ${scale})`;
 }
 
