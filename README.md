@@ -339,6 +339,13 @@ Run tests with `make test`, `make test-chrome`, and `make test-firefox`.
 
 - The right side should always be greater or equal to the left. There should be at least one case where both sides are non-zero and the right side is greater (depending on the repo set being used).
 
+Current issues
+----
+
+- How do we let a user share their graphs, given that the GitHub API only lets you view commits for repo that you have access to, even if those commits are publicly viewable?
+
+- Should we get `contributedRepositories` as well as `repositories`?
+
 License
 -------
 
