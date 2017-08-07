@@ -14,6 +14,8 @@ var renderPlain = throttle(require('./dom/render-scratch'), 300);
 var renderGarden = require('./dom/render-garden');
 var values = require('lodash.values');
 var addDeedToProject = require('./add-deed-to-project');
+var formDataOps = require('./dom/form-data-ops');
+var userFormIds = require('./user-form-ids');
 
 var renderers = {
   'plain': renderPlain,
@@ -29,6 +31,11 @@ var streamEndEventReceived = false;
 
 ((function go() {
   var queryStringParsed = qs.parse(window.location.search.slice(1));
+  routeState = RouteState({
+    followRoute: followRoute,
+    windowObject: window
+  });
+
   findToken(
     {
       routeDict: queryStringParsed,
@@ -41,17 +48,13 @@ var streamEndEventReceived = false;
   function decideOnToken(error, retrievedToken) {
     if (error) {
       if (error.message === 'No token or code found.') {
-        redirectToGitHubAuth();
+        routeState.routeFromHash();
       }
       else {
         handleError(error);
       }
     }
     else {
-      routeState = RouteState({
-        followRoute: followRoute,
-        windowObject: window
-      });
       routeState.addToRoute({token: retrievedToken});
     }
   }
@@ -60,16 +63,28 @@ var streamEndEventReceived = false;
 
 function followRoute(routeDict) {
   verbose = routeDict.verbose;
+  debugger;
+  if (!routeDict.token) {
+    saveFormValues({overridingValues: routeDict});
+    redirectToGitHubAuth();
+    return;
+  }
+
+  var formValues = loadFormValues();
+  formDataOps.setFormValues(formValues);
   // console.log(routeDict);
-  if (routeDict.user && routeDict.userEmail) {
+  if (routeDict['github-username'] && routeDict['github-user-email']) {
     projectsFlow(routeDict);
   }
   else {
     // githubUserInfoFlow(sb(curry(projectsFlow)(routeDict), handleError));
-    routeState.addToRoute({
-      user: document.getElementById('github-username').value,
-      userEmail: document.getElementById('github-user-email').value
-    });
+    if (formValues['github-username'] && formValues['github-user-email']) {
+      routeState.addToRoute({
+        'github-username': formValues['github-username'],
+        'github-user-email': formValues['github-user-email']
+      });
+    }
+    // else Wait until these values are added to the form.
   }
 }
 
@@ -83,10 +98,10 @@ function projectsFlow(routeDict) {
   }
 
   var githubProjectsSource = GitHubProjectsSource({
-    user: routeDict.user,
+    user: routeDict['github-username'],
     githubToken: routeDict.token,
-    username: routeDict.user,
-    userEmail: routeDict.userEmail,
+    username: routeDict['github-username'],
+    userEmail: routeDict['github-user-email'],
     request: request,
     onNonFatalError: handleError,
     onDeed: collectDeed,
@@ -174,4 +189,26 @@ function redirectToGitHubAuth() {
     '&scope=repo';
 
   window.location.href = authURI;
+}
+
+function saveFormValues({overridingValues}) {
+  var formValues = formDataOps.getFormValues();
+  if (overridingValues) {
+    userFormIds.forEach(overrideFormValue);
+  }
+  window.localStorage.formValues = JSON.stringify(formValues);
+
+  function overrideFormValue(id) {
+    if (id in overridingValues) {
+      formValues[id] = overridingValues[id];
+    }
+  }
+}
+
+function loadFormValues() {
+  var formValues = {};
+  if (window.localStorage.formValues) {
+    formValues = JSON.parse(window.localStorage.formValues);
+  }
+  return formValues;
 }
