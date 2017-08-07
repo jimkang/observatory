@@ -36,52 +36,19 @@ function renderGarden({projectData}) {
     name: 'root',
     deeds: projectData
   };
-  // var boundsForProjects = {};
 
   var root = hierarchy.hierarchy(rootData, deedsKey)
-      // .eachBefore(function(d) {
-      //   d.data.id = (d.parent ? d.parent.data.id + '.' : '') + d.data.name; 
-      // })
       .sum(sumBySize);
-      // .sort(function(a, b) { return b.height - a.height || b.value - a.value; });
 
-  // console.log('Total descendants:', root.descendants().length);
-  // console.log('Leaf count:', root.leaves().length);
-
-  // if (firstRender) {
-  //   hierarchy.treemap()
-  //     .tile(hierarchy.treemapSquarify.ratio(1))
-  //     .size([width, height])
-  //     .round(true)
-  //     .paddingInner(1)
-  //     (root);
-  //   firstRender = true;
-  // }
-  // else {
   treemap(root);
-  // }
-
-  // console.log('projects?', root.children);
 
   var cells = plantLayer.selectAll('g')
     .data(root.leaves(), getNestedId);
   
-  // console.log('leaf example:', root.leaves()[0]);
-  // console.log('exit size', cells.exit().size());
-  cells.exit().each(exitCellIsAProject);
-  // TODO: Why are non-projects being removed from the leaves?
-  // Validate before rendering that nothing's being removed.
-
-  // console.log(cells.exit());
-  // debugger;
   cells.exit().remove();
 
   var newCells = cells.enter().append('g');
   newCells.append('rect');
-  // newCells.append('clipPath')
-  //   .append('use');
-  // newCells.append('text');
-  // newCells.append('title');
 
   var updateCells = newCells.merge(cells);
 
@@ -194,12 +161,12 @@ function getLabelTransform(d) {
   return `translate(${x} ${y}) rotate(${rotation}) scale(${scale}, ${scale})`;
 }
 
-function exitCellIsAProject(exitingCell) {
-  if (!exitingCell.data.pushedAt) {
-    console.log('exiting cell is not a project!', exitingCell);
-    return false;
-  }
-  return true;
-}
+// function exitCellIsAProject(exitingCell) {
+//   if (!exitingCell.data.pushedAt) {
+//     console.log('exiting cell is not a project!', exitingCell);
+//     return false;
+//   }
+//   return true;
+// }
 
 module.exports = throttle(renderGarden, 1000);
