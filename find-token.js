@@ -7,6 +7,12 @@ var qs = require('qs');
 const estimatedExpirationLengthInDays = 1;
 const tokenExchangerBaseURL = 'http://162.243.21.88:5876';
 
+var appName = 'observatory';
+
+if (window.location.hostname === 'localhost') {
+  appName = 'observatoryTest';
+}
+
 // routeDict should be a dictionary derived from the URL route. It can be empty, but not undefined.
 // store should be an object that behaves like localStorage. It can be empty, but not undefined.
 function findToken({routeDict, store, currentDate}, done) {  
@@ -14,9 +20,8 @@ function findToken({routeDict, store, currentDate}, done) {
     // http://webcache.googleusercontent.com/search?q=cache:XLr30FwQuCsJ:blog.vjeux.com/2012/javascript/github-oauth-login-browser-side.html+&cd=1&hl=en&ct=clnk&gl=us
     var reqOpts = {
       method: 'GET',
-      // 
       url: tokenExchangerBaseURL + '/exchange?code=' + routeDict.code +
-        '&app=observatoryTest'
+        '&app=' + appName
     };
 
     request(reqOpts, sb(extractToken, done));
