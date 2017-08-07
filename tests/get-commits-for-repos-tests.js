@@ -1,7 +1,7 @@
 var test = require('tape');
 var assertNoError = require('assert-no-error');
 var request = require('request');
-var config = require('../config');
+var config = require('../test-config');
 var GetCommitsForRepos = require('../get-commits-for-repos');
 var findWhere = require('lodash.findwhere');
 
