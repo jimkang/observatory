@@ -343,6 +343,15 @@ Current issues
 ----
 
 - How do we let a user share their graphs, given that the GitHub API only lets you view commits for repo that you have access to, even if those commits are publicly viewable?
+     - I can't. We can share my stuff by having a server serve a cached version of my own stuff, but I can't do that for other people unless they ask.
+     - How can I line up the server stuff with direct calls to the GitHub API?
+          - Single server call, multiple writes to the http connection.
+          - Browser waits until it has a full line, then parses and calls `onProject` or `onDeed`?
+          - How to tell the server not to get everything? Different requests to the API and the server?
+               - Additional POST body fields for existing repos? Awkward.
+               - Entirely different call to server that includes:
+                    - username
+                    - existingRepos (Is this huge, though?)
 
 - Should we get `contributedRepositories` as well as `repositories`?
 
