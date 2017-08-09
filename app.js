@@ -3,7 +3,7 @@ var RouteState = require('route-state');
 // var listEmAll = require('list-em-all');
 var sb = require('standard-bail')();
 var handleError = require('handle-error-web');
-var GitHubProjectsSource = require('./github-projects-source');
+var GitHubProjectsSource = require('github-projects-source');
 var request = require('basic-browser-request');
 var config = require('./config');
 var findToken = require('./find-token');
@@ -14,6 +14,7 @@ var renderPlain = throttle(require('./dom/render-scratch'), 300);
 var renderGarden = require('./dom/render-garden');
 var values = require('lodash.values');
 var addDeedToProject = require('./add-deed-to-project');
+var leveljs = require('level-js');
 
 var renderers = {
   'plain': renderPlain,
@@ -83,7 +84,6 @@ function projectsFlow(routeDict) {
   }
 
   var githubProjectsSource = GitHubProjectsSource({
-    user: routeDict.user,
     githubToken: routeDict.token,
     username: routeDict.user,
     userEmail: routeDict.userEmail,
@@ -92,7 +92,8 @@ function projectsFlow(routeDict) {
     onDeed: collectDeed,
     onProject: collectProject,
     filterProject: weCareAboutThisProject,
-    dbName: 'observatory-deeds'
+    dbName: 'observatory-deeds',
+    db: leveljs 
   });
 
   streamEndEventReceived = false;

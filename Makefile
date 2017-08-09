@@ -21,13 +21,13 @@ run-on-80:
 build:
 	$(BROWSERIFY) app.js | $(UGLIFY) -c -m -o index.js
 
-test-chrome:
-	$(BROWSERIFY) tests/browser/storage-tests.js | $(SMOKECHROME)
-	$(BROWSERIFY) tests/browser/api-storage-tests.js | $(SMOKECHROME)
+# test-chrome:
+# 	$(BROWSERIFY) tests/browser/storage-tests.js | $(SMOKECHROME)
+# 	$(BROWSERIFY) tests/browser/api-storage-tests.js | $(SMOKECHROME)
 
-test-firefox:
-	$(BROWSERIFY) tests/browser/storage-tests.js | $(SMOKEFIREFOX)
-	$(BROWSERIFY) tests/browser/api-storage-tests.js | $(SMOKEFIREFOX)
+# test-firefox:
+# 	$(BROWSERIFY) tests/browser/storage-tests.js | $(SMOKEFIREFOX)
+# 	$(BROWSERIFY) tests/browser/api-storage-tests.js | $(SMOKEFIREFOX)
 
 pushall:
 	git push origin gh-pages
