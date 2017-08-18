@@ -15,6 +15,7 @@ var renderGarden = require('./dom/render-garden');
 var values = require('lodash.values');
 var addDeedToProject = require('./add-deed-to-project');
 var leveljs = require('level-js');
+var getUserCommitsFromServer = require('./get-user-commits-from-server');
 
 var renderers = {
   'plain': renderPlain,
@@ -40,19 +41,22 @@ var streamEndEventReceived = false;
   );
 
   function decideOnToken(error, retrievedToken) {
+    routeState = RouteState({
+      followRoute: followRoute,
+      windowObject: window
+    });
+
     if (error) {
       if (error.message === 'No token or code found.') {
-        redirectToGitHubAuth();
+        // TODO: Ask if they want to log in as themselves.
+        // redirectToGitHubAuth();
+        routeState.routeFromHash();
       }
       else {
         handleError(error);
       }
     }
     else {
-      routeState = RouteState({
-        followRoute: followRoute,
-        windowObject: window
-      });
       routeState.addToRoute({token: retrievedToken});
     }
   }
@@ -62,16 +66,16 @@ var streamEndEventReceived = false;
 function followRoute(routeDict) {
   verbose = routeDict.verbose;
   // console.log(routeDict);
-  if (routeDict.user && routeDict.userEmail) {
-    projectsFlow(routeDict);
-  }
-  else {
-    // githubUserInfoFlow(sb(curry(projectsFlow)(routeDict), handleError));
-    routeState.addToRoute({
-      user: document.getElementById('github-username').value,
-      userEmail: document.getElementById('github-user-email').value
-    });
-  }
+  // if (routeDict.user && routeDict.userEmail) {
+  projectsFlow(routeDict);
+  // }
+  // else {
+  //   // githubUserInfoFlow(sb(curry(projectsFlow)(routeDict), handleError));
+  //   routeState.addToRoute({
+  //     user: document.getElementById('github-username').value,
+  //     userEmail: document.getElementById('github-user-email').value
+  //   });
+  // }
 }
 
 function projectsFlow(routeDict) {
@@ -93,7 +97,8 @@ function projectsFlow(routeDict) {
     onProject: collectProject,
     filterProject: weCareAboutThisProject,
     dbName: 'observatory-deeds',
-    db: leveljs 
+    db: leveljs,
+    getUserCommits: routeDict.token ? undefined : getUserCommitsFromServer
   });
 
   streamEndEventReceived = false;
