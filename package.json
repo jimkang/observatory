@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "accessor": "^1.1.1",
+    "add-deed-to-project": "^1.0.0",
     "basic-browser-request": "^7.3.0",
     "call-next-tick": "^2.0.1",
     "d3-color": "^1.0.3",

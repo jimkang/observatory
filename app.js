@@ -13,7 +13,7 @@ var throttle = require('lodash.throttle');
 var renderPlain = throttle(require('./dom/render-scratch'), 300);
 var renderGarden = require('./dom/render-garden');
 var values = require('lodash.values');
-var addDeedToProject = require('./add-deed-to-project');
+var addDeedToProject = require('add-deed-to-project');
 var leveljs = require('level-js');
 var getUserCommitsFromServer = require('./get-user-commits-from-server');
 

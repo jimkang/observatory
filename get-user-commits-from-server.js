@@ -4,8 +4,7 @@ function getUserCommitsFromServer({
   request,
   onRepo,
   onCommit,
-  onNonFatalError,
-  existingRepos
+  onNonFatalError
 },
 done) {
 
@@ -13,9 +12,8 @@ done) {
   ndjsonParsingStream.on('data', emitObject);
 
   var reqOpts = {
-    url: 'server-url-goes here',
-    method: 'POST',
-    body: JSON.stringify(existingRepos),
+    url: 'http://107.170.58.24/observatory-cache/jimkang-cache.json',
+    method: 'GET',
     onData: writeToStream
   };
   request(reqOpts, done);
@@ -25,7 +23,7 @@ done) {
   }
 
   function emitObject(obj) {
-    if (obj.oid) {
+    if (obj.abbreviatedOid) {
       onCommit(obj);
     }
     else {
