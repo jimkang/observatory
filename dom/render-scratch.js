@@ -11,6 +11,9 @@ var basicProjectListRoot = d3.select('#basic-project-list');
 var deedsKey = GetPropertySafely('deeds', []);
 
 function render({projectData}) {
+  d3.selectAll('.view-root:not(#basic-project-list)').classed('hidden', true);
+  d3.select('#basic-project-list').classed('hidden', false);
+
   var projects = basicProjectListRoot.selectAll('.project').data(projectData, idKey);
   // projects.exit().remove();
   var newProjects = projects.enter().append('li').classed('project', true);

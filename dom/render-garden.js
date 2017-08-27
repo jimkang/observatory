@@ -32,6 +32,9 @@ var treemap = hierarchy.treemap()
     .paddingInner(1);
 
 function renderGarden({projectData}) {
+  d3.selectAll('.view-root:not(#garden-board)').classed('hidden', true);
+  d3.select('#garden-board').classed('hidden', false);
+
   var rootData = {
     name: 'root',
     deeds: projectData
