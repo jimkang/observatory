@@ -15,8 +15,13 @@ var deedsKey = GetPropertySafely('deeds', []);
 
 // var firstRender = true;
 
-const width = 1000;
-const height = 3000;
+// In view units:
+const width = 100;
+const height = 100;
+const xLabelMargin = 2;
+const yLabelMargin = 2;
+const labelYOffsetProportion = 0.25;
+const labelXOffsetProportion = 0.25;
 
 var fader = function(color) { return interpolate.interpolateRgb(color, '#fff')(0.2); };
 var color = scale.scaleOrdinal(scale.schemeCategory20.map(fader));
@@ -28,8 +33,8 @@ var labelLayer = d3.select('#garden-board .field-label-layer');
 var treemap = hierarchy.treemap()
     .tile(hierarchy.treemapResquarify.ratio(1))
     .size([width, height])
-    .round(true)
-    .paddingInner(1);
+    // .round(true)
+    .paddingInner(width/1000);
 
 function renderGarden({projectData}) {
   d3.selectAll('.view-root:not(#garden-board)').classed('hidden', true);
@@ -98,7 +103,7 @@ function renderGarden({projectData}) {
   newRegions.append('rect')
     .attr('fill', 'hsla(0, 0%, 100%, 0.5)')
     .attr('stroke', 'black')
-    .attr('stroke-width', 1);
+    .attr('stroke-width', width/1000);
   newRegions.append('text')
     .attr('text-anchor', 'middle');
 
@@ -143,24 +148,39 @@ function getRegionHeight(d) {
 function getLabelTransform(d) {
   var x = d.x0 + (d.x1 -  d.x0)/2;
   var y = d.y0 + (d.y1 - d.y0)/2;
-  var maxWidth = getRegionWidth(d);
-  var maxHeight = getRegionHeight(d);
+  var maxWidth = getRegionWidth(d) - xLabelMargin;
+  var maxHeight = getRegionHeight(d) - yLabelMargin;
 
   var currentWidth = this.getBBox().width;
+  var currentHeight = this.getBBox().height;
   var scale = 1.0;
+  var xScale;
+  var yScale;
+  var xTranslateOffset = 0;
+  var yTranslateOffset = 0;
 
   var rotation = 0;
   if (maxWidth < maxHeight) {
     rotation = -90;
-    if (currentWidth > maxHeight) {
-      scale = maxHeight/currentWidth;
-    }
+
+    xScale = maxHeight/currentWidth;
+    yScale = maxWidth/currentHeight;
   }
-  else if (currentWidth > maxWidth) {
-    scale = maxWidth/currentWidth;
+  else {
+    xScale = maxWidth/currentWidth;
+    yScale = maxHeight/currentHeight;
+  }
+  scale = xScale < yScale ? xScale : yScale;
+
+  if (maxWidth < maxHeight) {
+    xTranslateOffset = currentHeight * scale * labelXOffsetProportion;
+  }
+  else {
+    yTranslateOffset = currentHeight * scale * labelYOffsetProportion;
   }
 
-  return `translate(${x} ${y}) rotate(${rotation}) scale(${scale}, ${scale})`;
+  return `translate(${x + xTranslateOffset} ${y + yTranslateOffset})
+    rotate(${rotation}) scale(${scale}, ${scale})`;
 }
 
 // function exitCellIsAProject(exitingCell) {
