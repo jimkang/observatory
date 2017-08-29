@@ -7,6 +7,7 @@ var scale = require('d3-scale');
 // var d3Color = require('d3-color');
 var interpolate = require('d3-interpolate');
 var throttle = require('lodash.throttle');
+var Zoom = require('d3-zoom');
 
 // var idKey = accessor();
 // var nameKey = accessor('name');
@@ -29,6 +30,13 @@ var color = scale.scaleOrdinal(scale.schemeCategory20.map(fader));
 
 var plantLayer = d3.select('#garden-board .plant-layer');
 var labelLayer = d3.select('#garden-board .field-label-layer');
+
+var zoom = Zoom.zoom()
+  .scaleExtent([0.25, 4])
+  .on('zoom', zoomed);
+
+var zoomLayer = d3.select('#garden-board .zoom-layer');
+zoomLayer.call(zoom);
 
 var treemap = hierarchy.treemap()
     .tile(hierarchy.treemapResquarify.ratio(1))
@@ -160,23 +168,25 @@ function getLabelTransform(d) {
   var yTranslateOffset = 0;
 
   var rotation = 0;
-  if (maxWidth < maxHeight) {
-    rotation = -90;
+  if (currentWidth > 0 && currentHeight > 0) {
+    if (maxWidth < maxHeight) {
+      rotation = -90;
 
-    xScale = maxHeight/currentWidth;
-    yScale = maxWidth/currentHeight;
-  }
-  else {
-    xScale = maxWidth/currentWidth;
-    yScale = maxHeight/currentHeight;
-  }
-  scale = xScale < yScale ? xScale : yScale;
+      xScale = maxHeight/currentWidth;
+      yScale = maxWidth/currentHeight;
+    }
+    else {
+      xScale = maxWidth/currentWidth;
+      yScale = maxHeight/currentHeight;
+    }
+    scale = xScale < yScale ? xScale : yScale;
 
-  if (maxWidth < maxHeight) {
-    xTranslateOffset = currentHeight * scale * labelXOffsetProportion;
-  }
-  else {
-    yTranslateOffset = currentHeight * scale * labelYOffsetProportion;
+    if (maxWidth < maxHeight) {
+      xTranslateOffset = currentHeight * scale * labelXOffsetProportion;
+    }
+    else {
+      yTranslateOffset = currentHeight * scale * labelYOffsetProportion;
+    }
   }
 
   return `translate(${x + xTranslateOffset} ${y + yTranslateOffset})
@@ -190,5 +200,10 @@ function getLabelTransform(d) {
 //   }
 //   return true;
 // }
+
+function zoomed() {
+  // console.log('d3.event.transform', d3.event.transform);
+  zoomLayer.attr('transform', d3.event.transform);
+}
 
 module.exports = throttle(renderGarden, 1000);

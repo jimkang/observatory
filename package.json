@@ -48,6 +48,7 @@
     "d3-queue": "^3.0.7",
     "d3-scale": "^1.0.6",
     "d3-selection": "^1.1.0",
+    "d3-zoom": "^1.5.0",
     "get-property-safely": "^1.0.0",
     "github-projects-source": "^1.0.1",
     "handle-error-web": "^1.0.1",
