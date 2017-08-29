@@ -17,6 +17,10 @@ var deedsKey = GetPropertySafely('deeds', []);
 
 const width = 1000;
 const height = 3000;
+const xLabelMargin = 10;
+const yLabelMargin = 10;
+const labelYOffsetProportion = 0.25;
+const labelXOffsetProportion = 0.25;
 
 var fader = function(color) { return interpolate.interpolateRgb(color, '#fff')(0.2); };
 var color = scale.scaleOrdinal(scale.schemeCategory20.map(fader));
@@ -143,24 +147,41 @@ function getRegionHeight(d) {
 function getLabelTransform(d) {
   var x = d.x0 + (d.x1 -  d.x0)/2;
   var y = d.y0 + (d.y1 - d.y0)/2;
-  var maxWidth = getRegionWidth(d);
-  var maxHeight = getRegionHeight(d);
+  var maxWidth = getRegionWidth(d) - xLabelMargin;
+  var maxHeight = getRegionHeight(d) - yLabelMargin;
 
   var currentWidth = this.getBBox().width;
+  var currentHeight = this.getBBox().height;
+  var xScale;
+  var yScale;
+  var xTranslateOffset = 0;
+  var yTranslateOffset = 0;
   var scale = 1.0;
-
   var rotation = 0;
-  if (maxWidth < maxHeight) {
-    rotation = -90;
-    if (currentWidth > maxHeight) {
-      scale = maxHeight/currentWidth;
+
+  if (currentWidth > 0 && currentHeight > 0) {
+    if (maxWidth < maxHeight) {
+      rotation = -90;
+
+      xScale = maxHeight/currentWidth;
+      yScale = maxWidth/currentHeight;
+    }
+    else {
+      xScale = maxWidth/currentWidth;
+      yScale = maxHeight/currentHeight;
+    }
+    scale = xScale < yScale ? xScale : yScale;
+
+    if (maxWidth < maxHeight) {
+      xTranslateOffset = currentHeight * scale * labelXOffsetProportion;
+    }
+    else {
+      yTranslateOffset = currentHeight * scale * labelYOffsetProportion;
     }
   }
-  else if (currentWidth > maxWidth) {
-    scale = maxWidth/currentWidth;
-  }
 
-  return `translate(${x} ${y}) rotate(${rotation}) scale(${scale}, ${scale})`;
+  return `translate(${x + xTranslateOffset} ${y + yTranslateOffset})
+    rotate(${rotation}) scale(${scale}, ${scale})`;
 }
 
 // function exitCellIsAProject(exitingCell) {
