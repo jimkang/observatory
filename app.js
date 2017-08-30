@@ -122,6 +122,10 @@ function projectsFlow(routeDict) {
     if (verbose) {
       console.log('Received project:', project, 'from', source);
     }
+    var existingProject = collectedProjectsByName[project.name];
+    if (existingProject) {
+      project.deeds = existingProject.deeds;
+    }
     collectedProjectsByName[project.name] = project;
     collectedProjects = values(collectedProjectsByName);
     render({projectData: collectedProjects});
