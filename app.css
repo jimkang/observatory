@@ -59,3 +59,13 @@ div[contenteditable] {
 #status-message {
   background-color: #ffffee;
 }
+
+.zoom-protect-container {
+  margin-left: 1em;
+  display: flex;
+  width: 100%;
+}
+
+.gutter {
+  width: 1em;
+}
