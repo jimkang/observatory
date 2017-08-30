@@ -2,16 +2,21 @@ var d3 = require('d3-selection');
 var accessor = require('accessor');
 var GetPropertySafely = require('get-property-safely');
 var hierarchy = require('d3-hierarchy');
-var scale = require('d3-scale');
+// var scale = require('d3-scale');
 // var d3Format = require('d3-format');
 // var d3Color = require('d3-color');
-var interpolate = require('d3-interpolate');
+// var interpolate = require('d3-interpolate');
 var throttle = require('lodash.throttle');
 
 // var idKey = accessor();
 // var nameKey = accessor('name');
 // var messageKey = accessor('message');
 var deedsKey = GetPropertySafely('deeds', []);
+var gardenColors = require('./garden-colors');
+// var gardenColors = scale.schemeCategory20
+const gardenColorsLength = gardenColors.length;
+
+// const aYearInMilliseconds = 31536000000;
 
 // var firstRender = true;
 
@@ -22,8 +27,8 @@ const yLabelMargin = 10;
 const labelYOffsetProportion = 0.25;
 const labelXOffsetProportion = 0.25;
 
-var fader = function(color) { return interpolate.interpolateRgb(color, '#fff')(0.2); };
-var color = scale.scaleOrdinal(scale.schemeCategory20.map(fader));
+// var fader = function(color) { return interpolate.interpolateRgb(color, '#fff')(0.2); };
+// var color = scale.scaleOrdinal(scale.schemeCategory20.map(fader));
 // var format = d3Format.format(',d');
 
 var plantLayer = d3.select('#garden-board .plant-layer');
@@ -66,7 +71,8 @@ function renderGarden({projectData}) {
       .attr('id', function(d) { return d.data.id; })
       .attr('width', function(d) { return d.x1 - d.x0; })
       .attr('height', function(d) { return d.y1 - d.y0; })
-      .attr('fill', function(d) { return color(d.parent.data.id); });
+      .attr('fill', deedColor);
+      // .style('opacity', deedOpacity);
       // .each(addToProjectBounds);
 
   // updateCells.select('clipPath')
@@ -100,7 +106,7 @@ function renderGarden({projectData}) {
   var newRegions = projectRegions.enter().append('g').classed('project-region', true);
 
   newRegions.append('rect')
-    .attr('fill', 'hsla(0, 0%, 100%, 0.5)')
+    .attr('fill', 'hsla(0, 0%, 100%, 0.3)')
     .attr('stroke', 'black')
     .attr('stroke-width', 1);
   newRegions.append('text')
@@ -191,5 +197,36 @@ function getLabelTransform(d) {
 //   }
 //   return true;
 // }
+
+function projectColor(d) {
+  if (d.data.id) {
+    return gardenColors[getColorIndexForString(d.data.id)];
+  }
+  else {
+    return '#fff';
+  }
+}
+
+function deedColor(d) {
+  return projectColor(d.parent);
+}
+
+// 0-second old deeds will bright. Older deeds will be less opaque.
+// function deedOpacity(d) {
+//   var age = (new Date()).getTime() - (new Date(d.data.committedDate)).getTime();
+//   var alpha = age/(6 * aYearInMilliseconds);
+//   if (alpha > 1.0) {
+//     alpha = 1.0;
+//   }
+//   return 1.0 - alpha;
+// }
+
+function getColorIndexForString(s) {
+  var hash = 0;
+  for (var i = 0; i < s.length; ++i) {
+    hash += s.charCodeAt(i);
+  }
+  return hash % gardenColorsLength;
+}
 
 module.exports = throttle(renderGarden, 1000);
