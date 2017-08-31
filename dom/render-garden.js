@@ -5,7 +5,7 @@ var hierarchy = require('d3-hierarchy');
 // var scale = require('d3-scale');
 // var d3Format = require('d3-format');
 // var d3Color = require('d3-color');
-// var interpolate = require('d3-interpolate');
+var interpolate = require('d3-interpolate');
 var throttle = require('lodash.throttle');
 
 // var idKey = accessor();
@@ -27,7 +27,6 @@ const yLabelMargin = 10;
 const labelYOffsetProportion = 0.25;
 const labelXOffsetProportion = 0.25;
 
-// var fader = function(color) { return interpolate.interpolateRgb(color, '#fff')(0.2); };
 // var color = scale.scaleOrdinal(scale.schemeCategory20.map(fader));
 // var format = d3Format.format(',d');
 
@@ -60,7 +59,7 @@ function renderGarden({projectData}) {
   cells.exit().remove();
 
   var newCells = cells.enter().append('g');
-  newCells.append('rect');
+  newCells.append('rect').on('click', showDetails);
 
   var updateCells = newCells.merge(cells);
 
@@ -105,10 +104,11 @@ function renderGarden({projectData}) {
   
   var newRegions = projectRegions.enter().append('g').classed('project-region', true);
 
-  newRegions.append('rect')
-    .attr('fill', 'hsla(0, 0%, 100%, 0.3)')
-    .attr('stroke', 'black')
-    .attr('stroke-width', 1);
+  // Enable this if you need to debug region sizes.
+  // newRegions.append('rect')
+  //   .attr('fill', 'hsla(0, 0%, 100%, 0.3)')
+  //   .attr('stroke', 'black')
+  //   .attr('stroke-width', 1);
   newRegions.append('text')
     .attr('text-anchor', 'middle');
 
@@ -208,7 +208,7 @@ function projectColor(d) {
 }
 
 function deedColor(d) {
-  return projectColor(d.parent);
+  return fader(projectColor(d.parent));
 }
 
 // 0-second old deeds will bright. Older deeds will be less opaque.
@@ -227,6 +227,14 @@ function getColorIndexForString(s) {
     hash += s.charCodeAt(i);
   }
   return hash % gardenColorsLength;
+}
+
+function fader(color) {
+  return interpolate.interpolateRgb(color, '#fff')(0.3);
+}
+
+function showDetails(d) {
+  console.log(d);
 }
 
 module.exports = throttle(renderGarden, 1000);

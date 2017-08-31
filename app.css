@@ -69,3 +69,11 @@ div[contenteditable] {
 .gutter {
   width: 1em;
 }
+
+.project-region rect {
+  pointer-events: none;
+}
+
+.project-region text {
+  pointer-events: none;
+}
