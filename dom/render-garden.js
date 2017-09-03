@@ -31,13 +31,14 @@ const labelXOffsetProportion = 0.25;
 // var format = d3Format.format(',d');
 
 var plantLayer = d3.select('#garden-board .plant-layer');
+var regionLayer = d3.select('#garden-board .region-layer');
 var labelLayer = d3.select('#garden-board .field-label-layer');
 
 var treemap = hierarchy.treemap()
     .tile(hierarchy.treemapResquarify.ratio(1))
     .size([width, height])
     .round(true)
-    .paddingInner(1);
+    .paddingInner(0);
 
 function renderGarden({projectData}) {
   d3.selectAll('.view-root:not(#garden-board)').classed('hidden', true);
@@ -53,6 +54,51 @@ function renderGarden({projectData}) {
 
   treemap(root);
 
+  renderProjectRegions(root);
+  renderDeedCells(root);
+  renderProjectLabels(root);
+}
+
+function renderProjectRegions(root) {
+  var projectRegions = regionLayer.selectAll('.project-region')
+    .data(root.children, getNestedId);
+
+  projectRegions.exit().remove();
+  
+  var newRegions = projectRegions.enter()
+    .append('rect')
+      .classed('project-region', true)
+      .attr('fill', 'hsla(0, 0%, 100%, 0.3)')
+      .attr('stroke', 'black')
+      .attr('stroke-width', 1);
+
+  var updateRegions = projectRegions.merge(newRegions);
+
+  updateRegions
+    .attr('x', accessor('x0'))
+    .attr('y', accessor('y0'))
+    .attr('width', getRegionWidth)
+    .attr('height', getRegionHeight);
+}
+
+function renderProjectLabels(root) {
+  var labels = labelLayer.selectAll('.label')
+    .data(root.children, getNestedId);
+
+  labels.exit().remove();
+  
+  var newLabels = labels.enter().append('text')
+    .classed('label', true)
+    .attr('text-anchor', 'middle');
+
+  var updateLabels = labels.merge(newLabels);
+
+  updateLabels
+    .attr('transform', getLabelTransform)
+    .text(getNestedName);    
+}
+
+function renderDeedCells(root) {
   var cells = plantLayer.selectAll('g')
     .data(root.leaves(), getNestedId);
   
@@ -72,57 +118,7 @@ function renderGarden({projectData}) {
       .attr('height', function(d) { return d.y1 - d.y0; })
       .attr('fill', deedColor);
       // .style('opacity', deedOpacity);
-      // .each(addToProjectBounds);
-
-  // updateCells.select('clipPath')
-  //   .attr('id', function(d) { return 'clip-' + d.data.id; })
-  //   .select('use')
-  //     .attr('xlink:href', function(d) { return '#' + d.data.id; });
-
-  // updateCells.select('text')
-  //   .attr('clip-path', function(d) { return 'url(#clip-' + d.data.id + ')'; })
-  //   .selectAll('tspan')
-  //     .data(function(d) {
-  //       // TODO: Find out why name is needed. Should not be rendering projects!
-  //       return (d.data.name || d.data.message).split(/(?=[A-Z][^A-Z])/g);
-  //     })
-  //   .enter().append('tspan')
-  //     .attr('x', 4)
-  //     .attr('y', function(d, i) { return 13 + i * 10; })
-  //     .text(function(d) { return d; });
-
-  // updateCells.select('title')
-  //     .text(function(d) { return d.data.id + '\n' + format(d.value); });
-  // function addToProjectBounds(cell) {
-  //   // if (cell.data.projectName)
-  // }
-
-  var projectRegions = labelLayer.selectAll('.project-region')
-    .data(root.children, getNestedId);
-
-  projectRegions.exit().remove();
-  
-  var newRegions = projectRegions.enter().append('g').classed('project-region', true);
-
-  // Enable this if you need to debug region sizes.
-  // newRegions.append('rect')
-  //   .attr('fill', 'hsla(0, 0%, 100%, 0.3)')
-  //   .attr('stroke', 'black')
-  //   .attr('stroke-width', 1);
-  newRegions.append('text')
-    .attr('text-anchor', 'middle');
-
-  var updateRegions = projectRegions.merge(newRegions);
-
-  updateRegions.select('rect')
-    .attr('x', accessor('x0'))
-    .attr('y', accessor('y0'))
-    .attr('width', getRegionWidth)
-    .attr('height', getRegionHeight);
-
-  updateRegions.select('text')
-    .attr('transform', getLabelTransform)
-    .text(getNestedName);
+      // .each(addToProjectBounds);  
 }
 
 function sumBySize() {

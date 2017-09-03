@@ -70,10 +70,16 @@ div[contenteditable] {
   width: 1em;
 }
 
-.project-region rect {
+.project-region {
+  pointer-events: none;
+  fill: hsla(219, 22%, 73%, 0.5);
+}
+
+.label {
   pointer-events: none;
 }
 
-.project-region text {
-  pointer-events: none;
+.plant-layer rect {
+  stroke: white;
+  stroke-width: 1;
 }
