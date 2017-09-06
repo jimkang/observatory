@@ -10,12 +10,14 @@ var findToken = require('./find-token');
 var qs = require('qs');
 var throttle = require('lodash.throttle');
 // var render = require('./dom/render-scratch');
-var renderPlain = throttle(require('./dom/render-scratch'), 300);
+var renderPlain = require('./dom/render-scratch');
 var renderGarden = require('./dom/render-garden');
 var values = require('lodash.values');
 var addDeedToProject = require('add-deed-to-project');
 var leveljs = require('level-js');
 var getUserCommitsFromServer = require('./get-user-commits-from-server');
+
+const expensiveRenderInterval = 5;
 
 var renderers = {
   'plain': renderPlain,
@@ -86,6 +88,8 @@ function projectsFlow(routeDict) {
   if (!render) {
     render = renderPlain;
   }
+  render = throttle(render, 300);
+  var renderCount = 0;
 
   var githubProjectsSource = GitHubProjectsSource({
     githubToken: routeDict.token,
@@ -112,7 +116,7 @@ function projectsFlow(routeDict) {
       console.log('Received deed:', deed, 'from', source);
     }
     addDeedToProject(handleError, collectedProjectsByName, deed);
-    render({projectData: collectedProjects});
+    callRender({expensiveRenderIsOK: renderCount % expensiveRenderInterval === 0});
   }
 
   function collectProject(project, source) {
@@ -128,7 +132,7 @@ function projectsFlow(routeDict) {
     }
     collectedProjectsByName[project.name] = project;
     collectedProjects = values(collectedProjectsByName);
-    render({projectData: collectedProjects});
+    callRender({expensiveRenderIsOK: renderCount % expensiveRenderInterval === 0});
   }
 
   function onStreamEnd(error) {
@@ -144,8 +148,17 @@ function projectsFlow(routeDict) {
       console.log('deed count', 
         collectedProjects.map(p => p.deeds ? p.deeds.length : 0).reduce((sum, l) => sum + l)
       );
-      render({projectData: collectedProjects});
+      callRender({expensiveRenderIsOK: true});
     }
+  }
+
+  function callRender({expensiveRenderIsOK = false}) {
+    render({
+      projectData: collectedProjects,
+      expensiveRenderIsOK: expensiveRenderIsOK,
+      onDeedClick: d => console.log(d)
+    });
+    renderCount += 1;
   }
 }
 

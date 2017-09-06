@@ -6,7 +6,6 @@ var hierarchy = require('d3-hierarchy');
 // var d3Format = require('d3-format');
 // var d3Color = require('d3-color');
 var interpolate = require('d3-interpolate');
-var throttle = require('lodash.throttle');
 
 // var idKey = accessor();
 // var nameKey = accessor('name');
@@ -40,7 +39,7 @@ var treemap = hierarchy.treemap()
     .round(true)
     .paddingInner(0);
 
-function renderGarden({projectData}) {
+function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
   d3.selectAll('.view-root:not(#garden-board)').classed('hidden', true);
   d3.select('#garden-board').classed('hidden', false);
 
@@ -55,8 +54,8 @@ function renderGarden({projectData}) {
   treemap(root);
 
   renderProjectRegions(root);
-  renderDeedCells(root);
-  renderProjectLabels(root);
+  renderDeedCells(root, onDeedClick);
+  renderProjectLabels(root, expensiveRenderIsOK);
 }
 
 function renderProjectRegions(root) {
@@ -81,7 +80,7 @@ function renderProjectRegions(root) {
     .attr('height', getRegionHeight);
 }
 
-function renderProjectLabels(root) {
+function renderProjectLabels(root, expensiveRenderIsOK) {
   var labels = labelLayer.selectAll('.label')
     .data(root.children, getNestedId);
 
@@ -93,19 +92,21 @@ function renderProjectLabels(root) {
 
   var updateLabels = labels.merge(newLabels);
 
-  updateLabels
-    .attr('transform', getLabelTransform)
-    .text(getNestedName);    
+  updateLabels.text(getNestedName);
+
+  if (expensiveRenderIsOK) {
+    updateLabels.attr('transform', getLabelTransform);
+  }
 }
 
-function renderDeedCells(root) {
+function renderDeedCells(root, onDeedClick) {
   var cells = plantLayer.selectAll('g')
     .data(root.leaves(), getNestedId);
   
   cells.exit().remove();
 
   var newCells = cells.enter().append('g');
-  newCells.append('rect').on('click', showDetails);
+  newCells.append('rect').on('click', onDeedClick);
 
   var updateCells = newCells.merge(cells);
 
@@ -229,8 +230,8 @@ function fader(color) {
   return interpolate.interpolateRgb(color, '#fff')(0.3);
 }
 
-function showDetails(d) {
-  console.log(d);
-}
+// function showDetails(d) {
+//   console.log(d);
+// }
 
-module.exports = throttle(renderGarden, 1000);
+module.exports = renderGarden;
