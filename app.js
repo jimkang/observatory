@@ -46,7 +46,7 @@ var routeState;
 function followRoute(routeDict) {
   // console.log(routeDict);
   // if (routeDict.user && routeDict.userEmail) {
-  projectsFlow(routeDict);
+  projectsFlow({routeDict, changeView});
   // }
   // else {
   //   // githubUserInfoFlow(sb(curry(projectsFlow)(routeDict), handleError));
@@ -78,6 +78,11 @@ function followRoute(routeDict) {
 // function projectIsValid(project) {
 //   return !project.disown && !project.parent;
 // }
+
+function changeView(newViewname) {
+  routeState.addToRoute({view: newViewname});
+}
+
 
 function redirectToGitHubAuth() {
   var clientId = config.github.clientId;

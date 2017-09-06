@@ -63,7 +63,7 @@ function renderProjectRegions(root) {
     .data(root.children, getNestedId);
 
   projectRegions.exit().remove();
-  
+
   var newRegions = projectRegions.enter()
     .append('rect')
       .classed('project-region', true)

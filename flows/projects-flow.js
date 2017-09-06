@@ -3,6 +3,7 @@ var request = require('basic-browser-request');
 var throttle = require('lodash.throttle');
 var renderPlain = require('../dom/render-scratch');
 var renderGarden = require('../dom/render-garden');
+var renderHeader = require('../dom/render-header');
 var values = require('lodash.values');
 var addDeedToProject = require('add-deed-to-project');
 var leveljs = require('level-js');
@@ -10,22 +11,26 @@ var getUserCommitsFromServer = require('../get-user-commits-from-server');
 var handleError = require('handle-error-web');
 
 const expensiveRenderInterval = 5;
-const expensiveRenderThreshold = 10;
+const expensiveRenderThreshold = 5;
 
 var renderers = {
   'plain': renderPlain,
   'garden': renderGarden
 };
 
-function projectsFlow(routeDict) {
+function projectsFlow({routeDict, changeView}) {
+  var viewName = routeDict.view || 'garden';
+
+  renderHeader({
+    currentUsername: routeDict.user || 'Jim',
+    activeView: viewName,
+    changeView
+  });
   var streamEndEventReceived = false;
   // Using name instead of id because deeds/commits do not have project ids.
   var collectedProjectsByName = {};
   var collectedProjects = [];
-  var render = renderers[routeDict.view];
-  if (!render) {
-    render = renderPlain;
-  }
+  var render = renderers[viewName];
   render = throttle(render, 300);
   var renderCount = 0;
 
