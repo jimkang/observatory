@@ -18,26 +18,21 @@ var renderers = {
   'garden': renderGarden
 };
 
-function projectsFlow({routeDict, changeView}) {
-  var viewName = routeDict.view || 'garden';
-
-  renderHeader({
-    currentUsername: routeDict.user || 'Jim',
-    activeView: viewName,
-    changeView
-  });
-  var streamEndEventReceived = false;
-  // Using name instead of id because deeds/commits do not have project ids.
+// ProjectsFlow is per-data-source. If you need to get from a new data source,
+// you need to create another projectSource.
+// changeRenderer changes the rendering while still using the same data source.
+function ProjectsFlow({token, user, userEmail, verbose}) {
   var collectedProjectsByName = {};
   var collectedProjects = [];
-  var render = renderers[viewName];
-  render = throttle(render, 300);
+  var streamEndEventReceived = false;
   var renderCount = 0;
+  var render;
+  var ignoreSourceEvents = false;
 
   var githubProjectsSource = GitHubProjectsSource({
-    githubToken: routeDict.token,
-    username: routeDict.user,
-    userEmail: routeDict.userEmail,
+    githubToken: token,
+    username: user,
+    userEmail: userEmail,
     request: request,
     onNonFatalError: handleError,
     onDeed: collectDeed,
@@ -45,17 +40,42 @@ function projectsFlow({routeDict, changeView}) {
     // filterProject: weCareAboutThisProject,
     dbName: 'observatory-deeds',
     db: leveljs,
-    getUserCommits: routeDict.token ? undefined : getUserCommitsFromServer
+    getUserCommits: token ? undefined : getUserCommitsFromServer
   });
 
-  streamEndEventReceived = false;
-  githubProjectsSource.startStream({sources: ['local', 'API']}, onStreamEnd);
+  return {
+    start,
+    cancel,
+    changeRenderer,
+    newDataSourceMatches
+  };
+
+  function newDataSourceMatches({newToken, newUser, newUserEmail, newVerbose}) {
+    return token === newToken && user === newUser &&
+      userEmail === newUserEmail && verbose === newVerbose;
+  }
+
+  function start() {
+    githubProjectsSource.startStream({sources: ['local', 'API']}, onStreamEnd);
+  }
+
+  // TODO: Actually implement cancel in GitHubProjectsSource.
+  function cancel() {
+    ignoreSourceEvents = true;
+  }
 
   function collectDeed(deed, source) {
+    if (ignoreSourceEvents) {
+      if (verbose) {
+        console.log('Flow is cancelled. Ignoring deed!');
+      }
+      return;
+    }
+
     if (streamEndEventReceived) {
       console.log('Received deed after stream end!');
     }
-    if (routeDict.verbose) {
+    if (verbose) {
       console.log('Received deed:', deed, 'from', source);
     }
     addDeedToProject(handleError, collectedProjectsByName, deed);
@@ -63,10 +83,17 @@ function projectsFlow({routeDict, changeView}) {
   }
 
   function collectProject(project, source) {
+    if (ignoreSourceEvents) {
+      if (verbose) {
+        console.log('Flow is cancelled. Ignoring project!');
+      }
+      return;
+    }
+
     if (streamEndEventReceived) {
       console.log('Received project after stream end!');
     }
-    if (routeDict.verbose) {
+    if (verbose) {
       console.log('Received project:', project, 'from', source);
     }
     var existingProject = collectedProjectsByName[project.name];
@@ -96,18 +123,38 @@ function projectsFlow({routeDict, changeView}) {
   }
 
   function callRender({expensiveRenderIsOK = false}) {
-    render({
-      projectData: collectedProjects,
-      expensiveRenderIsOK: expensiveRenderIsOK,
-      onDeedClick: d => console.log(d)
-    });
-    renderCount += 1;
+    if (render) {
+      render({
+        projectData: collectedProjects,
+        expensiveRenderIsOK: expensiveRenderIsOK,
+        onDeedClick: d => console.log(d)
+      });
+      renderCount += 1;
+    }
   }
 
   function shouldDoExpensiveRender() {
     return renderCount > expensiveRenderThreshold &&
       renderCount % expensiveRenderInterval === 0;
   }
+
+  function changeRenderer({view, changeView}) {
+    var viewName = view || 'garden';
+
+    renderHeader({
+      currentUsername: user,
+      activeView: viewName,
+      changeView
+    });
+    // Using name instead of id because deeds/commits do not have project ids.
+    render = throttle(renderers[viewName], 300);
+    renderCount = 0;
+
+    if (streamEndEventReceived) {
+      callRender({expensiveRenderIsOK: true});
+    }
+    // Otherwise, the various event handlers will call callRender.
+  }
 }
 
-module.exports = projectsFlow;
+module.exports = ProjectsFlow;

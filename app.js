@@ -3,11 +3,12 @@ var handleError = require('handle-error-web');
 var config = require('./config');
 var findToken = require('./find-token');
 var qs = require('qs');
-var projectsFlow = require('./flows/projects-flow');
+var ProjectsFlow = require('./flows/projects-flow');
 
 // var curry = require('lodash.curry');
 
 var routeState;
+var projectsFlow;
 
 ((function go() {
   var queryStringParsed = qs.parse(window.location.search.slice(1));
@@ -44,40 +45,33 @@ var routeState;
 })());
 
 function followRoute(routeDict) {
-  // console.log(routeDict);
-  // if (routeDict.user && routeDict.userEmail) {
-  projectsFlow({routeDict, changeView});
-  // }
-  // else {
-  //   // githubUserInfoFlow(sb(curry(projectsFlow)(routeDict), handleError));
-  //   routeState.addToRoute({
-  //     user: document.getElementById('github-username').value,
-  //     userEmail: document.getElementById('github-user-email').value
-  //   });
-  // }
+  var user = routeDict.user || 'Jim';
+
+  if (projectsFlow && !projectsFlow.newDataSourceMatches({
+    newToken: routeDict.token,
+    newUser: user,
+    newUserEmail: routeDict.userEmail,
+    newVerbose: routeDict.verbose
+  })) {
+    projectsFlow.cancel();
+    projectsFlow = null;
+  }
+
+  if (!projectsFlow) {
+    projectsFlow = ProjectsFlow({
+      token: routeDict.token,
+      user: user,
+      userEmail: routeDict.userEmail,
+      verbose: routeDict.verbose
+    });
+    projectsFlow.start();
+  }
+
+  projectsFlow.changeRenderer({
+    view: routeDict.view,
+    changeView
+  });
 }
-
-
-
-// function listFlow() {
-//   listEmAll.loadList({url: 'projects.yaml'}, sb(callRenderList, handleError));
-// }
-
-// function callRenderList(projects) {
-//   listEmAll.render({
-//     thingList: projects.filter(projectIsValid),
-//     rootId: 'list', 
-//     thingClass: 'project'
-//   });
-// }
-
-// function newProjectFlow() {
-//   renderProjectEditor();
-// }
-
-// function projectIsValid(project) {
-//   return !project.disown && !project.parent;
-// }
 
 function changeView(newViewname) {
   routeState.addToRoute({view: newViewname});
