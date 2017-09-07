@@ -53,7 +53,7 @@ var projectsFlow;
 
 function followRoute(routeDict) {
   var user = routeDict.user || 'Jim';
-  debugger;
+
   if (routeDict.user &&
     (!routeDict.token || routeDict.expires <= (new Date()).getTime())) {
     // Token's expired and we want user-specific info. Start the redirect cycle again.

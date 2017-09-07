@@ -70,6 +70,7 @@ div[contenteditable] {
 
 .zoom-protect-container {
   margin-left: 1em;
+  margin-bottom: 1em;
   display: flex;
   width: 100%;
 }
@@ -120,8 +121,8 @@ header {
 }
 
 .github-info {
-  margin-top: 4em;
-  margin-bottom: 4em;
+  margin-top: 2em;
+  margin-bottom: 2em;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -155,4 +156,13 @@ header {
 
 header {
   margin-bottom: 2em;
+}
+
+.explanation {
+  font-family: Garamond, Georgia;
+  font-size: 0.8em;
+}
+
+a {
+  color: black;
 }

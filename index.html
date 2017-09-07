@@ -9,7 +9,7 @@
 
 <header>
   <div class="title">
-    Observatory: <span id="current-user-label"></span> projects on GitHub
+    Observatory: <span id="current-user-label-possessive"></span> projects on GitHub
   </div>
   <div class="view-nav">
     <a id="garden-view-button" class="view-button" data-viewname="garden">Garden</a> |
@@ -30,6 +30,10 @@
     <g class="details-layer"></g>
   </svg>
 </div>
+
+ <div class="explanation">
+    <p>This is a mapping of the things <span id="current-user-label"></span> has done on GitHub.</p>
+  </div>
 
 <section class="github-info">
   <div class="title">Want to see your own projects?</div>
@@ -52,6 +56,15 @@
 
   <div id="form-status-message" class="hidden"></div>
 </section>
+
+ <div class="explanation">
+    <p>
+      Note that most of these views represent commits as being equal size, when in fact, the amount of significance and work varies greatly from commit to commit. Certainly, <a href="https://blog.jcoglan.com/2013/11/15/why-github-is-not-your-cv/">it is not a resume</a>. Also, your GitHub activity is often not a good representation of your body of work as a whole.
+    </p>
+    <p>
+      I happen to put a lot of of my non-commercial work on GitHub, so this does help me out, personally. If you have another source of "project work" data that you'd like to see mapped out by Observatory, <a href="mailto:jimkang+observatory@gmail.com">let me know</a>, and I'll see what I can do!
+    </p>
+  </div>
 
 <script src="index.js"></script>
 
