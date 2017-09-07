@@ -2,8 +2,9 @@ var RouteState = require('route-state');
 var handleError = require('handle-error-web');
 var config = require('./config');
 var findToken = require('./find-token');
-var qs = require('qs');
 var ProjectsFlow = require('./flows/projects-flow');
+var wireGitHubForm = require('./dom/wire-github-form');
+var redirectToGitHubAuth = require('./redirect-to-github-auth');
 
 // var curry = require('lodash.curry');
 
@@ -11,17 +12,16 @@ var routeState;
 var projectsFlow;
 
 ((function go() {
-  var queryStringParsed = qs.parse(window.location.search.slice(1));
+  // On first load, always fetch a new token.
   findToken(
     {
-      routeDict: queryStringParsed,
-      store: window.localStorage,
+      queryString: window.location.search,
       currentDate: new Date()
     },
     decideOnToken
   );
 
-  function decideOnToken(error, retrievedToken) {
+  function decideOnToken(error, tokenInfo, unpackedRoute) {
     routeState = RouteState({
       followRoute: followRoute,
       windowObject: window
@@ -36,16 +36,35 @@ var projectsFlow;
       else {
         handleError(error);
       }
-    }
-    else {
-      routeState.addToRoute({token: retrievedToken});
+    }    
+    else {      
+      // routeState.addToRoute({token: retrievedToken});
+      var newRouteDict = unpackedRoute;
+      if (!newRouteDict) {
+        newRouteDict = {};
+      }
+      for (var key in tokenInfo) {
+        newRouteDict[key] = tokenInfo[key];
+      }
+      routeState.overwriteRouteEntirely(newRouteDict);
     }
   }
-
 })());
 
 function followRoute(routeDict) {
   var user = routeDict.user || 'Jim';
+  debugger;
+  if (routeDict.user &&
+    (!routeDict.token || routeDict.expires <= (new Date()).getTime())) {
+    // Token's expired and we want user-specific info. Start the redirect cycle again.
+    redirectToGitHubAuth({
+      routeDict: routeDict,
+      clientId: window.location.hostname === 'localhost' ?
+        config.githubTest.clientId : config.githubTest.clientId,
+      scopes: ['repo']
+    });
+    return;
+  }
 
   if (projectsFlow && !projectsFlow.newDataSourceMatches({
     newToken: routeDict.token,
@@ -71,21 +90,22 @@ function followRoute(routeDict) {
     view: routeDict.view,
     changeView
   });
+
+  wireGitHubForm({
+    username: routeDict.user,
+    userEmail: routeDict.userEmail,
+    onFormSubmitted: routeWithFormValues
+  });
+
+  function routeWithFormValues({username, userEmail}) {
+    routeState.addToRoute({
+      user: username,
+      userEmail: userEmail
+    });
+    return false;
+  }
 }
 
 function changeView(newViewname) {
   routeState.addToRoute({view: newViewname});
-}
-
-
-function redirectToGitHubAuth() {
-  var clientId = config.github.clientId;
-  if (window.location.hostname === 'localhost') {
-    clientId = config.githubTest.clientId;
-  }
-  var authURI = 'https://github.com/login/oauth/authorize?' +
-    'client_id=' + clientId +
-    '&scope=repo';
-
-  window.location.href = authURI;
 }

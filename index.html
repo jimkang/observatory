@@ -15,6 +15,7 @@
     <a id="garden-view-button" class="view-button" data-viewname="garden">Garden</a> |
     <a id="list-view-button" class="view-button" data-viewname="plain">Simple List</a>
   </div>
+  <div>Zoom in and out with the browser controls (cmd/alt and +/- on a computer, pinch zoom in/out on a phone).</div>
 </header>
 
 <ul id="basic-project-list" class="view-root">
@@ -31,72 +32,26 @@
 </div>
 
 <section class="github-info">
+  <div class="title">Want to see your own projects?</div>
 
   <div class="form-pair">
     <label>GitHub username</label>
     <div class="value-container">
-      <input type="text" id="github-username" value="jimkang"></input>
+      <input type="text" id="github-username" value="" required></input>
     </div>
   </div>
 
   <div class="form-pair">
-    <label>Git user email (the email that is used for this person's git commits)</label>
+    <label>Git email</label>
     <div class="value-container">
-      <input type="text" id="github-user-email" value="jimkang@gmail.com"></input>
+      <input type="email" id="github-user-email" value="<The email that is used for your git commits>" required></input>
     </div>
   </div>
+
+  <button id="github-form-submit" class="button">Show my projects!</button>
+
+  <div id="form-status-message" class="hidden"></div>
 </section>
-
-
-<!-- 
-<section class="project-editor">
-
-  <div class="form-pair">
-    <label>Project name</label>
-    <div class="value-container">
-      <input type="text" id="project-name" value="Project name"></input>
-    </div>
-  </div>
-
-  <div class="form-pair">
-    <label>Project id</label>
-    <div class="value-container">
-      <input type="text" id="project-id" value="project-id"></input>
-    </div>
-  </div>
-
-  <div class="form-pair">
-    <label>Conception date</label>
-    <div class="value-container">
-      <input type="date" id="project-stamp"></input>
-    </div>
-  </div>
-
-  <div class="form-pair">
-    <label>Description</label>
-    <div class="value-container">
-      <div contenteditable id="project-description">Describe the project here</div>
-    </div>
-  </div>
-
-  <div class="form-pair">
-    <label>Things done</label>
-    <div class="value-container things-done-value-container">
-      <div class="project-dots">...</div>
-      <button id="add-dot-button">Add thing</button>
-    </div>
-  </div>
-
-  <div id="status-message" class="annotation hidden warning">
-  </div>
-
-</section>
-
-<button id="export-projects-button">Export projects to console</button>
-
-<div id="success-message" class="annotation hidden">
-  <span class="message">Projects exported!</span>
-</div> -->
 
 <script src="index.js"></script>
 

@@ -117,3 +117,35 @@ header {
   font-weight: bold;
   font-size: 1.5em;
 }
+
+.github-info {
+  margin-top: 4em;
+  margin-bottom: 4em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.github-info input {
+  width: 25em;
+  height: 2em;
+  margin-left: 1em;
+  /* padding is not accepted by Firefox here. */
+}
+
+.github-info label {
+  text-align: right;
+}
+
+.github-info button {
+  background-color: white;
+  padding: 0.5em;
+  border-radius: 1em;
+  border-width: 1px;
+  border-color: #333;
+  font-size: 1.2em;
+  font-weight: bold;
+  height: 2.4em;
+  margin-top: 1em;
+  cursor: pointer;
+}
