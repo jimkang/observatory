@@ -60,7 +60,7 @@ function followRoute(routeDict) {
     redirectToGitHubAuth({
       routeDict: routeDict,
       clientId: window.location.hostname === 'localhost' ?
-        config.githubTest.clientId : config.githubTest.clientId,
+        config.githubTest.clientId : config.github.clientId,
       scopes: ['repo']
     });
     return;
