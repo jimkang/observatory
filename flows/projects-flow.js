@@ -4,6 +4,7 @@ var throttle = require('lodash.throttle');
 var renderPlain = require('../dom/render-scratch');
 var renderGarden = require('../dom/render-garden');
 var renderHeader = require('../dom/render-header');
+var renderDeedDetails = require('../dom/render-deed-details');
 var values = require('lodash.values');
 var addDeedToProject = require('add-deed-to-project');
 var leveljs = require('level-js');
@@ -127,7 +128,7 @@ function ProjectsFlow({token, user, userEmail, verbose}) {
       render({
         projectData: collectedProjects,
         expensiveRenderIsOK: expensiveRenderIsOK,
-        onDeedClick: d => console.log(d)
+        onDeedClick: renderDeedDetails
       });
       renderCount += 1;
     }

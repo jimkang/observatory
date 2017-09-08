@@ -166,3 +166,21 @@ header {
 a {
   color: black;
 }
+
+.details-layer {
+  position: fixed;
+  width: 100%;
+  pointer-events: none;
+}
+
+.details-box {
+  background-color: green;
+  width: 30%;
+  min-width: 200px;
+  margin-left: 25%;
+  pointer-events: auto;
+}
+
+.destroyed {
+  display: none;
+}

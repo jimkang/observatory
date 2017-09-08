@@ -54,8 +54,12 @@ function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
   treemap(root);
 
   renderProjectRegions(root);
-  renderDeedCells(root, onDeedClick);
+  renderDeedCells(root, getDataFromNodeToHandler);
   renderProjectLabels(root, expensiveRenderIsOK);
+
+  function getDataFromNodeToHandler(d) {
+    onDeedClick({deed: d.data, project: d.parent.data});
+  }
 }
 
 function renderProjectRegions(root) {
