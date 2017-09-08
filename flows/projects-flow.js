@@ -4,7 +4,7 @@ var throttle = require('lodash.throttle');
 var renderPlain = require('../dom/render-scratch');
 var renderGarden = require('../dom/render-garden');
 var renderHeader = require('../dom/render-header');
-var renderDeedDetails = require('../dom/render-deed-details');
+var RenderDeedDetails = require('../dom/render-deed-details');
 var values = require('lodash.values');
 var addDeedToProject = require('add-deed-to-project');
 var leveljs = require('level-js');
@@ -29,6 +29,7 @@ function ProjectsFlow({token, user, userEmail, verbose}) {
   var renderCount = 0;
   var render;
   var ignoreSourceEvents = false;
+  var renderDeedDetails = RenderDeedDetails({user});
 
   var githubProjectsSource = GitHubProjectsSource({
     githubToken: token,

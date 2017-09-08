@@ -52,7 +52,7 @@ var projectsFlow;
 })());
 
 function followRoute(routeDict) {
-  var user = routeDict.user || 'Jim';
+  var user = routeDict.user || 'jimkang';
 
   if (routeDict.user &&
     (!routeDict.token || routeDict.expires <= (new Date()).getTime())) {
