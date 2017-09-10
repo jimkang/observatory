@@ -1,0 +1,58 @@
+<html>
+<head>
+  <title>Safari always-on-top experiment</title>
+  <style>
+
+.zoom-protect-container {
+  margin-left: 1em;
+  margin-bottom: 1em;
+  display: flex;
+  width: 100%;
+}
+
+#garden-board {
+  z-index: 1;
+}
+
+.always-on-top {
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+}
+
+.details-box {
+  z-index: inherit;
+  background-color: green;
+  width: 30%;
+  min-width: 200px;
+  margin-left: 25%;
+  -webkit-margin-left: 0;
+  pointer-events: auto;
+}
+
+  </style>
+</head>
+
+<body>
+
+<div class="zoom-protect-container">
+<div class="always-on-top">
+    <div class="details-box">
+      <div class="project-details">
+        <a class="name-link" target="_blank">A project</a>
+        <div>Last updated: <span class="date">whenever</span></div>
+      </div>
+      <div class="deed-details">
+        <a class="date-link" target="_blank">Some date</a>
+        <div class="name">A thing</div>
+      </div>
+    </div>
+  </div>
+  
+  <svg id="garden-board" width="1000" height="3000" class="view-root">
+    <rect width="1000" height="3000" fill="orange"></rect>
+  </svg>
+
+  
+
+</div>
