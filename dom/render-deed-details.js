@@ -1,6 +1,7 @@
 var d3 = require('d3-selection');
 
 // Pre-rendering prep with static elements.
+var detailsLayer = d3.select('.details-layer');
 var detailsBox = d3.select('.details-box');
 detailsBox.on('click', hideBox);
 
@@ -23,12 +24,12 @@ function RenderDeedDetails({user}) {
     deedDateLink.text(dateStringToDisplayForm(deed.committedDate));
     deedDateLink.attr('href', getDeedLink(user, project, deed));
 
-    detailsBox.classed('destroyed', false);
+    detailsLayer.classed('destroyed', false);
   }
 }
 
 function hideBox() {
-  detailsBox.classed('destroyed', true);
+  detailsLayer.classed('destroyed', true);
 }
 
 function dateStringToDisplayForm(dateString) {

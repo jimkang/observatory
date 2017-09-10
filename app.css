@@ -167,17 +167,25 @@ a {
   color: black;
 }
 
+#garden-board {
+  z-index: 1;
+}
+
 .details-layer {
   position: fixed;
   width: 100%;
+  z-index: 1000;
+  background-color: transparent;
   pointer-events: none;
 }
 
 .details-box {
+  z-index: inherit;
   background-color: green;
   width: 30%;
   min-width: 200px;
   margin-left: 25%;
+  -webkit-margin-left: 0;
   pointer-events: auto;
 }
 
