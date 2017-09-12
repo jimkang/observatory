@@ -10,6 +10,7 @@ var addDeedToProject = require('add-deed-to-project');
 var leveljs = require('level-js');
 var getUserCommitsFromServer = require('../get-user-commits-from-server');
 var handleError = require('handle-error-web');
+var countDeedsInProjects = require('../count-deeds-in-projects');
 
 const expensiveRenderInterval = 5;
 const expensiveRenderThreshold = 5;
@@ -117,9 +118,7 @@ function ProjectsFlow({token, user, userEmail, verbose}) {
       // console.log('projects', collectedProjects);
       // console.log('deeds', collectedDeeds);
       console.log('project count', collectedProjects);
-      console.log('deed count', 
-        collectedProjects.map(p => p.deeds ? p.deeds.length : 0).reduce((sum, l) => sum + l)
-      );
+      console.log('deed count', countDeedsInProjects(collectedProjects));
       callRender({expensiveRenderIsOK: true});
     }
   }

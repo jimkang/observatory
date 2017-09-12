@@ -6,6 +6,7 @@ var hierarchy = require('d3-hierarchy');
 // var d3Format = require('d3-format');
 // var d3Color = require('d3-color');
 var interpolate = require('d3-interpolate');
+var countDeedsInProjects = require('../count-deeds-in-projects');
 
 // var idKey = accessor();
 // var nameKey = accessor('name');
@@ -20,7 +21,7 @@ const gardenColorsLength = gardenColors.length;
 // var firstRender = true;
 
 const width = 1000;
-const height = 3000;
+const heightToDeedRatio = 3/2;
 const xLabelMargin = 10;
 const yLabelMargin = 10;
 const labelYOffsetProportion = 0.25;
@@ -32,16 +33,24 @@ const labelXOffsetProportion = 0.25;
 var plantLayer = d3.select('#garden-board .plant-layer');
 var regionLayer = d3.select('#garden-board .region-layer');
 var labelLayer = d3.select('#garden-board .field-label-layer');
+var gardenBoard = d3.select('#garden-board');
 
-var treemap = hierarchy.treemap()
-    .tile(hierarchy.treemapResquarify.ratio(1))
-    .size([width, height])
-    .round(true)
-    .paddingInner(0);
+var treemap;
 
 function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
+  if (!treemap || expensiveRenderIsOK) {
+    let height = ~~(countDeedsInProjects(projectData) * heightToDeedRatio);
+    console.log('height', height)
+    gardenBoard.attr('height', height);
+    treemap = hierarchy.treemap()
+      .tile(hierarchy.treemapResquarify.ratio(1))
+      .size([width, height])
+      .round(true)
+      .paddingInner(0);
+  }
+
   d3.selectAll('.view-root:not(#garden-board)').classed('hidden', true);
-  d3.select('#garden-board').classed('hidden', false);
+  gardenBoard.classed('hidden', false);
 
   var rootData = {
     name: 'root',
