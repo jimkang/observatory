@@ -40,7 +40,7 @@ var treemap;
 function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
   if (!treemap || expensiveRenderIsOK) {
     let height = ~~(countDeedsInProjects(projectData) * heightToDeedRatio);
-    console.log('height', height)
+    // console.log('height', height)
     gardenBoard.attr('height', height);
     treemap = hierarchy.treemap()
       .tile(hierarchy.treemapResquarify.ratio(1))

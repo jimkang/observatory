@@ -3,7 +3,7 @@ var d3 = require('d3-selection');
 // Pre-rendering prep with static elements.
 var detailsLayer = d3.select('.details-layer');
 var detailsBox = d3.select('.details-box');
-detailsBox.on('click', hideBox);
+var closeButton = detailsBox.select('.close-button');
 
 var projectDetails = detailsBox.select('.project-details');
 var projectNameLink = projectDetails.select('.name-link');
@@ -11,6 +11,8 @@ var projectDate = projectDetails.select('.date');
 var deedDetails = detailsBox.select('.deed-details');
 var deedName = deedDetails.select('.name');
 var deedDateLink = deedDetails.select('.date-link');
+
+closeButton.on('click', hideBox);
 
 function RenderDeedDetails({user}) {
   return renderDeedDetails;
