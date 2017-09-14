@@ -2,6 +2,7 @@
 <head>
   <title>Observatory</title>
   <link rel="stylesheet" href="app.css"></link>
+  <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
 </head>
 <body>
 
@@ -21,8 +22,6 @@
 </ul>
 
 <div class="zoom-protect-container">
-  <div class="gutter"></div>
-
   <div class="details-layer destroyed">
     <div class="details-box">
       <div class="details-top-part">
@@ -39,7 +38,7 @@
     </div>
   </div>
 
-  <svg id="garden-board" width="1000" height="0" class="view-root">
+  <svg id="garden-board" width="100%" height="0" class="view-root">
     <g class='region-layer'></g>
     <g class='plant-layer'></g>
     <g class='field-label-layer'></g>

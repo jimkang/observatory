@@ -20,8 +20,8 @@ const gardenColorsLength = gardenColors.length;
 
 // var firstRender = true;
 
-const width = 1000;
-const heightToDeedRatio = 3/2;
+// const heightToDeedRatio = 3/2;
+const squarePixelAreaPerDeed = 40 * 40;
 const xLabelMargin = 10;
 const yLabelMargin = 10;
 const labelYOffsetProportion = 0.25;
@@ -39,7 +39,9 @@ var treemap;
 
 function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
   if (!treemap || expensiveRenderIsOK) {
-    let height = ~~(countDeedsInProjects(projectData) * heightToDeedRatio);
+    let neededArea = countDeedsInProjects(projectData) * squarePixelAreaPerDeed;
+    let width = gardenBoard.node().getBoundingClientRect().width;
+    let height = ~~(neededArea/width);
     // console.log('height', height)
     gardenBoard.attr('height', height);
     treemap = hierarchy.treemap()
