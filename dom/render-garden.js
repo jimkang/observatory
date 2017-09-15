@@ -7,6 +7,7 @@ var hierarchy = require('d3-hierarchy');
 // var d3Color = require('d3-color');
 var interpolate = require('d3-interpolate');
 var countDeedsInProjects = require('../count-deeds-in-projects');
+var gardenEmoji = require('../garden-emoji');
 
 // var idKey = accessor();
 // var nameKey = accessor('name');
@@ -15,13 +16,15 @@ var deedsKey = GetPropertySafely('deeds', []);
 var gardenColors = require('./garden-colors');
 // var gardenColors = scale.schemeCategory20
 const gardenColorsLength = gardenColors.length;
+const gardenEmojiLength = gardenEmoji.length;
 
 // const aYearInMilliseconds = 31536000000;
 
 // var firstRender = true;
 
 // const heightToDeedRatio = 3/2;
-const squarePixelAreaPerDeed = 40 * 40;
+const cellLength = 40;
+const squarePixelAreaPerDeed = cellLength * cellLength;
 const xLabelMargin = 10;
 const yLabelMargin = 10;
 const labelYOffsetProportion = 0.25;
@@ -37,7 +40,9 @@ var gardenBoard = d3.select('#garden-board');
 
 var treemap;
 
-function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
+function renderGarden({
+  projectData, onDeedClick, expensiveRenderIsOK, shouldRenderPlants}) {
+
   if (!treemap || expensiveRenderIsOK) {
     let neededArea = countDeedsInProjects(projectData) * squarePixelAreaPerDeed;
     let width = gardenBoard.node().getBoundingClientRect().width;
@@ -64,8 +69,11 @@ function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
 
   treemap(root);
 
-  renderProjectRegions(root);
-  renderDeedCells(root, getDataFromNodeToHandler);
+  d3.select('body').classed('garden', shouldRenderPlants);
+  if (!shouldRenderPlants) {
+    renderProjectRegions(root);
+  }
+  renderDeedCells(root, getDataFromNodeToHandler, shouldRenderPlants);
   renderProjectLabels(root, expensiveRenderIsOK);
 
   function getDataFromNodeToHandler(d) {
@@ -114,15 +122,24 @@ function renderProjectLabels(root, expensiveRenderIsOK) {
   }
 }
 
-function renderDeedCells(root, onDeedClick) {
+function renderDeedCells(root, onDeedClick, shouldRenderPlants) {
   var cells = plantLayer.selectAll('g')
     .data(root.leaves(), getNestedId);
   
   cells.exit().remove();
 
   var newCells = cells.enter().append('g');
-  newCells.append('rect').on('click', onDeedClick);
-  newCells.attr('fill', deedColor);
+  var newRects = newCells.append('rect')
+    .on('click', onDeedClick);
+  newRects.attr('fill', shouldRenderPlants ? 'hsla(0, 0%, 0%, 0)' : deedColor);
+  newRects.classed('plant-backing', shouldRenderPlants);
+
+  if (shouldRenderPlants) {
+    newCells.append('text')
+      .classed('deed-plant', true)
+      .attr('dy', cellLength)
+      .text(getPlantEmoji);
+  }
 
   var updateCells = newCells.merge(cells);
 
@@ -132,9 +149,7 @@ function renderDeedCells(root, onDeedClick) {
   updateCells.select('rect')
       .attr('id', function(d) { return d.data.id; })
       .attr('width', function(d) { return d.x1 - d.x0; })
-      .attr('height', function(d) { return d.y1 - d.y0; })
-      // .style('opacity', deedOpacity);
-      // .each(addToProjectBounds);  
+      .attr('height', function(d) { return d.y1 - d.y0; });
 }
 
 function sumBySize() {
@@ -223,6 +238,16 @@ function deedColor(d) {
   return fader(projectColor(d.parent));
 }
 
+function getPlantEmoji(d) {
+  if (d.parent && d.parent.data && d.parent.data.id) {
+    let emojiIndex = getHashIndexForString(d.parent.data.id, gardenEmojiLength);
+    return gardenEmoji[emojiIndex];
+  }
+  else {
+    return '';
+  }
+}
+
 // 0-second old deeds will bright. Older deeds will be less opaque.
 // function deedOpacity(d) {
 //   var age = (new Date()).getTime() - (new Date(d.data.committedDate)).getTime();
@@ -233,12 +258,16 @@ function deedColor(d) {
 //   return 1.0 - alpha;
 // }
 
-function getColorIndexForString(s) {
+function getHashIndexForString(s, arrayLength) {
   var hash = 0;
   for (var i = 0; i < s.length; ++i) {
     hash += s.charCodeAt(i);
   }
-  return hash % gardenColorsLength;
+  return hash % arrayLength;
+}
+
+function getColorIndexForString(s) {
+  return getHashIndexForString(s, gardenColorsLength);
 }
 
 function fader(color) {

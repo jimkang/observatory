@@ -1,0 +1,294 @@
+module.exports = [
+  // // 'sunny': 
+  // '☀️',
+  // // 'cloud': 
+  // '☁️',
+  // // 'showman':
+  //  '☃',
+  // // 'comet':
+  //  '☄',
+  // // 'coffee': 
+  // '☕️',
+  // // 'shamrock':
+  //  '☘',
+  // // 'skull_and_crossbones':
+  //  '☠',
+  // // 'zap': 
+  // '⚡️',
+  // // 'snowman': 
+  // '⛄️',
+  // // 'thunder_cloud_and_rain':
+  //  '⛈',
+  // // 'mountain':
+  //  '⛰',
+  // // 'fountain': 
+  // '⛲️',
+  // // 'cyclone':
+  //  '🌀',
+  // // 'rainbow':
+  //  '🌈',
+  // // 'moon':
+  //  '🌔',
+  // // 'star2':
+  //  '🌟',
+  // // 'tornado':
+  //  '🌪',
+  // // 'hotdog':
+  //  '🌭',
+  // // 'taco':
+  //  '🌮',
+  // // 'burrito':
+  //  '🌯',
+  // // 'chestnut':
+  //  '🌰',
+  // 'seedling':
+   '🌱',
+  // 'evergreen_tree':
+   '🌲',
+  // 'deciduous_tree':
+   '🌳',
+  // 'palm_tree':
+   '🌴',
+  // 'cactus':
+   '🌵',
+  // 'hot_pepper':
+   '🌶',
+  // 'tulip':
+   '🌷',
+  // 'cherry_blossom':
+   '🌸',
+  // 'rose':
+   '🌹',
+  // 'hibiscus':
+   '🌺',
+  // 'sunflower':
+   '🌻',
+  // 'blossom':
+   '🌼',
+  // 'corn':
+   '🌽',
+  // 'ear_of_rice':
+   '🌾',
+  // 'herb':
+   '🌿',
+  // 'four_leaf_clover':
+   '🍀',
+  // 'maple_leaf':
+   '🍁',
+  // 'fallen_leaf':
+   '🍂',
+  // 'leaves':
+   '🍃',
+  // 'mushroom':
+   '🍄',
+  // 'tomato':
+   '🍅',
+  // 'eggplant':
+   '🍆',
+  // 'grapes':
+   '🍇',
+  // 'melon':
+   '🍈',
+  // 'watermelon':
+   '🍉',
+  // 'tangerine':
+   '🍊',
+  // 'lemon':
+   '🍋',
+  // 'banana':
+   '🍌',
+  // 'pineapple':
+   '🍍',
+  // 'apple':
+   '🍎',
+  // 'green_apple':
+   '🍏',
+  // 'pear':
+   '🍐',
+  // 'peach':
+   '🍑',
+  // 'cherries':
+   '🍒',
+  // 'strawberry':
+   '🍓',
+  // // 'hamburger':
+  //  '🍔',
+  // // 'pizza':
+  //  '🍕',
+  // // 'meat_on_bone':
+  //  '🍖',
+  // // 'poultry_leg':
+  //  '🍗',
+  // // 'rice_cracker':
+  //  '🍘',
+  // // 'rice_ball':
+  //  '🍙',
+  // // 'rice':
+  //  '🍚',
+  // // 'curry':
+  //  '🍛',
+  // // 'ramen':
+  //  '🍜',
+  // // 'spaghetti':
+  //  '🍝',
+  // // 'bread':
+  //  '🍞',
+  // // 'fries':
+  //  '🍟',
+  // // 'sweet_potato':
+  //  '🍠',
+  // // 'dango':
+  //  '🍡',
+  // // 'oden':
+  //  '🍢',
+  // // 'sushi':
+  //  '🍣',
+  // // 'fried_shrimp':
+  //  '🍤',
+  // // 'fish_cake':
+  //  '🍥',
+  // // 'icecream':
+  //  '🍦',
+  // // 'shaved_ice':
+  //  '🍧',
+  // // 'ice_cream':
+  //  '🍨',
+  // // 'doughnut':
+  //  '🍩',
+  // // 'cookie':
+  //  '🍪',
+  // // 'chocolate_bar':
+  //  '🍫',
+  // // 'candy':
+  //  '🍬',
+  // // 'lollipop':
+  //  '🍭',
+  // // 'custard':
+  //  '🍮',
+  // // 'cake':
+  //  '🍰',
+  // 'jack_o_lantern':
+   '🎃',
+  // 'christmas_tree':
+   '🎄',
+  // // 'balloon':
+  //  '🎈',
+  // // 'tada':
+  //  '🎉',
+  // 'bamboo':
+   '🎍',
+  // // 'game_die':
+  //  '🎲',
+  // // 'saxophone':
+  //  '🎷',
+  // // 'trumpet':
+  //  '🎺',
+  // // 'tennis':
+  //  '🎾',
+  // // 'rat':
+  //  '🐀',
+  // // 'mouse2':
+  //  '🐁',
+  // // 'ox':
+  //  '🐂',
+  // // 'water_buffalo':
+  //  '🐃',
+  // // 'cow2':
+  //  '🐄',
+  // // 'tiger2':
+  //  '🐅',
+  // // 'leopard':
+  //  '🐆',
+  // // 'rabbit2':
+  //  '🐇',
+  // // 'cat2':
+  //  '🐈',
+  // // 'dragon':
+  //  '🐉',
+  // // 'crocodile':
+  //  '🐊',
+  // // 'whale2':
+  //  '🐋',
+  // // 'snail':
+  //  '🐌',
+  // // 'snake':
+  //  '🐍',
+  // // 'racehorse':
+  //  '🐎',
+  // // 'ram':
+  //  '🐏',
+  // // 'goat':
+  //  '🐐',
+  // // 'sheep':
+  //  '🐑',
+  // // 'monkey':
+  //  '🐒',
+  // // 'rooster':
+  //  '🐓',
+  // // 'chicken':
+  //  '🐔',
+  // // 'dog2':
+  //  '🐕',
+  // // 'pig2':
+  //  '🐖',
+  // // 'boar':
+  //  '🐗',
+  // // 'elephant':
+  //  '🐘',
+  // // 'octopus':
+  //  '🐙',
+  // // 'shell':
+  //  '🐚',
+  // // 'bug':
+  //  '🐛',
+  // // 'ant':
+  //  '🐜',
+  // // 'bee':
+  //  '🐝',
+  // // 'honeybee':
+  //  '🐝',
+  // // 'beetle':
+  //  '🐞',
+  // // 'fish':
+  //  '🐟',
+  // // 'tropical_fish':
+  //  '🐠',
+  // // 'blowfish':
+  //  '🐡',
+  // // 'turtle':
+  //  '🐢',
+  // // 'hatching_chick':
+  //  '🐣',
+  // // 'baby_chick':
+  //  '🐤',
+  // // 'hatched_chick':
+  //  '🐥',
+  // // 'bird':
+  //  '🐦',
+  // // 'penguin':
+  //  '🐧',
+  // // 'koala':
+  //  '🐨',
+  // // 'poodle':
+  //  '🐩',
+  // // 'dromedary_camel':
+  //  '🐪',
+  // // 'camel':
+  //  '🐫',
+  // // 'dolphin':
+  //  '🐬',
+  // // 'flipper':
+  //  '🐬',
+  // // 'ghost':
+  //  '👻',
+  // // 'skull':
+  //  '💀',
+  // // 'steam_locomotive':
+  //  '🚂',
+  // // 'crab':
+  //  '🦀',
+  // // 'scorpion':
+  //  '🦂',
+  // // 'turkey':
+  //  '🦃'
+];

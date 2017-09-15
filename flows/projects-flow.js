@@ -17,13 +17,17 @@ const expensiveRenderThreshold = 5;
 
 var renderers = {
   'plain': renderPlain,
-  'garden': renderGarden
+  'garden': renderGarden,
+  'literal-garden': function renderLiteralGarden(opts) {
+    opts.shouldRenderPlants = true;
+    renderGarden(opts);
+  }
 };
 
 // ProjectsFlow is per-data-source. If you need to get from a new data source,
 // you need to create another projectSource.
 // changeRenderer changes the rendering while still using the same data source.
-function ProjectsFlow({token, user, userEmail, verbose}) {
+function ProjectsFlow({token, user, userEmail, verbose, shouldRenderPlants}) {
   var collectedProjectsByName = {};
   var collectedProjects = [];
   var streamEndEventReceived = false;
@@ -128,7 +132,8 @@ function ProjectsFlow({token, user, userEmail, verbose}) {
       render({
         projectData: collectedProjects,
         expensiveRenderIsOK: expensiveRenderIsOK,
-        onDeedClick: renderDeedDetails
+        onDeedClick: renderDeedDetails,
+        shouldRenderPlants: shouldRenderPlants
       });
       renderCount += 1;
     }

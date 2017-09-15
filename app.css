@@ -93,8 +93,12 @@ div[contenteditable] {
 }
 
 .plant-layer rect {
-  stroke: white;
-  stroke-width: 1;
+  stroke: hsla(0, 0%, 100%, 0.5);
+  stroke-width: 1; 
+}
+
+.plant-layer rect.plant-backing {
+  stroke: none;
 }
 
 header {
@@ -232,6 +236,13 @@ a {
 .deed-details .name {
 }
 
+.deed-plant {
+  font-size: 1.5em;
+  pointer-events: none;
+  height: 40px;
+  dy: 40px;
+}
+
 .details-top-part {
   display: flex;
 }
@@ -250,6 +261,10 @@ a {
 
 .destroyed {
   display: none;
+}
+
+.garden {
+  background-color: hsl(86, 59%, 58%);
 }
 
 @media all and (max-width: 480px) {
