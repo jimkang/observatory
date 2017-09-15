@@ -9,6 +9,7 @@ body {
   font-family: futura, "helvetica neue";
   font-size: 24px;
   margin-bottom: 4em;
+  margin-left: 1em;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -44,6 +45,7 @@ div[contenteditable] {
 .form-pair {
   display: flex;
   margin-top: 1em;
+  flex-wrap: wrap;
 }
 
 .form-pair label {
@@ -74,6 +76,7 @@ div[contenteditable] {
   /* margin-bottom: 1em; */
   display: flex;
   width: 100%;
+  align-items: center;
 }
 
 .gutter {
@@ -130,14 +133,14 @@ header {
 }
 
 .github-info input {
-  width: 25em;
+  width: 60%;
   height: 2em;
   margin-left: 1em;
   /* padding is not accepted by Firefox here. */
 }
 
 .github-info label {
-  text-align: right;
+  /* text-align: right; */
 }
 
 .github-info button {
@@ -148,7 +151,7 @@ header {
   border-color: #333;
   font-size: 1.2em;
   font-weight: bold;
-  height: 2.4em;
+  /* height: 2.4em; */
   margin-top: 1em;
   cursor: pointer;
   font-family: futura;
@@ -170,6 +173,7 @@ a {
 
 #garden-board {
   z-index: 1;
+  margin-left: 2%;
 }
 
 .details-layer {
@@ -178,23 +182,21 @@ a {
   z-index: 1000;
   background-color: transparent;
   pointer-events: none;
-  top: 33%;
+  top: 0px;
 }
 
 .details-box {
   z-index: inherit;
   background-color: white;
-  width: 30%;
+  width: 40%;
   min-width: 200px;
-  margin-left: 25%;
+  margin-left: 28%;
+  margin-top: 100px;
   pointer-events: auto;
   box-shadow: hsla(0, 0%, 0%, 0.25) 0 2px 10px;
   padding: 1em;
   border-radius: 0.4em;
-  /* cursor: pointer; */
-  /* display: flex; */
   font-size: 0.8em;
-  /* flex-direction: column; */
 }
 
 .project-details {
@@ -251,17 +253,30 @@ a {
 }
 
 @media all and (max-width: 480px) {
-  .details-layer {
-
-  }
-
   .details-box {
     width: 80%;
     max-width: 200px;
-    margin-left: 10%;
-    /* margin-right: auto; */
+    margin-left: 7%;
     padding: 1em;
     border-radius: 0.4em;
-    /* font-size: 2em; */
+  }
+}
+
+@media all and (max-height: 320px) {
+  .details-box {
+    width: 70%;
+    max-width: inherit;
+    max-height: 240px;
+    margin-left: 2%;
+    padding: 1em;
+    border-radius: 0.4em;
+    overflow: scroll;
+  }
+}
+
+@media all and (max-height: 568px) {
+  .details-box {
+    max-height: 500px;
+    overflow: scroll;
   }
 }
