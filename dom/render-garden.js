@@ -122,6 +122,7 @@ function renderDeedCells(root, onDeedClick) {
 
   var newCells = cells.enter().append('g');
   newCells.append('rect').on('click', onDeedClick);
+  newCells.attr('fill', deedColor);
 
   var updateCells = newCells.merge(cells);
 
@@ -132,7 +133,6 @@ function renderDeedCells(root, onDeedClick) {
       .attr('id', function(d) { return d.data.id; })
       .attr('width', function(d) { return d.x1 - d.x0; })
       .attr('height', function(d) { return d.y1 - d.y0; })
-      .attr('fill', deedColor);
       // .style('opacity', deedOpacity);
       // .each(addToProjectBounds);  
 }
