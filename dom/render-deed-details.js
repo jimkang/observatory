@@ -8,6 +8,7 @@ var closeButton = detailsBox.select('.close-button');
 var projectDetails = detailsBox.select('.project-details');
 var projectNameLink = projectDetails.select('.name-link');
 var projectDate = projectDetails.select('.date');
+var projectDescription = projectDetails.select('.description');
 var deedDetails = detailsBox.select('.deed-details');
 var deedName = deedDetails.select('.name');
 var deedDateLink = deedDetails.select('.date-link');
@@ -21,6 +22,7 @@ function RenderDeedDetails({user}) {
     projectNameLink.text(project.name);
     projectNameLink.attr('href', getProjectLink(user, project));
     projectDate.text(dateStringToDisplayForm(project.pushedAt));
+    projectDescription.text(project.description);
 
     deedName.text(deed.message);
     deedDateLink.text(dateStringToDisplayForm(deed.committedDate));

@@ -47,7 +47,8 @@ function ProjectsFlow({token, user, userEmail, verbose, shouldRenderPlants}) {
     // filterProject: weCareAboutThisProject,
     dbName: 'observatory-deeds',
     db: leveljs,
-    getUserCommits: token ? undefined : getUserCommitsFromServer
+    getUserCommits: token ? undefined : getUserCommitsFromServer,
+    skipMetadata: token ? false : true
   });
 
   return {
