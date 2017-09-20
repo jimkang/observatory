@@ -241,6 +241,7 @@ a {
 
 .details-top-part {
   display: flex;
+  flex-direction: row-reverse;
 }
 
 .details-box .close-button {
@@ -253,6 +254,7 @@ a {
   border-color: #333;
   font-family: futura;
   margin-bottom: 1.5em;
+  min-width: 44px;
 }
 
 .destroyed {
@@ -272,19 +274,29 @@ a {
     font-size: 0.8em;
   }
 
+  .details-layer {
+    left: 0;
+  }
+
   .details-box {
-    width: 80%;
-    max-width: 200px;
-    margin-left: 7%;
-    padding: 1em;
-    border-radius: 0.4em;
+    width: 100%;
+    /*max-width: 200px;*/
+    margin-left: 0;
+    margin-top: 0;
+    /*padding: 1em;*/
+    border-radius: 0;
+  }
+}
+
+@media all and (max-height: 568px) {
+  .details-box {
+    height: 568px;
+    padding: 0;
   }
 }
 
 @media all and (max-height: 320px) {
   .details-box {
-    width: 70%;
-    max-width: inherit;
     max-height: 240px;
     margin-left: 2%;
     padding: 1em;
@@ -297,5 +309,23 @@ a {
   .details-box {
     max-height: 500px;
     overflow: scroll;
+  }
+
+  @media all and (max-width: 568px) {
+    .details-box {
+      width: 568px;
+    }
+  }  
+
+  @media all and (max-width: 480px) {
+    .details-box {
+      width: 480px;
+    }
+  }
+
+  @media all and (max-width: 320px) {
+    .details-box {
+      width: 320px;
+    }
   }
 }
