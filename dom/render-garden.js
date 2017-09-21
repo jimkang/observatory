@@ -8,6 +8,7 @@ var hierarchy = require('d3-hierarchy');
 var interpolate = require('d3-interpolate');
 var countDeedsInProjects = require('../count-deeds-in-projects');
 var gardenEmoji = require('../garden-emoji');
+var throttle = require('lodash.throttle');
 
 // var idKey = accessor();
 // var nameKey = accessor('name');
@@ -25,6 +26,7 @@ const gardenEmojiLength = gardenEmoji.length;
 // const heightToDeedRatio = 3/2;
 const cellLength = 40;
 const squarePixelAreaPerDeed = cellLength * cellLength;
+// const minimumArea = squarePixelAreaPerDeed * 100;
 const xLabelMargin = 10;
 const yLabelMargin = 10;
 const labelYOffsetProportion = 0.25;
@@ -278,4 +280,10 @@ function fader(color) {
 //   console.log(d);
 // }
 
-module.exports = renderGarden;
+var throttleTime = 300;
+
+if (gardenBoard.node().getBoundingClientRect().width < 568) {
+  throttleTime = 2000;
+}
+
+module.exports = throttle(renderGarden, throttleTime);

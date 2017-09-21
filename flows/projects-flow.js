@@ -1,6 +1,5 @@
 var GitHubProjectsSource = require('github-projects-source');
 var request = require('basic-browser-request');
-var throttle = require('lodash.throttle');
 var renderPlain = require('../dom/render-scratch');
 var renderGarden = require('../dom/render-garden');
 var renderHeader = require('../dom/render-header');
@@ -154,7 +153,7 @@ function ProjectsFlow({token, user, userEmail, verbose, shouldRenderPlants}) {
       changeView
     });
     // Using name instead of id because deeds/commits do not have project ids.
-    render = throttle(renderers[viewName], 300);
+    render = renderers[viewName];
     renderCount = 0;
 
     if (streamEndEventReceived) {
