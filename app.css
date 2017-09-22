@@ -245,6 +245,7 @@ a {
 
 .details-box .close-button {
   font-weight: bold;
+  font-size: 1.2em;
   cursor: pointer;
   background-color: white;
   padding: 0.5em;
