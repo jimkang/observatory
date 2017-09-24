@@ -14,7 +14,7 @@ var throttle = require('lodash.throttle');
 // var nameKey = accessor('name');
 // var messageKey = accessor('message');
 var deedsKey = GetPropertySafely('deeds', []);
-var gardenColors = require('./garden-colors');
+var gardenColors = require('./garden-colors.json');
 // var gardenColors = scale.schemeCategory20
 const gardenColorsLength = gardenColors.length;
 const gardenEmojiLength = gardenEmoji.length;
@@ -237,7 +237,8 @@ function projectColor(d) {
 }
 
 function deedColor(d) {
-  return fader(projectColor(d.parent));
+  // return fader(projectColor(d.parent));
+  return projectColor(d.parent);
 }
 
 function getPlantEmoji(d) {
