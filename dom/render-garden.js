@@ -9,15 +9,16 @@ var interpolate = require('d3-interpolate');
 var countDeedsInProjects = require('../count-deeds-in-projects');
 var gardenEmoji = require('../garden-emoji');
 var throttle = require('lodash.throttle');
+var GetEvenIndexForString = require('../get-even-index-for-string');
+var probable = require('probable');
 
 // var idKey = accessor();
 // var nameKey = accessor('name');
 // var messageKey = accessor('message');
 var deedsKey = GetPropertySafely('deeds', []);
-var gardenColors = require('./garden-colors.json');
-// var gardenColors = scale.schemeCategory20
-const gardenColorsLength = gardenColors.length;
-const gardenEmojiLength = gardenEmoji.length;
+var gardenColors = probable.shuffle(require('./garden-colors.json'));
+var getColorIndexForString = GetEvenIndexForString({arrayLength: gardenColors.length});
+var getEmojiIndexForString = GetEvenIndexForString({arrayLength: gardenEmoji.length});
 
 // const aYearInMilliseconds = 31536000000;
 
@@ -243,7 +244,7 @@ function deedColor(d) {
 
 function getPlantEmoji(d) {
   if (d.parent && d.parent.data && d.parent.data.id) {
-    let emojiIndex = getHashIndexForString(d.parent.data.id, gardenEmojiLength);
+    let emojiIndex = getEmojiIndexForString(d.parent.data.id);
     return gardenEmoji[emojiIndex];
   }
   else {
@@ -260,18 +261,6 @@ function getPlantEmoji(d) {
 //   }
 //   return 1.0 - alpha;
 // }
-
-function getHashIndexForString(s, arrayLength) {
-  var hash = 0;
-  for (var i = 0; i < s.length; ++i) {
-    hash += s.charCodeAt(i);
-  }
-  return hash % arrayLength;
-}
-
-function getColorIndexForString(s) {
-  return getHashIndexForString(s, gardenColorsLength);
-}
 
 function fader(color) {
   return interpolate.interpolateRgb(color, '#fff')(0.3);
