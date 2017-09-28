@@ -11,11 +11,9 @@ function GetEvenIndexForString({arrayLength}) {
   function getEvenIndexForString(s) {
     if (!(s in indexesForStrings)) {
       indexesForStrings[s] = nextIndex;
+      nextIndex += 1;
       if (nextIndex >= arrayLength) {
         nextIndex = 0;
-      }
-      else {
-        nextIndex += 1;
       }
     }
     return indexesForStrings[s];

@@ -2,21 +2,18 @@ var d3 = require('d3-selection');
 var accessor = require('accessor');
 var GetPropertySafely = require('get-property-safely');
 var hierarchy = require('d3-hierarchy');
-// var scale = require('d3-scale');
-// var d3Format = require('d3-format');
-// var d3Color = require('d3-color');
-var interpolate = require('d3-interpolate');
 var countDeedsInProjects = require('../count-deeds-in-projects');
 var gardenEmoji = require('../garden-emoji');
 var throttle = require('lodash.throttle');
 var GetEvenIndexForString = require('../get-even-index-for-string');
-var probable = require('probable');
 
 // var idKey = accessor();
 // var nameKey = accessor('name');
 // var messageKey = accessor('message');
 var deedsKey = GetPropertySafely('deeds', []);
-var gardenColors = probable.shuffle(require('./garden-colors.json'));
+// TODO: This shuffling should be done in the build step, or in Megaswatch.
+var gardenColors = reorderByBucket(require('./garden-colors.json'), 9);
+console.log('gardenColors', gardenColors);
 var getColorIndexForString = GetEvenIndexForString({arrayLength: gardenColors.length});
 var getEmojiIndexForString = GetEvenIndexForString({arrayLength: gardenEmoji.length});
 
@@ -32,9 +29,6 @@ const xLabelMargin = 10;
 const yLabelMargin = 10;
 const labelYOffsetProportion = 0.25;
 const labelXOffsetProportion = 0.25;
-
-// var color = scale.scaleOrdinal(scale.schemeCategory20.map(fader));
-// var format = d3Format.format(',d');
 
 var plantLayer = d3.select('#garden-board .plant-layer');
 var regionLayer = d3.select('#garden-board .region-layer');
@@ -238,7 +232,6 @@ function projectColor(d) {
 }
 
 function deedColor(d) {
-  // return fader(projectColor(d.parent));
   return projectColor(d.parent);
 }
 
@@ -262,13 +255,22 @@ function getPlantEmoji(d) {
 //   return 1.0 - alpha;
 // }
 
-function fader(color) {
-  return interpolate.interpolateRgb(color, '#fff')(0.3);
+// Reordering the color array by buckets is a way of making sure adjacent hues
+// are separated.
+function reorderByBucket(array, numberOfBuckets) {
+  var reconstituted = [];
+  const bucketSize = ~~(array.length/numberOfBuckets);
+  for (var i = 0; i < array.length; ++i) {
+    var reconstitutedIndex = (i % numberOfBuckets) * bucketSize + ~~(i/numberOfBuckets);
+    if (reconstitutedIndex >= array.length) {
+      break;
+    }
+    else {
+      reconstituted[reconstitutedIndex] = array[i];
+    }
+  }
+  return reconstituted;
 }
-
-// function showDetails(d) {
-//   console.log(d);
-// }
 
 var throttleTime = 300;
 
