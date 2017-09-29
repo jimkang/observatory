@@ -27,7 +27,7 @@ function EaseThrottle({fn}) {
     else {
       fn(opts);
       numberOfCalls += 1;
-      timer = Timer(timerDone, easeCubicIn(numberOfCalls/50) * 1500);
+      timer = Timer(timerDone, easeCubicIn(numberOfCalls/50) * 1000);
     }
   }
 
