@@ -4,8 +4,9 @@ var GetPropertySafely = require('get-property-safely');
 var hierarchy = require('d3-hierarchy');
 var countDeedsInProjects = require('../count-deeds-in-projects');
 var gardenEmoji = require('../garden-emoji');
-var throttle = require('lodash.throttle');
+// var throttle = require('lodash.throttle');
 var GetEvenIndexForString = require('../get-even-index-for-string');
+var EaseThrottle = require('../ease-throttle');
 
 // var idKey = accessor();
 // var nameKey = accessor('name');
@@ -13,7 +14,7 @@ var GetEvenIndexForString = require('../get-even-index-for-string');
 var deedsKey = GetPropertySafely('deeds', []);
 // TODO: This shuffling should be done in the build step, or in Megaswatch.
 var gardenColors = reorderByBucket(require('./garden-colors.json'), 9);
-console.log('gardenColors', gardenColors);
+// console.log('gardenColors', gardenColors);
 var getColorIndexForString = GetEvenIndexForString({arrayLength: gardenColors.length});
 var getEmojiIndexForString = GetEvenIndexForString({arrayLength: gardenEmoji.length});
 
@@ -120,6 +121,8 @@ function renderProjectLabels(root, expensiveRenderIsOK) {
 }
 
 function renderDeedCells(root, onDeedClick, shouldRenderPlants) {
+  // console.log('rendering', root.leaves().length, 'deeds');
+
   var cells = plantLayer.selectAll('g')
     .data(root.leaves(), getNestedId);
   
@@ -272,10 +275,10 @@ function reorderByBucket(array, numberOfBuckets) {
   return reconstituted;
 }
 
-var throttleTime = 300;
+// var throttleTime = 300;
 
-if (gardenBoard.node().getBoundingClientRect().width < 568) {
-  throttleTime = 2000;
-}
+// if (gardenBoard.node().getBoundingClientRect().width < 568) {
+  // throttleTime = 2000;
+// }
 
-module.exports = throttle(renderGarden, throttleTime);
+module.exports = EaseThrottle({fn: renderGarden});
