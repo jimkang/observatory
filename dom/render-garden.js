@@ -8,13 +8,14 @@ var gardenEmoji = require('../garden-emoji');
 var GetEvenIndexForString = require('../get-even-index-for-string');
 var EaseThrottle = require('../ease-throttle');
 
+const widthLimit = 800;
 // var idKey = accessor();
 // var nameKey = accessor('name');
 // var messageKey = accessor('message');
 var deedsKey = GetPropertySafely('deeds', []);
 // TODO: This shuffling should be done in the build step, or in Megaswatch.
 var gardenColors = reorderByBucket(require('./garden-colors.json'), 9);
-// console.log('gardenColors', gardenColors);
+console.log('gardenColors', JSON.stringify(gardenColors));
 var getColorIndexForString = GetEvenIndexForString({arrayLength: gardenColors.length});
 var getEmojiIndexForString = GetEvenIndexForString({arrayLength: gardenEmoji.length});
 
@@ -44,8 +45,12 @@ function renderGarden({
   if (!treemap || expensiveRenderIsOK) {
     let neededArea = countDeedsInProjects(projectData) * squarePixelAreaPerDeed;
     let width = gardenBoard.node().getBoundingClientRect().width;
+    if (width > widthLimit) {
+      width = widthLimit;
+    }
     let height = ~~(neededArea/width);
     // console.log('height', height)
+    gardenBoard.attr('width', width);
     gardenBoard.attr('height', height);
     treemap = hierarchy.treemap()
       .tile(hierarchy.treemapResquarify.ratio(1))
