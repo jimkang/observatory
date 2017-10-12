@@ -7,6 +7,7 @@ var gardenEmoji = require('../garden-emoji');
 // var throttle = require('lodash.throttle');
 var GetEvenIndexForString = require('../get-even-index-for-string');
 var EaseThrottle = require('../ease-throttle');
+var Zoom = require('d3-zoom').zoom;
 
 const widthLimit = 800;
 // var idKey = accessor();
@@ -36,6 +37,11 @@ var plantLayer = d3.select('#garden-board .plant-layer');
 var regionLayer = d3.select('#garden-board .region-layer');
 var labelLayer = d3.select('#garden-board .field-label-layer');
 var gardenBoard = d3.select('#garden-board');
+var gardenZoomContainer = d3.select('#garden-zoom-container');
+
+var zoom = Zoom();
+zoom.on('zoom', applyTransformToZoomContainer);
+gardenBoard.call(zoom);
 
 var treemap;
 
@@ -285,5 +291,9 @@ function reorderByBucket(array, numberOfBuckets) {
 // if (gardenBoard.node().getBoundingClientRect().width < 568) {
   // throttleTime = 2000;
 // }
+
+function applyTransformToZoomContainer() {
+  gardenZoomContainer.attr('transform', d3.event.transform);
+}
 
 module.exports = EaseThrottle({fn: renderGarden});
