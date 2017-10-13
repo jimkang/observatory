@@ -158,8 +158,8 @@ function renderProjectLabels(root, expensiveRenderIsOK) {
     if (textWidth > 0) {
       gardenContext.save();
       gardenContext.translate(
-        ~~(region.x0 + maxWidth/2) + 0.5,
-        ~~(region.y0 + maxHeight/2) + 0.5
+        ~~(region.x0 + maxWidth/2) + 0.5 + xLabelMargin,
+        ~~(region.y0 + maxHeight/2) + 0.5 + yLabelMargin
       );
       let scale = 1.0;
 
