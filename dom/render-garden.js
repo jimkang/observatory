@@ -36,8 +36,9 @@ const labelXOffsetProportion = 0.25;
 
 // var plantLayer = d3.select('#garden-board .plant-layer');
 // var regionLayer = d3.select('#garden-board .region-layer');
-// var labelLayer = d3.select('#garden-board .field-label-layer');
+var labelLayer = d3.select('.field-label-layer');
 var gardenBoard = d3.select('#garden-board');
+var gardenBoardLabels = d3.select('#garden-board-labels');
 var gardenContext = gardenBoard.node()
   .getContext('2d', {alpha: false});
 // var gardenZoomContainer = d3.select('#garden-zoom-container');
@@ -69,6 +70,8 @@ function renderGarden({
     // console.log('height', height)
     gardenBoard.attr('width', width);
     gardenBoard.attr('height', height);
+    gardenBoardLabels.attr('width', width);
+    gardenBoardLabels.attr('height', height);
 
     treemap = hierarchy.treemap()
       .tile(hierarchy.treemapResquarify.ratio(1))
@@ -140,32 +143,51 @@ function renderProjectLabels(root, expensiveRenderIsOK) {
   gardenContext.font = initialFontSize + 'px futura';
   gardenContext.textAlign = 'center';
   gardenContext.textBaseline = 'middle';
-  gardenContext.fillStyle = '#333';
+  // gardenContext.fillStyle = '#333';
 
-  root.children.forEach(renderLabel);
+  root.children.forEach(calculateLabelPositionOnCanvas);
 
+  var labels = labelLayer.selectAll('.label')
+    .data(root.children, getNestedId);
+
+  labels.exit().remove();
+  
+  var newLabels = labels.enter().append('text')
+    .classed('label', true)
+    .attr('text-anchor', 'middle');
+
+  var updateLabels = labels.merge(newLabels);
+
+  updateLabels.text(getNestedName);
+
+  if (expensiveRenderIsOK) {
+    updateLabels.style('font-size', d => d.labelDisplayDetails.fontSize);
+    updateLabels.attr('transform', getLabelTransform);
+  }
   // if (expensiveRenderIsOK) {
   //   root.children.forEach
   // }
 
   // TODO: Use canvas to calculate, but actually render in crisp SVG.
-  function renderLabel(region) {
+  function calculateLabelPositionOnCanvas(region) {
     var regionName = getNestedName(region);
     var maxWidth = getRegionWidth(region) - 2* xLabelMargin;
     var maxHeight = getRegionHeight(region) - 2 * yLabelMargin;
     var textWidth = gardenContext.measureText(regionName).width;
 
     if (textWidth > 0) {
-      gardenContext.save();
-      gardenContext.translate(
-        ~~(region.x0 + maxWidth/2) + 0.5 + xLabelMargin,
-        ~~(region.y0 + maxHeight/2) + 0.5 + yLabelMargin
-      );
+      // gardenContext.save();
+      // gardenContext.translate(
+      let labelDisplayDetails = {};
+      labelDisplayDetails.center = {
+        x: ~~(region.x0 + maxWidth/2) + 0.5 + xLabelMargin,
+        y: ~~(region.y0 + maxHeight/2) + 0.5 + yLabelMargin
+      };
+      labelDisplayDetails.rotation = 0;
       let scale = 1.0;
 
       if (maxWidth < maxHeight) {
-        // Rotate -90.
-        gardenContext.rotate(-Math.PI/2);
+        labelDisplayDetails.rotation = -90;
 
         if (textWidth > maxHeight) {
           scale = maxHeight/textWidth;
@@ -175,19 +197,15 @@ function renderProjectLabels(root, expensiveRenderIsOK) {
         scale = maxWidth/textWidth;
       }
 
+      // Font is assumed to be Futura.
+      labelDisplayDetails.fontSize = 48;
       if (scale !== 1.0) {
-        gardenContext.font = ~~(initialFontSize * scale) + 'px futura';
+        labelDisplayDetails.fontSize = ~~(initialFontSize * scale); 
       }
+      region.labelDisplayDetails = labelDisplayDetails;
 
-      // if (maxWidth < maxHeight) {
-      //   xTranslateOffset = currentHeight * scale * labelXOffsetProportion;
-      // }
-      // else {
-      //   yTranslateOffset = currentHeight * scale * labelYOffsetProportion;
-      // }
-      
-      gardenContext.fillText(regionName, 0, 0);
-      gardenContext.restore();
+      // gardenContext.fillText(regionName, 0, 0);
+      // gardenContext.restore();
     }
   }
 }
@@ -234,43 +252,43 @@ function getRegionHeight(d) {
 }
 
 function getLabelTransform(d) {
-  var x = d.x0 + (d.x1 -  d.x0)/2;
-  var y = d.y0 + (d.y1 - d.y0)/2;
-  var maxWidth = getRegionWidth(d) - xLabelMargin;
-  var maxHeight = getRegionHeight(d) - yLabelMargin;
+  // var x = d.x0 + (d.x1 -  d.x0)/2;
+  // var y = d.y0 + (d.y1 - d.y0)/2;
+  // var maxWidth = getRegionWidth(d) - xLabelMargin;
+  // var maxHeight = getRegionHeight(d) - yLabelMargin;
 
-  var currentWidth = this.getBBox().width;
-  var currentHeight = this.getBBox().height;
-  var xScale;
-  var yScale;
-  var xTranslateOffset = 0;
-  var yTranslateOffset = 0;
-  var scale = 1.0;
-  var rotation = 0;
+  // var currentWidth = this.getBBox().width;
+  // var currentHeight = this.getBBox().height;
+  // var xScale;
+  // var yScale;
+  // var xTranslateOffset = 0;
+  // var yTranslateOffset = 0;
+  // var scale = 1.0;
+  // var rotation = 0;
 
-  if (currentWidth > 0 && currentHeight > 0) {
-    if (maxWidth < maxHeight) {
-      rotation = -90;
+  // if (currentWidth > 0 && currentHeight > 0) {
+  //   if (maxWidth < maxHeight) {
+  //     rotation = -90;
 
-      xScale = maxHeight/currentWidth;
-      yScale = maxWidth/currentHeight;
-    }
-    else {
-      xScale = maxWidth/currentWidth;
-      yScale = maxHeight/currentHeight;
-    }
-    scale = xScale < yScale ? xScale : yScale;
+  //     xScale = maxHeight/currentWidth;
+  //     yScale = maxWidth/currentHeight;
+  //   }
+  //   else {
+  //     xScale = maxWidth/currentWidth;
+  //     yScale = maxHeight/currentHeight;
+  //   }
+  //   scale = xScale < yScale ? xScale : yScale;
 
-    if (maxWidth < maxHeight) {
-      xTranslateOffset = currentHeight * scale * labelXOffsetProportion;
-    }
-    else {
-      yTranslateOffset = currentHeight * scale * labelYOffsetProportion;
-    }
-  }
+  //   if (maxWidth < maxHeight) {
+  //     xTranslateOffset = currentHeight * scale * labelXOffsetProportion;
+  //   }
+  //   else {
+  //     yTranslateOffset = currentHeight * scale * labelYOffsetProportion;
+  //   }
+  // }
 
-  return `translate(${x + xTranslateOffset} ${y + yTranslateOffset})
-    rotate(${rotation}) scale(${scale}, ${scale})`;
+  return `translate(${d.labelDisplayDetails.center.x} ${d.labelDisplayDetails.center.y})
+    rotate(${d.labelDisplayDetails.rotation})`;
 }
 
 // function exitCellIsAProject(exitingCell) {
