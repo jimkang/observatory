@@ -9,6 +9,7 @@ var GetEvenIndexForString = require('../get-even-index-for-string');
 var EaseThrottle = require('../ease-throttle');
 var Zoom = require('d3-zoom').zoom;
 
+const devicePixelRatio = window.devicePixelRatio || 1;
 const widthLimit = 800;
 // var idKey = accessor();
 // var nameKey = accessor('name');
@@ -16,7 +17,7 @@ const widthLimit = 800;
 var deedsKey = GetPropertySafely('deeds', []);
 // TODO: This shuffling should be done in the build step, or in Megaswatch.
 var gardenColors = reorderByBucket(require('./garden-colors.json'), 9);
-console.log('gardenColors', JSON.stringify(gardenColors));
+// console.log('gardenColors', JSON.stringify(gardenColors));
 var getColorIndexForString = GetEvenIndexForString({arrayLength: gardenColors.length});
 var getEmojiIndexForString = GetEvenIndexForString({arrayLength: gardenEmoji.length});
 
@@ -33,31 +34,42 @@ const yLabelMargin = 10;
 const labelYOffsetProportion = 0.25;
 const labelXOffsetProportion = 0.25;
 
-var plantLayer = d3.select('#garden-board .plant-layer');
-var regionLayer = d3.select('#garden-board .region-layer');
-var labelLayer = d3.select('#garden-board .field-label-layer');
+// var plantLayer = d3.select('#garden-board .plant-layer');
+// var regionLayer = d3.select('#garden-board .region-layer');
+// var labelLayer = d3.select('#garden-board .field-label-layer');
 var gardenBoard = d3.select('#garden-board');
-var gardenZoomContainer = d3.select('#garden-zoom-container');
+var gardenContext = gardenBoard.node()
+  .getContext('2d', {alpha: false});
+// var gardenZoomContainer = d3.select('#garden-zoom-container');
 
-var zoom = Zoom();
-zoom.on('zoom', applyTransformToZoomContainer);
-gardenBoard.call(zoom);
+// var zoom = Zoom();
+// zoom.on('zoom', applyTransformToZoomContainer);
+// gardenBoard.call(zoom);
 
 var treemap;
 
 function renderGarden({
   projectData, onDeedClick, expensiveRenderIsOK, shouldRenderPlants}) {
 
+  var width = 0;
+  var height = 0;
+
   if (!treemap || expensiveRenderIsOK) {
     let neededArea = countDeedsInProjects(projectData) * squarePixelAreaPerDeed;
-    let width = gardenBoard.node().getBoundingClientRect().width;
+    width = gardenBoard.node().getBoundingClientRect().width;
     if (width > widthLimit) {
       width = widthLimit;
     }
-    let height = ~~(neededArea/width);
+    height = ~~(neededArea/width);
+
+    // width *= devicePixelRatio;
+    // height *= devicePixelRatio;
+    // gardenContext.scale(devicePixelRatio, devicePixelRatio);
+
     // console.log('height', height)
     gardenBoard.attr('width', width);
     gardenBoard.attr('height', height);
+
     treemap = hierarchy.treemap()
       .tile(hierarchy.treemapResquarify.ratio(1))
       .size([width, height])
@@ -79,6 +91,9 @@ function renderGarden({
   treemap(root);
 
   d3.select('body').classed('garden', shouldRenderPlants);
+
+  gardenContext.clearRect(0, 0, width, height);
+
   if (!shouldRenderPlants) {
     renderProjectRegions(root);
   }
@@ -91,76 +106,106 @@ function renderGarden({
 }
 
 function renderProjectRegions(root) {
-  var projectRegions = regionLayer.selectAll('.project-region')
-    .data(root.children, getNestedId);
+  gardenContext.fillStyle = '#eee';
+  root.children.forEach(drawRegion);
 
-  projectRegions.exit().remove();
+  function drawRegion(region) {
+    gardenContext.fillRect(
+      region.x0, region.y0, getRegionWidth(region), getRegionHeight(region)
+    );
+  }
+  // var projectRegions = regionLayer.selectAll('.project-region')
+  //   .data(root.children, getNestedId);
 
-  var newRegions = projectRegions.enter()
-    .append('rect')
-      .classed('project-region', true)
-      .attr('fill', 'hsla(0, 0%, 100%, 0.3)')
-      .attr('stroke', 'black')
-      .attr('stroke-width', 1);
+  // projectRegions.exit().remove();
 
-  var updateRegions = projectRegions.merge(newRegions);
+  // var newRegions = projectRegions.enter()
+  //   .append('rect')
+  //     .classed('project-region', true)
+  //     .attr('fill', 'hsla(0, 0%, 100%, 0.3)')
+  //     .attr('stroke', 'black')
+  //     .attr('stroke-width', 1);
 
-  updateRegions
-    .attr('x', accessor('x0'))
-    .attr('y', accessor('y0'))
-    .attr('width', getRegionWidth)
-    .attr('height', getRegionHeight);
+  // var updateRegions = projectRegions.merge(newRegions);
+
+  // updateRegions
+  //   .attr('x', accessor('x0'))
+  //   .attr('y', accessor('y0'))
+  //   .attr('width', getRegionWidth)
+  //   .attr('height', getRegionHeight);
 }
 
 function renderProjectLabels(root, expensiveRenderIsOK) {
-  var labels = labelLayer.selectAll('.label')
-    .data(root.children, getNestedId);
+  const initialFontSize = 48;
+  gardenContext.font = initialFontSize + 'px futura';
+  gardenContext.textAlign = 'center';
+  gardenContext.textBaseline = 'middle';
+  gardenContext.fillStyle = '#333';
 
-  labels.exit().remove();
-  
-  var newLabels = labels.enter().append('text')
-    .classed('label', true)
-    .attr('text-anchor', 'middle');
+  root.children.forEach(renderLabel);
 
-  var updateLabels = labels.merge(newLabels);
+  // if (expensiveRenderIsOK) {
+  //   root.children.forEach
+  // }
 
-  updateLabels.text(getNestedName);
+  // TODO: Use canvas to calculate, but actually render in crisp SVG.
+  function renderLabel(region) {
+    var regionName = getNestedName(region);
+    var maxWidth = getRegionWidth(region) - 2* xLabelMargin;
+    var maxHeight = getRegionHeight(region) - 2 * yLabelMargin;
+    var textWidth = gardenContext.measureText(regionName).width;
 
-  if (expensiveRenderIsOK) {
-    updateLabels.attr('transform', getLabelTransform);
+    if (textWidth > 0) {
+      gardenContext.save();
+      gardenContext.translate(
+        ~~(region.x0 + maxWidth/2) + 0.5,
+        ~~(region.y0 + maxHeight/2) + 0.5
+      );
+      let scale = 1.0;
+
+      if (maxWidth < maxHeight) {
+        // Rotate -90.
+        gardenContext.rotate(-Math.PI/2);
+
+        if (textWidth > maxHeight) {
+          scale = maxHeight/textWidth;
+        }
+      }
+      else if (textWidth > maxWidth) {
+        scale = maxWidth/textWidth;
+      }
+
+      if (scale !== 1.0) {
+        gardenContext.font = ~~(initialFontSize * scale) + 'px futura';
+      }
+
+      // if (maxWidth < maxHeight) {
+      //   xTranslateOffset = currentHeight * scale * labelXOffsetProportion;
+      // }
+      // else {
+      //   yTranslateOffset = currentHeight * scale * labelYOffsetProportion;
+      // }
+      
+      gardenContext.fillText(regionName, 0, 0);
+      gardenContext.restore();
+    }
   }
 }
 
 function renderDeedCells(root, onDeedClick, shouldRenderPlants) {
   // console.log('rendering', root.leaves().length, 'deeds');
+  gardenContext.strokeStyle = 'white';
+  gardenContext.lineWidth = 1;
 
-  var cells = plantLayer.selectAll('g')
-    .data(root.leaves(), getNestedId);
-  
-  cells.exit().remove();
+  root.leaves().forEach(drawDeedCell);
 
-  var newCells = cells.enter().append('g');
-  var newRects = newCells.append('rect')
-    .on('click', onDeedClick);
-  newRects.attr('fill', shouldRenderPlants ? 'hsla(0, 0%, 0%, 0)' : deedColor);
-  newRects.classed('plant-backing', shouldRenderPlants);
-
-  if (shouldRenderPlants) {
-    newCells.append('text')
-      .classed('deed-plant', true)
-      .attr('dy', cellLength)
-      .text(getPlantEmoji);
+  function drawDeedCell(cell) {
+    gardenContext.fillStyle = deedColor(cell);
+    var width = getRegionWidth(cell);
+    var height = getRegionHeight(cell);
+    gardenContext.fillRect(cell.x0, cell.y0, width, height);
+    gardenContext.strokeRect(cell.x0 + 0.5, cell.y0 + 0.5, width, height);
   }
-
-  var updateCells = newCells.merge(cells);
-
-  updateCells
-    .attr('transform', function(d) { return 'translate(' + d.x0 + ',' + d.y0 + ')'; });
-
-  updateCells.select('rect')
-      .attr('id', function(d) { return d.data.id; })
-      .attr('width', function(d) { return d.x1 - d.x0; })
-      .attr('height', function(d) { return d.y1 - d.y0; });
 }
 
 function sumBySize() {
