@@ -39,10 +39,13 @@
     </div>
   </div>
 
-  <canvas id="garden-board" width="800" height="0" class="view-root"></canvas>
-  <svg id="garden-board-labels">
-    <g class="field-label-layer"></g>
-  </svg>
+  <div id="garden-container" class="view-root">
+    <canvas id="garden-board" width="800" height="0"></canvas>
+    <svg id="garden-board-labels">
+      <g class="field-label-layer" transform="translate(4, 15)"></g>
+    </svg>
+    <canvas id="garden-targets-board" width="800" height="0"></canvas>
+  </div>
 
 </div>
 

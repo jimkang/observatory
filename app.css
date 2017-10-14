@@ -71,11 +71,10 @@ div[contenteditable] {
 }
 
 .zoom-protect-container {
-  /* margin-left: 1em; */
-  /* margin-bottom: 1em; */
   display: flex;
   width: 100%;
   flex-direction: column;
+  position: relative;
   align-items: center;
 }
 
@@ -171,10 +170,32 @@ a {
   color: black;
 }
 
+#garden-container {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  position: relative;
+  align-items: center;
+}
+
 #garden-board {
   z-index: 1;
-  margin-left: 2%;
+  position: relative;
 }
+
+#garden-board-labels {
+  z-index: 2;
+  position: absolute;
+}
+
+#garden-targets-board {
+  /* display: none; */
+  position: absolute;
+  opacity: 0;
+  /* visibility: hidden; */
+  z-index: 3;
+}
+
 
 .details-layer {
   position: fixed;

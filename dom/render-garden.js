@@ -1,15 +1,15 @@
 var d3 = require('d3-selection');
-var accessor = require('accessor');
+// var accessor = require('accessor');
 var GetPropertySafely = require('get-property-safely');
 var hierarchy = require('d3-hierarchy');
 var countDeedsInProjects = require('../count-deeds-in-projects');
-var gardenEmoji = require('../garden-emoji');
+// var gardenEmoji = require('../garden-emoji');
 // var throttle = require('lodash.throttle');
 var GetEvenIndexForString = require('../get-even-index-for-string');
 var EaseThrottle = require('../ease-throttle');
-var Zoom = require('d3-zoom').zoom;
+// var Zoom = require('d3-zoom').zoom;
 
-const devicePixelRatio = window.devicePixelRatio || 1;
+// const devicePixelRatio = window.devicePixelRatio || 1;
 const widthLimit = 800;
 // var idKey = accessor();
 // var nameKey = accessor('name');
@@ -19,7 +19,7 @@ var deedsKey = GetPropertySafely('deeds', []);
 var gardenColors = reorderByBucket(require('./garden-colors.json'), 9);
 // console.log('gardenColors', JSON.stringify(gardenColors));
 var getColorIndexForString = GetEvenIndexForString({arrayLength: gardenColors.length});
-var getEmojiIndexForString = GetEvenIndexForString({arrayLength: gardenEmoji.length});
+// var getEmojiIndexForString = GetEvenIndexForString({arrayLength: gardenEmoji.length});
 
 // const aYearInMilliseconds = 31536000000;
 
@@ -31,16 +31,22 @@ const squarePixelAreaPerDeed = cellLength * cellLength;
 // const minimumArea = squarePixelAreaPerDeed * 100;
 const xLabelMargin = 10;
 const yLabelMargin = 10;
-const labelYOffsetProportion = 0.25;
-const labelXOffsetProportion = 0.25;
+// const labelYOffsetProportion = 0.25;
+// const labelXOffsetProportion = 0.25;
+
+var trackingColorer = TrackingColorer();
 
 // var plantLayer = d3.select('#garden-board .plant-layer');
 // var regionLayer = d3.select('#garden-board .region-layer');
 var labelLayer = d3.select('.field-label-layer');
 var gardenBoard = d3.select('#garden-board');
+var gardenTargetsBoard = d3.select('#garden-targets-board');
 var gardenBoardLabels = d3.select('#garden-board-labels');
 var gardenContext = gardenBoard.node()
   .getContext('2d', {alpha: false});
+var gardenTargetsContext = gardenTargetsBoard.node()
+  .getContext('2d', {alpha: false});
+
 // var gardenZoomContainer = d3.select('#garden-zoom-container');
 
 // var zoom = Zoom();
@@ -49,9 +55,7 @@ var gardenContext = gardenBoard.node()
 
 var treemap;
 
-function renderGarden({
-  projectData, onDeedClick, expensiveRenderIsOK, shouldRenderPlants}) {
-
+function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
   var width = 0;
   var height = 0;
 
@@ -72,6 +76,10 @@ function renderGarden({
     gardenBoard.attr('height', height);
     gardenBoardLabels.attr('width', width);
     gardenBoardLabels.attr('height', height);
+    gardenTargetsBoard.attr('width', width);
+    gardenTargetsBoard.attr('height', height);
+
+    gardenTargetsBoard.on('click', onTargetBoardClick);
 
     treemap = hierarchy.treemap()
       .tile(hierarchy.treemapResquarify.ratio(1))
@@ -80,7 +88,7 @@ function renderGarden({
       .paddingInner(0);
   }
 
-  d3.selectAll('.view-root:not(#garden-board)').classed('hidden', true);
+  d3.selectAll('.view-root:not(#garden-container)').classed('hidden', true);
   gardenBoard.classed('hidden', false);
 
   var rootData = {
@@ -93,18 +101,28 @@ function renderGarden({
 
   treemap(root);
 
-  d3.select('body').classed('garden', shouldRenderPlants);
+  // d3.select('body').classed('garden', shouldRenderPlants);
 
   gardenContext.clearRect(0, 0, width, height);
+  gardenTargetsContext.clearRect(0, 0, width, height);
 
-  if (!shouldRenderPlants) {
-    renderProjectRegions(root);
-  }
-  renderDeedCells(root, getDataFromNodeToHandler, shouldRenderPlants);
+  // if (!shouldRenderPlants) {
+  renderProjectRegions(root);
+  // }
+  renderDeedCells(root);
   renderProjectLabels(root, expensiveRenderIsOK);
 
-  function getDataFromNodeToHandler(d) {
-    onDeedClick({deed: d.data, project: d.parent.data});
+  // function getDataFromNodeToHandler(d) {
+  //   onDeedClick({deed: d.data, project: d.parent.data});
+  // }
+
+  function onTargetBoardClick() {
+    var mouseX = d3.event.layerX;
+    var mouseY = d3.event.layerY;
+
+    var imageData = gardenTargetsContext.getImageData(mouseX, mouseY, 1, 1).data;
+    var cell = trackingColorer.getCellForImageData(imageData);
+    onDeedClick({deed: cell.data, project: cell.parent.data});
   }
 }
 
@@ -179,6 +197,7 @@ function renderProjectLabels(root, expensiveRenderIsOK) {
       // gardenContext.save();
       // gardenContext.translate(
       let labelDisplayDetails = {};
+      // Note: Some amount canvas to svg fudge is built into field-label-layer's transform.
       labelDisplayDetails.center = {
         x: ~~(region.x0 + maxWidth/2) + 0.5 + xLabelMargin,
         y: ~~(region.y0 + maxHeight/2) + 0.5 + yLabelMargin
@@ -210,7 +229,7 @@ function renderProjectLabels(root, expensiveRenderIsOK) {
   }
 }
 
-function renderDeedCells(root, onDeedClick, shouldRenderPlants) {
+function renderDeedCells(root) {
   // console.log('rendering', root.leaves().length, 'deeds');
   gardenContext.strokeStyle = 'white';
   gardenContext.lineWidth = 1;
@@ -223,6 +242,9 @@ function renderDeedCells(root, onDeedClick, shouldRenderPlants) {
     var height = getRegionHeight(cell);
     gardenContext.fillRect(cell.x0, cell.y0, width, height);
     gardenContext.strokeRect(cell.x0 + 0.5, cell.y0 + 0.5, width, height);
+
+    gardenTargetsContext.fillStyle = trackingColorer.getTrackingColorForCell(cell);
+    gardenTargetsContext.fillRect(cell.x0, cell.y0, width, height);
   }
 }
 
@@ -312,15 +334,15 @@ function deedColor(d) {
   return projectColor(d.parent);
 }
 
-function getPlantEmoji(d) {
-  if (d.parent && d.parent.data && d.parent.data.id) {
-    let emojiIndex = getEmojiIndexForString(d.parent.data.id);
-    return gardenEmoji[emojiIndex];
-  }
-  else {
-    return '';
-  }
-}
+// function getPlantEmoji(d) {
+//   if (d.parent && d.parent.data && d.parent.data.id) {
+//     let emojiIndex = getEmojiIndexForString(d.parent.data.id);
+//     return gardenEmoji[emojiIndex];
+//   }
+//   else {
+//     return '';
+//   }
+// }
 
 // 0-second old deeds will bright. Older deeds will be less opaque.
 // function deedOpacity(d) {
@@ -355,8 +377,53 @@ function reorderByBucket(array, numberOfBuckets) {
   // throttleTime = 2000;
 // }
 
-function applyTransformToZoomContainer() {
-  gardenZoomContainer.attr('transform', d3.event.transform);
+// function applyTransformToZoomContainer() {
+//   gardenZoomContainer.attr('transform', d3.event.transform);
+// }
+
+function TrackingColorer() {
+  var nextColor = 0;
+
+  var cellsForTrackingColors = {};
+
+  return {
+    getTrackingColorForCell,
+    getCellForImageData
+  };
+
+  function getTrackingColorForCell(cell) {
+    if (!cell.trackingColor) {
+      cell.trackingColor = getNextColor();
+      cellsForTrackingColors[cell.trackingColor] = cell;
+    }
+    return cell.trackingColor;
+  }
+
+  function getCellForImageData(imageData) {
+    return cellsForTrackingColors[
+      '#' +
+      leftPad((imageData[0]).toString(16), 2) +
+      leftPad((imageData[1]).toString(16), 2) +
+      leftPad((imageData[2]).toString(16), 2)
+    ];
+  }
+
+  // Note: If there's more than 0xFFFFFF cells, this won't work.
+  function getNextColor() {
+    var nextColorString = '#' + leftPad((nextColor).toString(16), 6);
+    nextColor += 1;
+    return nextColorString;
+  }
+}
+
+// 😎
+function leftPad(numberString, desiredLength) {
+  var padsNeeded = desiredLength - numberString.length;
+  var pads = '';
+  for (var i = 0; i < padsNeeded; ++i) {
+    pads += '0';
+  }
+  return pads + numberString;
 }
 
 module.exports = EaseThrottle({fn: renderGarden});
