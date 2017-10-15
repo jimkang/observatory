@@ -20,6 +20,7 @@ const initialFontSize = 48;
 var trackingColorer = TrackingColorer();
 
 var labelLayer = d3.select('.field-label-layer');
+var gardenContainer = d3.select('#garden-container');
 var gardenBoard = d3.select('#garden-board');
 var gardenTargetsBoard = d3.select('#garden-targets-board');
 var gardenBoardLabels = d3.select('#garden-board-labels');
@@ -36,12 +37,16 @@ function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
 
   if (!treemap || expensiveRenderIsOK) {
     let neededArea = countDeedsInProjects(projectData) * squarePixelAreaPerDeed;
-    width = gardenBoard.node().getBoundingClientRect().width;
+    width = document.body.getBoundingClientRect().width;
+
+    console.log('width', width)
     if (width > widthLimit) {
       width = widthLimit;
     }
     height = ~~(neededArea/width);
 
+    gardenContainer.attr('width', width);
+    gardenContainer.attr('height', height);
     gardenBoard.attr('width', width);
     gardenBoard.attr('height', height);
     gardenBoardLabels.attr('width', width);
@@ -76,8 +81,8 @@ function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
 
   renderProjectRegions(root);
   renderDeedCells(root);
-    calculateProjectLabelPositions(root);
   if (expensiveRenderIsOK) {
+    calculateProjectLabelPositions(root);
     renderProjectLabels(root);
   }
 
