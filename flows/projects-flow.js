@@ -16,11 +16,7 @@ const expensiveRenderThreshold = 5;
 
 var renderers = {
   'plain': renderPlain,
-  'garden': renderGarden,
-  'literal-garden': function renderLiteralGarden(opts) {
-    opts.shouldRenderPlants = true;
-    renderGarden(opts);
-  }
+  'garden': renderGarden
 };
 
 // ProjectsFlow is per-data-source. If you need to get from a new data source,

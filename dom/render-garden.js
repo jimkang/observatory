@@ -45,8 +45,8 @@ function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
     }
     height = ~~(neededArea/width);
 
-    gardenContainer.attr('width', width);
-    gardenContainer.attr('height', height);
+    gardenContainer.style('width', width);
+    gardenContainer.style('height', height);
     gardenBoard.attr('width', width);
     gardenBoard.attr('height', height);
     gardenBoardLabels.attr('width', width);
