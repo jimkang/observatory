@@ -81,10 +81,8 @@ function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
 
   renderProjectRegions(root);
   renderDeedCells(root);
-  if (expensiveRenderIsOK) {
-    calculateProjectLabelPositions(root);
-    renderProjectLabels(root);
-  }
+  calculateProjectLabelPositions(root);
+  renderProjectLabels(root);
 
   function onTargetBoardClick() {
     var mouseX = d3.event.layerX;
