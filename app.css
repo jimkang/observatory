@@ -180,7 +180,7 @@ a {
 
 #garden-board {
   z-index: 1;
-  position: relative;
+  position: absolute;
 }
 
 #garden-board-labels {
@@ -189,10 +189,8 @@ a {
 }
 
 #garden-targets-board {
-  /* display: none; */
   position: absolute;
   opacity: 0;
-  /* visibility: hidden; */
   z-index: 3;
 }
 
