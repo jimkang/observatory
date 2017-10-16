@@ -305,6 +305,10 @@ a {
   }
 }
 
+.deed-name {
+  cursor: pointer;
+}
+
 @media all and (max-height: 568px) {
   .details-box {
     height: 568px;

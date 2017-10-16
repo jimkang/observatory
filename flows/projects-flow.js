@@ -1,6 +1,6 @@
 var GitHubProjectsSource = require('github-projects-source');
 var request = require('basic-browser-request');
-var renderPlain = require('../dom/render-scratch');
+var renderPlain = require('../dom/render-plain');
 var renderGarden = require('../dom/render-garden');
 var renderHeader = require('../dom/render-header');
 var RenderDeedDetails = require('../dom/render-deed-details');

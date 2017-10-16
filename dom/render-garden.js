@@ -39,7 +39,6 @@ function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
     let neededArea = countDeedsInProjects(projectData) * squarePixelAreaPerDeed;
     width = document.body.getBoundingClientRect().width;
 
-    console.log('width', width)
     if (width > widthLimit) {
       width = widthLimit;
     }

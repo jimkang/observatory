@@ -1,6 +1,7 @@
 var d3 = require('d3-selection');
 var accessor = require('accessor');
 var GetPropertySafely = require('get-property-safely');
+var EaseThrottle = require('../ease-throttle');
 
 var idKey = accessor();
 var nameKey = accessor('name');
@@ -31,4 +32,4 @@ function render({projectData}) {
   allDeeds.select('.deed-name').text(messageKey);
 }
 
-module.exports = render;
+module.exports = EaseThrottle({fn: render});
