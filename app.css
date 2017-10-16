@@ -170,7 +170,7 @@ a {
   color: black;
 }
 
-#garden-container {
+.canvases-container {
   display: flex;
   width: 100%;
   flex-direction: column;

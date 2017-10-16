@@ -22,7 +22,7 @@ var renderers = {
 // ProjectsFlow is per-data-source. If you need to get from a new data source,
 // you need to create another projectSource.
 // changeRenderer changes the rendering while still using the same data source.
-function ProjectsFlow({token, user, userEmail, verbose, shouldRenderPlants}) {
+function ProjectsFlow({token, user, userEmail, verbose}) {
   var collectedProjectsByName = {};
   var collectedProjects = [];
   var streamEndEventReceived = false;
@@ -128,8 +128,7 @@ function ProjectsFlow({token, user, userEmail, verbose, shouldRenderPlants}) {
       render({
         projectData: collectedProjects,
         expensiveRenderIsOK: expensiveRenderIsOK,
-        onDeedClick: renderDeedDetails,
-        shouldRenderPlants: shouldRenderPlants
+        onDeedClick: renderDeedDetails
       });
       renderCount += 1;
     }

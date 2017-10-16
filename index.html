@@ -18,28 +18,35 @@
   </div>
 </header>
 
-<ul id="basic-project-list" class="view-root">
-</ul>
+<div id="list-container" class="view-root">
+  <ul id="basic-project-list">
+  </ul>
+  <div id="basic-deed-list">
+    <!-- TODO -->
+  </div>
+</div>
 
-<div class="zoom-protect-container">
-  <div class="details-layer destroyed">
-    <div class="details-box">
-      <div class="details-top-part">
-        <button class="close-button">x</button>
-        <div class="project-details">
-          <a class="name-link" target="_blank"></a>
-          <div>Last updated: <span class="date"></span></div>
-          <div class="description"></div>
+<div id="garden-container" class="view-root">
+  <div class="zoom-protect-container">
+    <div class="details-layer destroyed">
+      <div class="details-box">
+        <div class="details-top-part">
+          <button class="close-button">x</button>
+          <div class="project-details">
+            <a class="name-link" target="_blank"></a>
+            <div>Last updated: <span class="date"></span></div>
+            <div class="description"></div>
+          </div>
         </div>
-      </div>
-      <div class="deed-details">
-        <a class="date-link" target="_blank"></a>
-        <div class="name"></div>
+        <div class="deed-details">
+          <a class="date-link" target="_blank"></a>
+          <div class="name"></div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div id="garden-container" class="view-root">
+  <div class="canvases-container">
     <canvas id="garden-board" width="800" height="0"></canvas>
     <svg id="garden-board-labels">
       <g class="field-label-layer" transform="translate(4, 15)"></g>

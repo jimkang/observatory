@@ -20,6 +20,7 @@ const initialFontSize = 48;
 var trackingColorer = TrackingColorer();
 
 var labelLayer = d3.select('.field-label-layer');
+var canvasesContainer = d3.select('#canvases-container');
 var gardenContainer = d3.select('#garden-container');
 var gardenBoard = d3.select('#garden-board');
 var gardenTargetsBoard = d3.select('#garden-targets-board');
@@ -46,6 +47,8 @@ function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
 
     gardenContainer.style('width', width);
     gardenContainer.style('height', height);
+    canvasesContainer.style('width', width);
+    canvasesContainer.style('height', height);
     gardenBoard.attr('width', width);
     gardenBoard.attr('height', height);
     gardenBoardLabels.attr('width', width);
@@ -63,7 +66,7 @@ function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
   }
 
   d3.selectAll('.view-root:not(#garden-container)').classed('hidden', true);
-  gardenBoard.classed('hidden', false);
+  gardenContainer.classed('hidden', false);
 
   var rootData = {
     name: 'root',
