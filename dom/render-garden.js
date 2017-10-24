@@ -177,8 +177,19 @@ function renderDeedCells(root) {
     gardenContext.fillStyle = deedColor(cell);
     var width = getRegionWidth(cell);
     var height = getRegionHeight(cell);
-    gardenContext.fillRect(cell.x0, cell.y0, width, height);
-    gardenContext.strokeRect(cell.x0 + 0.5, cell.y0 + 0.5, width, height);
+    // gardenContext.fillRect(cell.x0, cell.y0, width, height);
+    // gardenContext.strokeRect(cell.x0 + 0.5, cell.y0 + 0.5, width, height);
+    gardenContext.beginPath();
+    gardenContext.arc(
+      ~~(cell.x0 + width/2),
+      ~~(cell.y0 + height/2),
+      width < height ? width/2 : height/2,
+      0,
+      2 * Math.PI,
+      true
+    );
+    gardenContext.closePath();
+    gardenContext.fill();
 
     gardenTargetsContext.fillStyle = trackingColorer.getTrackingColorForCell(cell);
     gardenTargetsContext.fillRect(cell.x0, cell.y0, width, height);

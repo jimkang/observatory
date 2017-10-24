@@ -6,8 +6,6 @@ var ProjectsFlow = require('./flows/projects-flow');
 var wireGitHubForm = require('./dom/wire-github-form');
 var redirectToGitHubAuth = require('./redirect-to-github-auth');
 
-// var curry = require('lodash.curry');
-
 var routeState;
 var projectsFlow;
 
