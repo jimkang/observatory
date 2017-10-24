@@ -307,6 +307,15 @@ a {
 
 .deed-name {
   cursor: pointer;
+  font-size: smaller;
+}
+
+#list-container .project-details {
+  cursor: pointer;
+}
+
+#list-container {
+  max-width: 25em;
 }
 
 @media all and (max-height: 568px) {

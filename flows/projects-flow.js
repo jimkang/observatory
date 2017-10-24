@@ -1,6 +1,6 @@
 var GitHubProjectsSource = require('github-projects-source');
 var request = require('basic-browser-request');
-var renderPlain = require('../dom/render-plain');
+var RenderPlain = require('../dom/render-plain');
 var renderGarden = require('../dom/render-garden');
 var renderHeader = require('../dom/render-header');
 var RenderDeedDetails = require('../dom/render-deed-details');
@@ -14,11 +14,6 @@ var countDeedsInProjects = require('../count-deeds-in-projects');
 const expensiveRenderInterval = 5;
 const expensiveRenderThreshold = 5;
 
-var renderers = {
-  'plain': renderPlain,
-  'garden': renderGarden
-};
-
 // ProjectsFlow is per-data-source. If you need to get from a new data source,
 // you need to create another projectSource.
 // changeRenderer changes the rendering while still using the same data source.
@@ -30,6 +25,11 @@ function ProjectsFlow({token, user, userEmail, verbose}) {
   var render;
   var ignoreSourceEvents = false;
   var renderDeedDetails = RenderDeedDetails({user});
+
+  var renderers = {
+    'plain': RenderPlain({user}),
+    'garden': renderGarden
+  };
 
   var githubProjectsSource = GitHubProjectsSource({
     githubToken: token,
