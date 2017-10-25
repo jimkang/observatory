@@ -159,6 +159,8 @@ header {
 
 header {
   margin-bottom: 2em;
+  margin-left: 1em;
+  margin-right: 1em;
 }
 
 .explanation {
@@ -316,15 +318,45 @@ a {
   text-decoration: underline;
 }
 
-#list-container .project-details {
-  cursor: pointer;
+#basic-project-list {
+  padding-left: 4em;
+  /*padding-right: 2em;*/
 }
 
 #list-container {
   max-width: 25em;
 }
 
+#list-container .project-details {
+  cursor: pointer;
+}
+
+#basic-project-list .deeds-root {
+  margin-bottom: 1em;
+}
+
 @media all and (max-height: 568px) {
+  body {
+    font-size: 18px;
+  }
+
+  header {
+    margin-bottom: 0;
+  }
+
+  #basic-project-list {
+    padding-left: 3em;
+    padding-right: 2em;
+  }
+
+#list-container {
+  max-width: 100%;
+}
+
+  .name-link {
+    font-size: 1.2em;
+  }
+
   .details-box {
     height: 568px;
     padding: 0;
