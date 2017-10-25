@@ -8,6 +8,7 @@ const projectDetailsSkeleton = `<div class="project-details">
       <a class="name-link" target="_blank"></a>
       <div>Last updated: <span class="date"></span></div>
       <div class="description"></div>
+      <div class="show-deeds">Deeds</div>
     </div>
   </div>
 `;
@@ -44,8 +45,13 @@ function RenderPlain({user}) {
     var deedsRoot = allProjects.select('.deeds-root');
     var deeds = deedsRoot.selectAll('.deed').data(deedsKey, idKey);
     // deeds.exit().remove();
-    var newDeeds = deeds.enter().append('li').classed('deed', true);
-    newDeeds.append('div').classed('deed-name', true);
+    var newDeeds = deeds.enter().append('li')
+      .classed('deed', true);
+    newDeeds.append('a')
+      .classed('deed-name', true)
+      .attr('href', getDeedLinkFromDeed)
+      .attr('target', '_blank');
+
     var allDeeds = newDeeds.merge(deeds);
     allDeeds.select('.deed-name').text(messageKey);
 
@@ -57,11 +63,23 @@ function RenderPlain({user}) {
       });
     }
   }
+
+  function getDeedLinkFromDeed(deed) {
+    return `https://github.com/${user}/${deed.projectName}/commit/${deed.abbreviatedOid}`;
+  }
 }
 
 function toggleDeedList() {
-  var deedsRoot = d3.select(this.parentNode).select('.deeds-root');
+  var deedsRoot = d3.select(findProjectParent(this)).select('.deeds-root');
   deedsRoot.classed('hidden', !deedsRoot.classed('hidden'));
+}
+
+function findProjectParent(node) {
+  var projectNode = node;
+  while (!projectNode.classList.contains('project') && projectNode.parentNode) {
+    projectNode = projectNode.parentNode;
+  }
+  return projectNode;
 }
 
 module.exports = RenderPlain;

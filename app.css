@@ -308,6 +308,12 @@ a {
 .deed-name {
   cursor: pointer;
   font-size: smaller;
+  text-decoration: none;
+}
+
+.show-deeds {
+  margin-top: 1em;
+  text-decoration: underline;
 }
 
 #list-container .project-details {
