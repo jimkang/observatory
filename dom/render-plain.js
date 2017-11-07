@@ -27,7 +27,7 @@ function RenderPlain({user}) {
     d3.selectAll('.view-root:not(#list-container)').classed('hidden', true);
     d3.select('#list-container').classed('hidden', false);
 
-    var projects = basicProjectListRoot.selectAll('.project').data(projectData, idKey);
+    var projects = basicProjectListRoot.selectAll('.project').data(projectData);
     // projects.exit().remove();
     var newProjects = projects.enter().append('li').classed('project', true);
     var projectDescriptions = newProjects.append('div')

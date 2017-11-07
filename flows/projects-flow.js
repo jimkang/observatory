@@ -4,6 +4,7 @@ var RenderPlain = require('../dom/render-plain');
 var renderGarden = require('../dom/render-garden');
 var renderHeader = require('../dom/render-header');
 var RenderDeedDetails = require('../dom/render-deed-details');
+var RenderActivityView = require('../dom/render-activity-view');
 var values = require('lodash.values');
 var addDeedToProject = require('add-deed-to-project');
 var leveljs = require('level-js');
@@ -28,7 +29,8 @@ function ProjectsFlow({token, user, userEmail, verbose}) {
 
   var renderers = {
     'plain': RenderPlain({user}),
-    'garden': renderGarden
+    'garden': renderGarden,
+    'activity': RenderActivityView({user})
   };
 
   var githubProjectsSource = GitHubProjectsSource({
@@ -126,7 +128,7 @@ function ProjectsFlow({token, user, userEmail, verbose}) {
   function callRender({expensiveRenderIsOK = false}) {
     if (render) {
       render({
-        projectData: collectedProjects,
+        projectData: collectedProjects.sort(compareLastUpdatedDesc),
         expensiveRenderIsOK: expensiveRenderIsOK,
         onDeedClick: renderDeedDetails
       });
@@ -155,6 +157,15 @@ function ProjectsFlow({token, user, userEmail, verbose}) {
       callRender({expensiveRenderIsOK: true});
     }
     // Otherwise, the various event handlers will call callRender.
+  }
+}
+
+function compareLastUpdatedDesc(projectA, projectB) {
+  if (new Date(projectA.pushedAt) > new Date(projectB.pushedAt)) {
+    return -1;
+  }
+  else {
+    return 1;
   }
 }
 
