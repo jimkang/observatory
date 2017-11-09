@@ -95,8 +95,16 @@ function ProjectsFlow({ token, user, userEmail, verbose }) {
     if (verbose) {
       console.log('Received deed:', deed, 'from', source);
     }
-    addDeedToProject(handleError, collectedProjectsByName, deed);
-    callRender({expensiveRenderIsOK: shouldDoExpensiveRender()});
+
+    if (deed.projectName in collectedProjectsByName) {
+      addDeedToProject(handleError, collectedProjectsByName, deed);
+    } else {
+      collectedProjectsByName[deed.projectName] = {
+        name: deed.projectName,
+        deeds: [deed]
+      };
+    }
+    callRender({ expensiveRenderIsOK: shouldDoExpensiveRender() });
   }
 
   function collectProject(project, source) {
@@ -115,29 +123,32 @@ function ProjectsFlow({ token, user, userEmail, verbose }) {
     }
     var existingProject = collectedProjectsByName[project.name];
     if (existingProject) {
-      project.deeds = existingProject.deeds;
+      if (project.deeds) {
+        project.deeds = mergeDeeds(project.deeds, existingProject.deeds);
+      } else {
+        project.deeds = existingProject.deeds;
+      }
     }
     collectedProjectsByName[project.name] = project;
     collectedProjects = values(collectedProjectsByName);
-    callRender({expensiveRenderIsOK: shouldDoExpensiveRender()});
+    callRender({ expensiveRenderIsOK: shouldDoExpensiveRender() });
   }
 
   function onStreamEnd(error) {
     streamEndEventReceived = true;
     if (error) {
       handleError(error);
-    }
-    else {
+    } else {
       console.log('Finished streaming.');
       // console.log('projects', collectedProjects);
       // console.log('deeds', collectedDeeds);
       console.log('project count', collectedProjects);
       console.log('deed count', countDeedsInProjects(collectedProjects));
-      callRender({expensiveRenderIsOK: true});
+      callRender({ expensiveRenderIsOK: true });
     }
   }
 
-  function callRender({expensiveRenderIsOK = false}) {
+  function callRender({ expensiveRenderIsOK = false }) {
     if (render) {
       render({
         projectData: collectedProjects.sort(compareLastUpdatedDesc),
@@ -177,9 +188,33 @@ function ProjectsFlow({ token, user, userEmail, verbose }) {
 function compareLastUpdatedDesc(projectA, projectB) {
   if (new Date(projectA.pushedAt) > new Date(projectB.pushedAt)) {
     return -1;
-  }
-  else {
+  } else {
     return 1;
+  }
+}
+
+// Right now, deeds in listB will always win a conflict with deeds in listA.
+function mergeDeeds(listA, listB) {
+  var deedsById = {};
+  listA.forEach(addToMap);
+  listB.forEach(addToMap);
+  var merged = values(deedsById);
+  if (merged.length < listA.length && merged.length < listB.length) {
+    // If dupes start getting logged and we're using the cache,
+    // there's something wrong with it.
+    console.log(
+      'listA.length:',
+      listA.length,
+      'listB.length:',
+      listB.length,
+      'merged:',
+      merged.length
+    );
+  }
+  return merged;
+
+  function addToMap(deed) {
+    deedsById[deed.id] = deed;
   }
 }
 
