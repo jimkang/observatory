@@ -9,7 +9,9 @@ const widthLimit = 800;
 var deedsKey = GetPropertySafely('deeds', []);
 // TODO: This shuffling should be done in the build step, or in Megaswatch.
 var gardenColors = reorderByBucket(require('./garden-colors.json'), 9);
-var getColorIndexForString = GetEvenIndexForString({arrayLength: gardenColors.length});
+var getColorIndexForString = GetEvenIndexForString({
+  arrayLength: gardenColors.length
+});
 
 const cellLength = 40;
 const squarePixelAreaPerDeed = cellLength * cellLength;
@@ -25,14 +27,14 @@ var gardenContainer = d3.select('#garden-container');
 var gardenBoard = d3.select('#garden-board');
 var gardenTargetsBoard = d3.select('#garden-targets-board');
 var gardenBoardLabels = d3.select('#garden-board-labels');
-var gardenContext = gardenBoard.node()
-  .getContext('2d', {alpha: false});
-var gardenTargetsContext = gardenTargetsBoard.node()
-  .getContext('2d', {alpha: false});
+var gardenContext = gardenBoard.node().getContext('2d', { alpha: false });
+var gardenTargetsContext = gardenTargetsBoard
+  .node()
+  .getContext('2d', { alpha: false });
 
 var treemap;
 
-function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
+function renderGarden({ projectData, onDeedClick, expensiveRenderIsOK }) {
   var width = 0;
   var height = 0;
 
@@ -43,7 +45,7 @@ function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
     if (width > widthLimit) {
       width = widthLimit;
     }
-    height = ~~(neededArea/width);
+    height = ~~(neededArea / width);
 
     gardenContainer.style('width', width);
     gardenContainer.style('height', height);
@@ -58,7 +60,8 @@ function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
 
     gardenTargetsBoard.on('click', onTargetBoardClick);
 
-    treemap = hierarchy.treemap()
+    treemap = hierarchy
+      .treemap()
       .tile(hierarchy.treemapResquarify.ratio(1))
       .size([width, height])
       .round(true)
@@ -73,8 +76,7 @@ function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
     deeds: projectData
   };
 
-  var root = hierarchy.hierarchy(rootData, deedsKey)
-      .sum(sumBySize);
+  var root = hierarchy.hierarchy(rootData, deedsKey).sum(sumBySize);
 
   treemap(root);
 
@@ -90,9 +92,10 @@ function renderGarden({projectData, onDeedClick, expensiveRenderIsOK}) {
     var mouseX = d3.event.layerX;
     var mouseY = d3.event.layerY;
 
-    var imageData = gardenTargetsContext.getImageData(mouseX, mouseY, 1, 1).data;
+    var imageData = gardenTargetsContext.getImageData(mouseX, mouseY, 1, 1)
+      .data;
     var cell = trackingColorer.getCellForImageData(imageData);
-    onDeedClick({deed: cell.data, project: cell.parent.data});
+    onDeedClick({ deed: cell.data, project: cell.parent.data });
   }
 }
 
@@ -102,7 +105,10 @@ function renderProjectRegions(root) {
 
   function drawRegion(region) {
     gardenContext.fillRect(
-      region.x0, region.y0, getRegionWidth(region), getRegionHeight(region)
+      region.x0,
+      region.y0,
+      getRegionWidth(region),
+      getRegionHeight(region)
     );
   }
 }
@@ -117,7 +123,7 @@ function calculateProjectLabelPositions(root) {
 
 function calculateLabelPositionOnCanvas(region) {
   var regionName = getNestedName(region);
-  var maxWidth = getRegionWidth(region) - 2* xLabelMargin;
+  var maxWidth = getRegionWidth(region) - 2 * xLabelMargin;
   var maxHeight = getRegionHeight(region) - 2 * yLabelMargin;
   var textWidth = gardenContext.measureText(regionName).width;
 
@@ -125,8 +131,8 @@ function calculateLabelPositionOnCanvas(region) {
     let labelDisplayDetails = {};
     // Note: Some amount canvas to svg fudge is built into field-label-layer's transform.
     labelDisplayDetails.center = {
-      x: ~~(region.x0 + maxWidth/2) + 0.5 + xLabelMargin,
-      y: ~~(region.y0 + maxHeight/2) + 0.5 + yLabelMargin
+      x: ~~(region.x0 + maxWidth / 2) + 0.5 + xLabelMargin,
+      y: ~~(region.y0 + maxHeight / 2) + 0.5 + yLabelMargin
     };
     labelDisplayDetails.rotation = 0;
     let scale = 1.0;
@@ -135,29 +141,29 @@ function calculateLabelPositionOnCanvas(region) {
       labelDisplayDetails.rotation = -90;
 
       if (textWidth > maxHeight) {
-        scale = maxHeight/textWidth;
+        scale = maxHeight / textWidth;
       }
-    }
-    else if (textWidth > maxWidth) {
-      scale = maxWidth/textWidth;
+    } else if (textWidth > maxWidth) {
+      scale = maxWidth / textWidth;
     }
 
     // Font is assumed to be Futura.
     labelDisplayDetails.fontSize = 48;
     if (scale !== 1.0) {
-      labelDisplayDetails.fontSize = ~~(initialFontSize * scale); 
+      labelDisplayDetails.fontSize = ~~(initialFontSize * scale);
     }
     region.labelDisplayDetails = labelDisplayDetails;
   }
 }
 
 function renderProjectLabels(root) {
-  var labels = labelLayer.selectAll('.label')
-    .data(root.children, getNestedId);
+  var labels = labelLayer.selectAll('.label').data(root.children, getNestedId);
 
   labels.exit().remove();
-  
-  var newLabels = labels.enter().append('text')
+
+  var newLabels = labels
+    .enter()
+    .append('text')
     .classed('label', true)
     .attr('text-anchor', 'middle');
 
@@ -180,7 +186,9 @@ function renderDeedCells(root) {
     gardenContext.fillRect(cell.x0, cell.y0, width, height);
     gardenContext.strokeRect(cell.x0 + 0.5, cell.y0 + 0.5, width, height);
 
-    gardenTargetsContext.fillStyle = trackingColorer.getTrackingColorForCell(cell);
+    gardenTargetsContext.fillStyle = trackingColorer.getTrackingColorForCell(
+      cell
+    );
     gardenTargetsContext.fillRect(cell.x0, cell.y0, width, height);
   }
 }
@@ -206,15 +214,16 @@ function getRegionHeight(d) {
 }
 
 function getLabelTransform(d) {
-  return `translate(${d.labelDisplayDetails.center.x} ${d.labelDisplayDetails.center.y})
+  return `translate(${d.labelDisplayDetails.center.x} ${
+    d.labelDisplayDetails.center.y
+  })
     rotate(${d.labelDisplayDetails.rotation})`;
 }
 
 function projectColor(d) {
   if (d.data.id) {
     return gardenColors[getColorIndexForString(d.data.id)];
-  }
-  else {
+  } else {
     return '#fff';
   }
 }
@@ -227,13 +236,13 @@ function deedColor(d) {
 // are separated.
 function reorderByBucket(array, numberOfBuckets) {
   var reconstituted = [];
-  const bucketSize = ~~(array.length/numberOfBuckets);
+  const bucketSize = ~~(array.length / numberOfBuckets);
   for (var i = 0; i < array.length; ++i) {
-    var reconstitutedIndex = (i % numberOfBuckets) * bucketSize + ~~(i/numberOfBuckets);
+    var reconstitutedIndex =
+      (i % numberOfBuckets) * bucketSize + ~~(i / numberOfBuckets);
     if (reconstitutedIndex >= array.length) {
       break;
-    }
-    else {
+    } else {
       reconstituted[reconstitutedIndex] = array[i];
     }
   }
@@ -261,15 +270,15 @@ function TrackingColorer() {
   function getCellForImageData(imageData) {
     return cellsForTrackingColors[
       '#' +
-      leftPad((imageData[0]).toString(16), 2) +
-      leftPad((imageData[1]).toString(16), 2) +
-      leftPad((imageData[2]).toString(16), 2)
+        leftPad(imageData[0].toString(16), 2) +
+        leftPad(imageData[1].toString(16), 2) +
+        leftPad(imageData[2].toString(16), 2)
     ];
   }
 
   // Note: If there's more than 0xFFFFFF cells, this won't work.
   function getNextColor() {
-    var nextColorString = '#' + leftPad((nextColor).toString(16), 6);
+    var nextColorString = '#' + leftPad(nextColor.toString(16), 6);
     nextColor += 1;
     return nextColorString;
   }
@@ -289,4 +298,4 @@ function getFontSize(region) {
   return region.labelDisplayDetails.fontSize;
 }
 
-module.exports = EaseThrottle({fn: renderGarden});
+module.exports = EaseThrottle({ fn: renderGarden });

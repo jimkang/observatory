@@ -18,7 +18,7 @@ if (window.location.hostname === 'localhost') {
 // where unpackedRoute is an object extracted from the encoded routeDict originally
 // passed in the GitHub redirect URL via the `state` param.
 // tokenInfo is an object with the token and expirationDate.
-function findToken({queryString, currentDate}, done) {
+function findToken({ queryString, currentDate }, done) {
   var queryStringParsed = qs.parse(queryString.slice(1));
   var unpackedRoute;
   if ('state' in queryStringParsed) {
@@ -29,13 +29,16 @@ function findToken({queryString, currentDate}, done) {
     // http://webcache.googleusercontent.com/search?q=cache:XLr30FwQuCsJ:blog.vjeux.com/2012/javascript/github-oauth-login-browser-side.html+&cd=1&hl=en&ct=clnk&gl=us
     var reqOpts = {
       method: 'GET',
-      url: tokenExchangerBaseURL + '/exchange?code=' + queryStringParsed.code +
-        '&app=' + appName
+      url:
+        tokenExchangerBaseURL +
+        '/exchange?code=' +
+        queryStringParsed.code +
+        '&app=' +
+        appName
     };
 
     request(reqOpts, sb(extractToken, done));
-  }
-  else {
+  } else {
     callNextTick(done, new Error('No token or code found.'));
   }
 
@@ -46,15 +49,15 @@ function findToken({queryString, currentDate}, done) {
       // TODO: Get real expiration.
       tokenInfo = {
         token: body,
-        expires: currentDate.getTime() +
+        expires:
+          currentDate.getTime() +
           estimatedExpirationLengthInDays * 24 * 60 * 60 * 1000
       };
     }
 
     if (tokenInfo) {
       done(null, tokenInfo, unpackedRoute);
-    }
-    else {
+    } else {
       done(new Error('Could not get the token from token exchanger.'));
     }
   }

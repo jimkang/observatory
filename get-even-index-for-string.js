@@ -3,7 +3,7 @@
 // If it is asked for more indexes for strings than there are array positions,
 // it looks around.
 
-function GetEvenIndexForString({arrayLength}) {
+function GetEvenIndexForString({ arrayLength }) {
   var nextIndex = 0;
   var indexesForStrings = {};
   return getEvenIndexForString;

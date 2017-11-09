@@ -19,8 +19,8 @@ var probable = createProbable({
 });
 
 const numberOfSegments = 5;
-const segmentSize = ~~(numberOfColors/numberOfSegments);
-const hueRangePerSegment = 360/numberOfSegments;
+const segmentSize = ~~(numberOfColors / numberOfSegments);
+const hueRangePerSegment = 360 / numberOfSegments;
 // const chroma = 85;
 // const luminence = 55;
 const swatchWidth = 20;
@@ -29,7 +29,7 @@ var colors = flatten(range(numberOfSegments).map(interpolateInSegment));
 
 console.log(JSON.stringify(colors, null, 2));
 fs.writeFileSync(
-  __dirname + '/color-test.html', 
+  __dirname + '/color-test.html',
   `
 <html>
 <body>
@@ -49,9 +49,11 @@ function interpolateInSegment(segmentIndex) {
     color.hcl(startHue, chroma, luminence),
     color.hcl(endHue, chroma, luminence)
   );
-  return range(segmentSize).map(i => interpolator(i/segmentSize));
+  return range(segmentSize).map(i => interpolator(i / segmentSize));
 }
 
 function swatchForColor(color, i) {
-  return `<rect width="${swatchWidth}" height="${swatchWidth}" fill="${color}" x="${i * swatchWidth}"></rect>`;
+  return `<rect width="${swatchWidth}" height="${swatchWidth}" fill="${
+    color
+  }" x="${i * swatchWidth}"></rect>`;
 }

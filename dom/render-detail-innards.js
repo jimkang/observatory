@@ -1,4 +1,4 @@
-function renderDeedDetailInnards({parent, deed, project, user}) {
+function renderDeedDetailInnards({ parent, deed, project, user }) {
   var projectDetails = parent.select('.project-details');
   var projectNameLink = projectDetails.select('.name-link');
   var projectDate = projectDetails.select('.date');
@@ -24,7 +24,9 @@ function getProjectLink(user, project) {
 }
 
 function getDeedLink(user, project, deed) {
-  return `https://github.com/${user}/${project.name}/commit/${deed.abbreviatedOid}`;
+  return `https://github.com/${user}/${project.name}/commit/${
+    deed.abbreviatedOid
+  }`;
 }
 
 function dateStringToDisplayForm(dateString) {

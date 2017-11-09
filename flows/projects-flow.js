@@ -18,19 +18,19 @@ const expensiveRenderThreshold = 5;
 // ProjectsFlow is per-data-source. If you need to get from a new data source,
 // you need to create another projectSource.
 // changeRenderer changes the rendering while still using the same data source.
-function ProjectsFlow({token, user, userEmail, verbose}) {
+function ProjectsFlow({ token, user, userEmail, verbose }) {
   var collectedProjectsByName = {};
   var collectedProjects = [];
   var streamEndEventReceived = false;
   var renderCount = 0;
   var render;
   var ignoreSourceEvents = false;
-  var renderDeedDetails = RenderDeedDetails({user});
+  var renderDeedDetails = RenderDeedDetails({ user });
 
   var renderers = {
-    'plain': RenderPlain({user}),
-    'garden': renderGarden,
-    'activity': RenderActivityView({user})
+    plain: RenderPlain({ user }),
+    garden: renderGarden,
+    activity: RenderActivityView({ user })
   };
 
   var githubProjectsSource = GitHubProjectsSource({
@@ -55,13 +55,25 @@ function ProjectsFlow({token, user, userEmail, verbose}) {
     newDataSourceMatches
   };
 
-  function newDataSourceMatches({newToken, newUser, newUserEmail, newVerbose}) {
-    return token === newToken && user === newUser &&
-      userEmail === newUserEmail && verbose === newVerbose;
+  function newDataSourceMatches({
+    newToken,
+    newUser,
+    newUserEmail,
+    newVerbose
+  }) {
+    return (
+      token === newToken &&
+      user === newUser &&
+      userEmail === newUserEmail &&
+      verbose === newVerbose
+    );
   }
 
   function start() {
-    githubProjectsSource.startStream({sources: ['local', 'API']}, onStreamEnd);
+    githubProjectsSource.startStream(
+      { sources: ['local', 'API'] },
+      onStreamEnd
+    );
   }
 
   // TODO: Actually implement cancel in GitHubProjectsSource.
@@ -137,11 +149,13 @@ function ProjectsFlow({token, user, userEmail, verbose}) {
   }
 
   function shouldDoExpensiveRender() {
-    return renderCount > expensiveRenderThreshold &&
-      renderCount % expensiveRenderInterval === 0;
+    return (
+      renderCount > expensiveRenderThreshold &&
+      renderCount % expensiveRenderInterval === 0
+    );
   }
 
-  function changeRenderer({view, changeView}) {
+  function changeRenderer({ view, changeView }) {
     var viewName = view || 'garden';
 
     renderHeader({
@@ -154,7 +168,7 @@ function ProjectsFlow({token, user, userEmail, verbose}) {
     renderCount = 0;
 
     if (streamEndEventReceived) {
-      callRender({expensiveRenderIsOK: true});
+      callRender({ expensiveRenderIsOK: true });
     }
     // Otherwise, the various event handlers will call callRender.
   }

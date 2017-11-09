@@ -53,7 +53,7 @@
     "d3-selection": "^1.1.0",
     "d3-timer": "^1.0.7",
     "get-property-safely": "^1.0.0",
-    "github-projects-source": "^1.1.1",
+    "github-projects-source": "^1.1.2",
     "handle-error-web": "^1.0.1",
     "idmaker": "^0.1.1",
     "level-js": "^2.2.4",

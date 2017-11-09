@@ -1,7 +1,5 @@
 var d3 = require('d3-selection');
 
-function renderProjectEditor() {
-
-}
+function renderProjectEditor() {}
 
 module.exports = renderProjectEditor;

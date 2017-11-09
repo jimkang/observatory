@@ -31,3 +31,6 @@ build:
 
 pushall:
 	git push origin gh-pages
+
+prettier:
+	prettier --single-quote --write "**/*.js"

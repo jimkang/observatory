@@ -11,7 +11,7 @@ var redirectToGitHubAuth = require('./redirect-to-github-auth');
 var routeState;
 var projectsFlow;
 
-((function go() {
+(function go() {
   // On first load, always fetch a new token.
   findToken(
     {
@@ -32,12 +32,10 @@ var projectsFlow;
         // TODO: Ask if they want to log in as themselves.
         // redirectToGitHubAuth();
         routeState.routeFromHash();
-      }
-      else {
+      } else {
         handleError(error);
       }
-    }    
-    else {      
+    } else {
       // routeState.addToRoute({token: retrievedToken});
       var newRouteDict = unpackedRoute;
       if (!newRouteDict) {
@@ -49,29 +47,36 @@ var projectsFlow;
       routeState.overwriteRouteEntirely(newRouteDict);
     }
   }
-})());
+})();
 
 function followRoute(routeDict) {
   var user = routeDict.user || 'jimkang';
 
-  if (routeDict.user &&
-    (!routeDict.token || routeDict.expires <= (new Date()).getTime())) {
+  if (
+    routeDict.user &&
+    (!routeDict.token || routeDict.expires <= new Date().getTime())
+  ) {
     // Token's expired and we want user-specific info. Start the redirect cycle again.
     redirectToGitHubAuth({
       routeDict: routeDict,
-      clientId: window.location.hostname === 'localhost' ?
-        config.githubTest.clientId : config.github.clientId,
+      clientId:
+        window.location.hostname === 'localhost'
+          ? config.githubTest.clientId
+          : config.github.clientId,
       scopes: ['repo']
     });
     return;
   }
 
-  if (projectsFlow && !projectsFlow.newDataSourceMatches({
-    newToken: routeDict.token,
-    newUser: user,
-    newUserEmail: routeDict.userEmail,
-    newVerbose: routeDict.verbose
-  })) {
+  if (
+    projectsFlow &&
+    !projectsFlow.newDataSourceMatches({
+      newToken: routeDict.token,
+      newUser: user,
+      newUserEmail: routeDict.userEmail,
+      newVerbose: routeDict.verbose
+    })
+  ) {
     projectsFlow.cancel();
     projectsFlow = null;
   }
@@ -97,7 +102,7 @@ function followRoute(routeDict) {
     onFormSubmitted: routeWithFormValues
   });
 
-  function routeWithFormValues({username, userEmail}) {
+  function routeWithFormValues({ username, userEmail }) {
     routeState.addToRoute({
       user: username,
       userEmail: userEmail
@@ -107,5 +112,5 @@ function followRoute(routeDict) {
 }
 
 function changeView(newViewname) {
-  routeState.addToRoute({view: newViewname});
+  routeState.addToRoute({ view: newViewname });
 }

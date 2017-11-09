@@ -20,22 +20,27 @@ var basicProjectListRoot = d3.select('#basic-project-list');
 
 var deedsKey = GetPropertySafely('deeds', []);
 
-function RenderPlain({user}) {
-  return EaseThrottle({fn: renderPlain});
+function RenderPlain({ user }) {
+  return EaseThrottle({ fn: renderPlain });
 
-  function renderPlain({projectData}) {
+  function renderPlain({ projectData }) {
     d3.selectAll('.view-root:not(#list-container)').classed('hidden', true);
     d3.select('#list-container').classed('hidden', false);
 
     var projects = basicProjectListRoot.selectAll('.project').data(projectData);
     // projects.exit().remove();
-    var newProjects = projects.enter().append('li').classed('project', true);
-    var projectDescriptions = newProjects.append('div')
+    var newProjects = projects
+      .enter()
+      .append('li')
+      .classed('project', true);
+    var projectDescriptions = newProjects
+      .append('div')
       .classed('project-description', true)
       .on('click', toggleDeedList);
     projectDescriptions.html(projectDetailsSkeleton);
 
-    newProjects.append('ul')
+    newProjects
+      .append('ul')
       .classed('deeds-root', true)
       .classed('hidden', true);
 
@@ -45,9 +50,12 @@ function RenderPlain({user}) {
     var deedsRoot = allProjects.select('.deeds-root');
     var deeds = deedsRoot.selectAll('.deed').data(deedsKey, idKey);
     // deeds.exit().remove();
-    var newDeeds = deeds.enter().append('li')
+    var newDeeds = deeds
+      .enter()
+      .append('li')
       .classed('deed', true);
-    newDeeds.append('a')
+    newDeeds
+      .append('a')
       .classed('deed-name', true)
       .attr('href', getDeedLinkFromDeed)
       .attr('target', '_blank');
@@ -65,7 +73,9 @@ function RenderPlain({user}) {
   }
 
   function getDeedLinkFromDeed(deed) {
-    return `https://github.com/${user}/${deed.projectName}/commit/${deed.abbreviatedOid}`;
+    return `https://github.com/${user}/${deed.projectName}/commit/${
+      deed.abbreviatedOid
+    }`;
   }
 }
 

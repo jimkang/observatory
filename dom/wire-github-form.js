@@ -2,7 +2,7 @@ var d3 = require('d3-selection');
 
 var statusMessage = d3.select('#form-status-message');
 
-function wireGitHubForm({onFormSubmitted, username, userEmail}) {
+function wireGitHubForm({ onFormSubmitted, username, userEmail }) {
   d3.select('#github-form-submit').on('click', onGithubFormSubmit);
   var usernameField = document.getElementById('github-username');
   var userEmailField = document.getElementById('github-user-email');

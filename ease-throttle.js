@@ -13,7 +13,7 @@ var easeCubicIn = require('d3-ease').easeCubicIn;
 //   }
 // }
 
-function EaseThrottle({fn}) {
+function EaseThrottle({ fn }) {
   var timer;
   var queuedOpts;
   var numberOfCalls = 0;
@@ -23,11 +23,10 @@ function EaseThrottle({fn}) {
   function throttledFn(opts) {
     if (timer) {
       queuedOpts = opts;
-    }
-    else {
+    } else {
       fn(opts);
       numberOfCalls += 1;
-      timer = Timer(timerDone, easeCubicIn(numberOfCalls/50) * 1000);
+      timer = Timer(timerDone, easeCubicIn(numberOfCalls / 50) * 1000);
     }
   }
 

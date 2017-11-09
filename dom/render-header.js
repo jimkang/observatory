@@ -1,10 +1,12 @@
 var d3 = require('d3-selection');
 
-function renderHeader({currentUsername, activeView, changeView}) {
-  d3.select('#current-user-label-possessive').text(currentUsername + '\'s');
+function renderHeader({ currentUsername, activeView, changeView }) {
+  d3.select('#current-user-label-possessive').text(currentUsername + "'s");
   d3.select('#current-user-label').text(currentUsername);
   d3.selectAll('.view-button').on('click', onViewButtonClick);
-  d3.selectAll('.view-button').classed('active-view-button', viewButtonIsActive);
+  d3
+    .selectAll('.view-button')
+    .classed('active-view-button', viewButtonIsActive);
 
   function viewButtonIsActive() {
     return this.dataset.viewname === activeView;

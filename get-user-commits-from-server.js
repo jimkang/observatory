@@ -1,13 +1,9 @@
 var ndjson = require('ndjson');
 
-function getUserCommitsFromServer({
-  request,
-  onRepo,
-  onCommit,
-  onNonFatalError
-},
-done) {
-
+function getUserCommitsFromServer(
+  { request, onRepo, onCommit, onNonFatalError },
+  done
+) {
   var ndjsonParsingStream = ndjson.parse();
   ndjsonParsingStream.on('data', emitObject);
 
@@ -25,8 +21,7 @@ done) {
   function emitObject(obj) {
     if (obj.abbreviatedOid) {
       onCommit(obj);
-    }
-    else {
+    } else {
       onRepo(obj);
     }
   }

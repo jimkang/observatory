@@ -8,10 +8,10 @@ var closeButton = detailsBox.select('.close-button');
 
 closeButton.on('click', hideBox);
 
-function RenderDeedDetails({user}) {
+function RenderDeedDetails({ user }) {
   return renderDeedDetails;
 
-  function renderDeedDetails({deed, project}) {
+  function renderDeedDetails({ deed, project }) {
     renderDetailInnards({
       parent: detailsBox,
       deed,
