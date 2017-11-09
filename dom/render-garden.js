@@ -68,9 +68,6 @@ function renderGarden({ projectData, onDeedClick, expensiveRenderIsOK }) {
       .paddingInner(0);
   }
 
-  d3.selectAll('.view-root:not(#garden-container)').classed('hidden', true);
-  gardenContainer.classed('hidden', false);
-
   var rootData = {
     name: 'root',
     deeds: projectData

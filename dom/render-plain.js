@@ -24,9 +24,6 @@ function RenderPlain({ user }) {
   return EaseThrottle({ fn: renderPlain });
 
   function renderPlain({ projectData }) {
-    d3.selectAll('.view-root:not(#list-container)').classed('hidden', true);
-    d3.select('#list-container').classed('hidden', false);
-
     var projects = basicProjectListRoot.selectAll('.project').data(projectData);
     // projects.exit().remove();
     var newProjects = projects

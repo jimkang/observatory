@@ -11,6 +11,7 @@ var leveljs = require('level-js');
 var getUserCommitsFromServer = require('../get-user-commits-from-server');
 var handleError = require('handle-error-web');
 var countDeedsInProjects = require('../count-deeds-in-projects');
+var switchViewRoot = require('../dom/switch-view-root');
 
 const expensiveRenderInterval = 5;
 const expensiveRenderThreshold = 5;
@@ -176,6 +177,7 @@ function ProjectsFlow({ token, user, userEmail, verbose }) {
     });
     // Using name instead of id because deeds/commits do not have project ids.
     render = renderers[viewName];
+    switchViewRoot(viewName);
     renderCount = 0;
 
     if (streamEndEventReceived) {
