@@ -68,6 +68,7 @@ div[contenteditable] {
 
 #status-message {
   background-color: #ffffee;
+  width: 80%;
 }
 
 .zoom-protect-container {
