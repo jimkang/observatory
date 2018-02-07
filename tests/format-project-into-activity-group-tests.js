@@ -66,7 +66,7 @@ function runTest(testCase) {
   test(testCase.name, formatTest);
 
   function formatTest(t) {
-    var activityGroup = formatProjectIntoActivityGroup(testCase.projectData);
+    var activityGroup = formatProjectIntoActivityGroup(testCase.project);
     t.ok(activityGroup.id, 'Group has an id.');
     t.ok(activityGroup.name, 'Group has a name.');
     t.ok(activityGroup.description, 'Group has a description.');
@@ -119,6 +119,7 @@ function runTest(testCase) {
           'Has a ship-point activity.'
         );
       }
+      t.end();
     }
 
     function checkActivity(activity) {
