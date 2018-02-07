@@ -15,7 +15,7 @@
   </div>
   <div class="view-nav">
     <a id="garden-view-button" class="view-button" data-viewname="garden">Garden</a> |
-    <a id="activity-button" class="view-button hidden" data-viewname="activity">Activity Lines</a> <!-- | -->
+    <a id="activity-button" class="view-button" data-viewname="activity">Activity</a> | 
     <a id="list-view-button" class="view-button" data-viewname="plain">Simple List</a>
   </div>
 </header>
@@ -56,7 +56,10 @@
 </div>
 
 <div id="activity-container" class="view-root">
-  Activity
+  <div>Activity</div>
+  <svg id="activity-board" width="1000" height="1000">
+    <g id="activity-groups"></g>
+  </svg>
 </div>
 
  <div class="explanation">

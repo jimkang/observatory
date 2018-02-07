@@ -1,0 +1,436 @@
+[
+  {
+    "name": "observatory-cache",
+    "id": "MDEwOlJlcG9zaXRvcnkxMDEyNTEyMzA=",
+    "pushedAt": "2018-02-06T03:33:08Z",
+    "description": "Generates a (intended to be server-side) line-delimited JSON cache of GitHub (each line is a project or deed) and other API-related data for the Observatory browser app.",
+    "lastCheckedDate": "2018-02-06T05:00:07.060Z",
+    "deeds": [
+      {
+        "abbreviatedOid": "3685005",
+        "message": "Update to github-projects-source that includes metadata.",
+        "committedDate": "2017-09-16T21:21:57Z",
+        "repoName": "observatory-cache",
+        "id": "3685005",
+        "projectName": "observatory-cache"
+      },
+      {
+        "abbreviatedOid": "3ca01a7",
+        "message": "Collect deeds in a map (by id) before writing them out to avoid writing duplicate deeds.",
+        "committedDate": "2017-11-09T04:37:54Z",
+        "repoName": "observatory-cache",
+        "id": "3ca01a7",
+        "projectName": "observatory-cache"
+      }
+    ]
+  },
+  {
+    "name": "adventure-game-player",
+    "id": "MDEwOlJlcG9zaXRvcnkxMjAyNDg1OTQ=",
+    "pushedAt": "2018-02-05T03:11:11Z",
+    "description": "A bot that makes scenes of attempts to play things as adventure games.",
+    "lastCheckedDate": "2018-02-06T05:00:07.060Z"
+  },
+  {
+    "name": "shotbot",
+    "id": "MDEwOlJlcG9zaXRvcnkxMTY5NzE4NDc=",
+    "pushedAt": "2018-02-01T12:28:37Z",
+    "description": "Multi-tenant app for bots that post screenshots of web pages.",
+    "lastCheckedDate": "2018-02-06T05:00:07.060Z",
+    "deeds": [
+      {
+        "abbreviatedOid": "196fe37",
+        "message": "Getting full viewport-filling images. Saving dry runs to png.",
+        "committedDate": "2018-01-11T15:18:34Z",
+        "repoName": "shotbot",
+        "id": "196fe37",
+        "projectName": "shotbot"
+      },
+      {
+        "abbreviatedOid": "267b2ed",
+        "message": "Refactor what goes in behavior and what goes in config. Implement posting to archive.",
+        "committedDate": "2018-02-01T03:58:27Z",
+        "repoName": "shotbot",
+        "id": "267b2ed",
+        "projectName": "shotbot"
+      },
+      {
+        "abbreviatedOid": "39668ae",
+        "message": "Fix footer, post to Twitter.",
+        "committedDate": "2018-02-01T12:28:29Z",
+        "repoName": "shotbot",
+        "id": "39668ae",
+        "projectName": "shotbot"
+      }
+    ]
+  },
+  {
+    "name": "boxadder",
+    "id": "MDEwOlJlcG9zaXRvcnk4NDAyMDcy",
+    "pushedAt": "2013-03-12T18:26:28Z",
+    "description": "An app that calculates the sums of items in boxes and updates all other client instances about its changes. A test drive of Meteor, svg, and d3.js.",
+    "lastCheckedDate": "2018-02-06T05:00:04.875Z",
+    "deeds": [
+      {
+        "abbreviatedOid": "013ec55",
+        "message": "Improved spacing in add/copy board forms a little bit.",
+        "committedDate": "2013-03-11T18:43:19Z",
+        "repoName": "boxadder",
+        "id": "013ec55",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "036388a",
+        "message": "Fixed comment misplacement.",
+        "committedDate": "2013-03-10T20:27:18Z",
+        "repoName": "boxadder",
+        "id": "036388a",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "05bb778",
+        "message": "Added note about security.",
+        "committedDate": "2013-03-12T13:08:36Z",
+        "repoName": "boxadder",
+        "id": "05bb778",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "06f011c",
+        "message": "- Added support for cancelling a text edit with Esc, reset zoom on start of text edit, lock zoom during edit. This is because the text field draws weirdly when zoomed.\n- Grouped board zooming methods into BoardZoomer, added support for locking the zoom level and resetting.",
+        "committedDate": "2013-02-27T04:08:26Z",
+        "repoName": "boxadder",
+        "id": "06f011c",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "071916c",
+        "message": "Moved some functions out of board.js and into syncing_data_and_elements.js.",
+        "committedDate": "2013-03-04T07:07:59Z",
+        "repoName": "boxadder",
+        "id": "071916c",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "083a3e0",
+        "message": "Fixed typo.",
+        "committedDate": "2013-03-07T04:15:56Z",
+        "repoName": "boxadder",
+        "id": "083a3e0",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "0ab305d",
+        "message": "- Moved boxadder.js to client since all of it was client code anyway.\n- Added a newBoardDialog template that's shown when showNewBoardDialog is set in Session as well as a showNewBoardDialog method on the addBoardTemplate to make it react to changes to that Session variable.",
+        "committedDate": "2013-02-21T05:24:45Z",
+        "repoName": "boxadder",
+        "id": "0ab305d",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "0c42a47",
+        "message": "Deleted and disabled some logs, clarified confusing comment.",
+        "committedDate": "2013-02-17T22:10:26Z",
+        "repoName": "boxadder",
+        "id": "0c42a47",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "0e8de57",
+        "message": "Item dragging is now working, although the scores were temporarily dropped.\n\nStopped using the Item template for the item rect contents because that stopped the draggability, and Meteor reactivity was cut off anyway.\n\nAdded drag behaviors –&nbsp;one for plain rects and one for groups (&lt;g&gt;s). groupdragmove moves its children because the &lt;g&gt; does not have its own position.\n\nDropped css for elements inside &lt;svg&gt; because that prevents dragging somehow.",
+        "committedDate": "2013-02-10T23:57:50Z",
+        "repoName": "boxadder",
+        "id": "0e8de57",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "10b9944",
+        "message": "Moved board rendering code to client/board.js.",
+        "committedDate": "2013-02-11T01:48:05Z",
+        "repoName": "boxadder",
+        "id": "10b9944",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "11d24a1",
+        "message": "Got rid of some log messages.",
+        "committedDate": "2013-03-11T22:28:13Z",
+        "repoName": "boxadder",
+        "id": "11d24a1",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "127e2e1",
+        "message": "Commented out logging in sumForBox.",
+        "committedDate": "2013-02-12T08:22:17Z",
+        "repoName": "boxadder",
+        "id": "127e2e1",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "12f30b8",
+        "message": "Desaturated URL highlight slightly.",
+        "committedDate": "2013-03-11T19:43:25Z",
+        "repoName": "boxadder",
+        "id": "12f30b8",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "13316b1",
+        "message": "- Also put new boxes in center of viewport.\n- Check for login before attempting to add new item.",
+        "committedDate": "2013-03-12T04:03:25Z",
+        "repoName": "boxadder",
+        "id": "13316b1",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "1660729",
+        "message": "Add spacing.",
+        "committedDate": "2013-03-12T13:10:53Z",
+        "repoName": "boxadder",
+        "id": "1660729",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "18520d6",
+        "message": "Replace *all* spaces in the urlId with -.",
+        "committedDate": "2013-03-11T22:28:02Z",
+        "repoName": "boxadder",
+        "id": "18520d6",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "1b5b787",
+        "message": "Added d3, added x, y, width, and height properties to items and boxes, drew boxes and items in new svg element. Sums back to not working, labels not showing up.",
+        "committedDate": "2013-02-07T06:29:09Z",
+        "repoName": "boxadder",
+        "id": "1b5b787",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "1c9d7b2",
+        "message": "Added Items allow methods and updated createItem so that users that can't write to the board can't create, update, or delete Items.",
+        "committedDate": "2013-02-24T07:14:54Z",
+        "repoName": "boxadder",
+        "id": "1c9d7b2",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "1cb8e69",
+        "message": "Restrict available boards to just the ones the user owns or are public.",
+        "committedDate": "2013-02-22T23:51:05Z",
+        "repoName": "boxadder",
+        "id": "1cb8e69",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "1cba3b2",
+        "message": "Removed insecure package. Seems about ready.",
+        "committedDate": "2013-02-27T02:50:04Z",
+        "repoName": "boxadder",
+        "id": "1cba3b2",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "1ea5f1b",
+        "message": "Adding new items and getting sums works. (Quite ugly, though.)\n\nAdded createItem method in models.\nAdded some accounts-* packages.\nImplemented sum method.\nMade Template.box.items method work by passing this._id as boxId in query.\nUpdated item template to show title.\nAdded new item form to box.",
+        "committedDate": "2013-02-06T05:26:40Z",
+        "repoName": "boxadder",
+        "id": "1ea5f1b",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "1ec6eeb",
+        "message": "Renamed groupDrag to addGroupDragBehavior.",
+        "committedDate": "2013-02-19T03:17:01Z",
+        "repoName": "boxadder",
+        "id": "1ec6eeb",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "2123e5d",
+        "message": "Got text to be editable at other zoom levels by zooming to 1 and centering on the editable item.\n\nPass lockZoomToDefaultCenterPanAtDataCoords to makeEditable as doOnStartEdit. lockZoomToDefaultCenterPanAtDataCoords centers the pan on the element for the given data object and sets the zoom to 1.\n\neditableSVGText: Use the d object in doOnEditStart and the exitEditing call in the click handler. (That call to exitEditing was being passed garbage before and was working by accident.)",
+        "committedDate": "2013-03-08T04:55:07Z",
+        "repoName": "boxadder",
+        "id": "2123e5d",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "23a8729",
+        "message": "- Now using tweening for lockZoomToDefaultCenterPanAtDataCoords and unlock zoom. \n- Pulled parseScaleAndTranslateFromTransformString from tweenToZoom. Using it to store transform data in parsedPreLockTransform, which replaces preLockZoomTransformSTring.\n- Renamed BoardZommer.zoom to syncZoomEventToTransform.",
+        "committedDate": "2013-03-10T22:19:31Z",
+        "repoName": "boxadder",
+        "id": "23a8729",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "248e131",
+        "message": "Set up item title label to appear inside of item rect.",
+        "committedDate": "2013-02-11T07:07:57Z",
+        "repoName": "boxadder",
+        "id": "248e131",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "2527dbc",
+        "message": "Removed {{constant}} around &lt;svg&gt;. Seems to be fine so far.",
+        "committedDate": "2013-02-10T06:08:27Z",
+        "repoName": "boxadder",
+        "id": "2527dbc",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "27196ac",
+        "message": "Updated readme.",
+        "committedDate": "2013-03-12T13:35:01Z",
+        "repoName": "boxadder",
+        "id": "27196ac",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "285b917",
+        "message": "Added support for corner drag to resize on Mobile Safari.\n\n- Moved code from addResizeHandleDragBehavior into BoardDragger, using when the dragged element happens to be the resize element. On desktop, getTappedElementFromEvent uses elementFromPoint, and if clientX and clientY aren't available from the event, it uses event.target.correspondingUseElement.\n\n(Needed to do that because the drag event was being take by the group's drag handler – BoardDragger&nbsp;– on Mobile Safari.)\n\n- Added supporting flags and objects for resize to BoardDragger.\n- Increased size of resize handle.\n-",
+        "committedDate": "2013-03-09T03:13:42Z",
+        "repoName": "boxadder",
+        "id": "285b917",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "28b9686",
+        "message": "Deleted commented out styles.",
+        "committedDate": "2013-02-11T01:41:52Z",
+        "repoName": "boxadder",
+        "id": "28b9686",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "2a7ac51",
+        "message": "Added another disclaimer!",
+        "committedDate": "2013-02-13T06:31:08Z",
+        "repoName": "boxadder",
+        "id": "2a7ac51",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "2a9550d",
+        "message": "Threw line breaks into \"new board\" form.",
+        "committedDate": "2013-02-25T03:37:22Z",
+        "repoName": "boxadder",
+        "id": "2a9550d",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "2c59258",
+        "message": "Added deleteBoard to Meteor.methods and made a deleteBoard template that calls it when its button is clicked. Can now delete boards.",
+        "committedDate": "2013-02-24T08:09:33Z",
+        "repoName": "boxadder",
+        "id": "2c59258",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "2cadf10",
+        "message": "Got rid of self and self.node in Template.board.rendered –&nbsp;just calling it svgElement now.",
+        "committedDate": "2013-03-06T22:15:45Z",
+        "repoName": "boxadder",
+        "id": "2cadf10",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "2deda9c",
+        "message": "Highlight current board in list.",
+        "committedDate": "2013-02-24T00:18:58Z",
+        "repoName": "boxadder",
+        "id": "2deda9c",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "3084b3f",
+        "message": "Make sumForBox look for just intersections, not containment, so that anything touching the box will be counted in the sum.",
+        "committedDate": "2013-02-14T04:15:52Z",
+        "repoName": "boxadder",
+        "id": "3084b3f",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "30b8240",
+        "message": "Made board and page background a little less bright.",
+        "committedDate": "2013-03-11T02:40:05Z",
+        "repoName": "boxadder",
+        "id": "30b8240",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "30de1d6",
+        "message": "Fixed issue with phantom boxes when switching between boards. syncNodesToBoxes needed to chain the appending of the &lt;g&gt;'s subelements to the enter() call, just like in syncNodesToItems. This way, they get properly synced to the Boxes data.",
+        "committedDate": "2013-02-22T03:37:09Z",
+        "repoName": "boxadder",
+        "id": "30de1d6",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "3158af8",
+        "message": "Get group drag to not make everything in the group collapse to the same point on drag by changing the coords to relative changes in the mouse move.",
+        "committedDate": "2013-02-11T06:58:01Z",
+        "repoName": "boxadder",
+        "id": "3158af8",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "389feb9",
+        "message": "Whitespace.",
+        "committedDate": "2013-02-17T22:56:57Z",
+        "repoName": "boxadder",
+        "id": "389feb9",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "3980c25",
+        "message": "Implemented resizing for boxes and items.\n- Added append/update functions for resize handles (which are ugly gray boxes right now). Called them in the sync and update functions for both boxes and items.\n- Renamed the background rect css for both boxes and items to bounds-background for easier generic drag responding code that applies to both.\n- syncAttrsToItems nows selects background rects with a css class just 'rect' to avoid catching the resize ahndle.\n- Placed the item delete button using item.width rather than a static distance from the left side.\n- Added drag behaviors for the resize handles that update width and height in the store and on the bounds-background element.",
+        "committedDate": "2013-03-01T15:55:34Z",
+        "repoName": "boxadder",
+        "id": "3980c25",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "3afcd88",
+        "message": "Added widthAndHeightAttrs helper, but not using yet.",
+        "committedDate": "2013-03-10T23:12:15Z",
+        "repoName": "boxadder",
+        "id": "3afcd88",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "3affbee",
+        "message": "Darkened board bg a tiny bit to separate it further from the rest of the page.",
+        "committedDate": "2013-03-10T23:47:39Z",
+        "repoName": "boxadder",
+        "id": "3affbee",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "3ba3c17",
+        "message": "Fixed bug in which all of the items had the same values. Was passing the find criteria to fetch() rather than fetch().\n\nHooked add-new-item function to the addItem template.",
+        "committedDate": "2013-02-08T03:32:27Z",
+        "repoName": "boxadder",
+        "id": "3ba3c17",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "3dafe7b",
+        "message": "Fixed typo.",
+        "committedDate": "2013-02-23T21:31:31Z",
+        "repoName": "boxadder",
+        "id": "3dafe7b",
+        "projectName": "boxadder"
+      },
+      {
+        "abbreviatedOid": "3e63726",
+        "message": "Pulled tweenToNewZoom out of zoomToFitAllRects.",
+        "committedDate": "2013-03-10T21:42:38Z",
+        "repoName": "boxadder",
+        "id": "3e63726",
+        "projectName": "boxadder"
+      }
+    ]
+  }
+]
