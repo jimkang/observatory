@@ -10,54 +10,57 @@ var testCases = [
       numberOfActivities: 2,
       shouldHaveStartDate: true,
       shouldHaveShippedDate: false,
+      shouldHaveLastActiveDate: true,
       activityFrequency: 0.3, // TODO: Get real value
-      ageInDays: 100, // TODO: Get real value
+      ageInDays: 143, // TODO: Get real value
+      activitySpanInDays: 53,
       // dormancy length?
       isExternal: false,
       available: true
     }
-  },
-  {
-    name: 'No activity',
-    project: projectData[1],
-    expected: {
-      numberOfActivities: 0,
-      shouldHaveStartDate: false,
-      shouldHaveShippedDate: false,
-      activityFrequency: 0.3, // TODO: Get real value
-      ageInDays: 100, // TODO: Get real value
-      // dormancy length?
-      isExternal: true,
-      available: true
-    }
-  },
-  {
-    name: 'Shipped',
-    project: projectData[2],
-    expected: {
-      numberOfActivities: 3,
-      shouldHaveStartDate: true,
-      shouldHaveShippedDate: true,
-      activityFrequency: 0.3, // TODO: Get real value
-      ageInDays: 100, // TODO: Get real value
-      // dormancy length?
-      isExternal: true
-    }
-  },
-  {
-    name: 'Unavailable',
-    project: projectData[3],
-    expected: {
-      numberOfActivities: 45,
-      shouldHaveStartDate: true,
-      shouldHaveShippedDate: true,
-      activityFrequency: 0.3, // TODO: Get real value
-      ageInDays: 100, // TODO: Get real value
-      // dormancy length?
-      isExternal: true,
-      available: false
-    }
   }
+  // {
+  //   name: 'No activity',
+  //   project: projectData[1],
+  //   expected: {
+  //     numberOfActivities: 0,
+  //     shouldHaveStartDate: false,
+  //     shouldHaveShippedDate: false,
+  // shouldHaveLastActiveDate: true,
+  //     activityFrequency: 0.3, // TODO: Get real value
+  //     ageInDays: 100, // TODO: Get real value
+  //     // dormancy length?
+  //     isExternal: true,
+  //     available: true
+  //   }
+  // },
+  // {
+  //   name: 'Shipped',
+  //   project: projectData[2],
+  //   expected: {
+  //     numberOfActivities: 3,
+  //     shouldHaveStartDate: true,
+  //     shouldHaveShippedDate: true,
+  //     activityFrequency: 0.3, // TODO: Get real value
+  //     ageInDays: 100, // TODO: Get real value
+  //     // dormancy length?
+  //     isExternal: true
+  //   }
+  // },
+  // {
+  //   name: 'Unavailable',
+  //   project: projectData[3],
+  //   expected: {
+  //     numberOfActivities: 45,
+  //     shouldHaveStartDate: true,
+  //     shouldHaveShippedDate: true,
+  //     activityFrequency: 0.3, // TODO: Get real value
+  //     ageInDays: 100, // TODO: Get real value
+  //     // dormancy length?
+  //     isExternal: true,
+  //     available: false
+  //   }
+  // }
 ];
 
 testCases.forEach(runTest);
@@ -66,7 +69,10 @@ function runTest(testCase) {
   test(testCase.name, formatTest);
 
   function formatTest(t) {
-    var activityGroup = formatProjectIntoActivityGroup(testCase.project);
+    var activityGroup = formatProjectIntoActivityGroup(
+      testCase.project,
+      new Date('2018-02-07').getTime()
+    );
     t.ok(activityGroup.id, 'Group has an id.');
     t.ok(activityGroup.name, 'Group has a name.');
     t.ok(activityGroup.description, 'Group has a description.');
@@ -76,15 +82,18 @@ function runTest(testCase) {
     if (testCase.expected.shouldHaveShippedDate) {
       t.ok(activityGroup.shippedDate, 'Group has a shippedDate.');
     }
+    if (testCase.expected.shouldHaveLastActiveDate) {
+      t.ok(activityGroup.lastActiveDate, 'Group has a lastActiveDate.');
+    }
     t.equal(
       activityGroup.ageInDays,
       testCase.expected.ageInDays,
       'ageInDays is correct.'
     );
     t.equal(
-      activityGroup.ageInDays,
-      testCase.expected.activityFrequency,
-      'activityFrequency is correct.'
+      activityGroup.activitySpanInDays,
+      testCase.expected.activitySpanInDays,
+      'activitySpanInDays is correct.'
     );
     t.equal(
       activityGroup.ageInDays,
