@@ -5,6 +5,8 @@
     "pushedAt": "2018-02-06T03:33:08Z",
     "description": "Generates a (intended to be server-side) line-delimited JSON cache of GitHub (each line is a project or deed) and other API-related data for the Observatory browser app.",
     "lastCheckedDate": "2018-02-06T05:00:07.060Z",
+    "isExternal": false,
+    "available": true,
     "deeds": [
       {
         "abbreviatedOid": "3685005",

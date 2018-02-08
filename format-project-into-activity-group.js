@@ -4,7 +4,9 @@ function formatProjectIntoActivityGroup(project, nowInEpochTime = Date.now()) {
   var activityGroup = {
     id: project.id,
     name: project.name,
-    description: project.description
+    description: project.description,
+    isExternal: project.isExternal,
+    available: project.available
   };
 
   if (project.deeds && project.deeds.length > 0) {

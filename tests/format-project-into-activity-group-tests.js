@@ -15,8 +15,8 @@ var testCases = [
       ageInDays: 143, // TODO: Get real value
       activitySpanInDays: 53,
       // dormancy length?
-      isExternal: false,
-      available: true
+      isExternal: false, // TODO: Add this to API source
+      available: true // TODO: Add this to API source
     }
   }
   // {
@@ -96,12 +96,12 @@ function runTest(testCase) {
       'activitySpanInDays is correct.'
     );
     t.equal(
-      activityGroup.ageInDays,
+      activityGroup.isExternal,
       testCase.expected.isExternal,
       'isExternal is correct.'
     );
     t.equal(
-      activityGroup.ageInDays,
+      activityGroup.available,
       testCase.expected.available,
       'available is correct.'
     );
