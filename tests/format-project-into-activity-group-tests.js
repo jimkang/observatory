@@ -11,56 +11,53 @@ var testCases = [
       shouldHaveStartDate: true,
       shouldHaveShippedDate: false,
       shouldHaveLastActiveDate: true,
-      activityFrequency: 0.3, // TODO: Get real value
       ageInDays: 143, // TODO: Get real value
       activitySpanInDays: 53,
       // dormancy length?
       isExternal: false, // TODO: Add this to API source
       available: true // TODO: Add this to API source
     }
+  },
+  {
+    name: 'No activity',
+    project: projectData[1],
+    expected: {
+      numberOfActivities: 0,
+      shouldHaveStartDate: false,
+      shouldHaveShippedDate: false,
+      shouldHaveLastActiveDate: false,
+      ageInDays: undefined,
+      // dormancy length?
+      isExternal: true,
+      available: true
+    }
+  },
+  {
+    name: 'Shipped',
+    project: projectData[2],
+    expected: {
+      numberOfActivities: 3,
+      shouldHaveStartDate: true,
+      shouldHaveShippedDate: true,
+      ageInDays: 26,
+      activitySpanInDays: 21,
+      isExternal: true,
+      available: true
+    }
+  },
+  {
+    name: 'Unavailable',
+    project: projectData[3],
+    expected: {
+      numberOfActivities: 45,
+      shouldHaveStartDate: true,
+      shouldHaveShippedDate: true,
+      ageInDays: 1827,
+      activitySpanInDays: 34,
+      isExternal: true,
+      available: false
+    }
   }
-  // {
-  //   name: 'No activity',
-  //   project: projectData[1],
-  //   expected: {
-  //     numberOfActivities: 0,
-  //     shouldHaveStartDate: false,
-  //     shouldHaveShippedDate: false,
-  // shouldHaveLastActiveDate: true,
-  //     activityFrequency: 0.3, // TODO: Get real value
-  //     ageInDays: 100, // TODO: Get real value
-  //     // dormancy length?
-  //     isExternal: true,
-  //     available: true
-  //   }
-  // },
-  // {
-  //   name: 'Shipped',
-  //   project: projectData[2],
-  //   expected: {
-  //     numberOfActivities: 3,
-  //     shouldHaveStartDate: true,
-  //     shouldHaveShippedDate: true,
-  //     activityFrequency: 0.3, // TODO: Get real value
-  //     ageInDays: 100, // TODO: Get real value
-  //     // dormancy length?
-  //     isExternal: true
-  //   }
-  // },
-  // {
-  //   name: 'Unavailable',
-  //   project: projectData[3],
-  //   expected: {
-  //     numberOfActivities: 45,
-  //     shouldHaveStartDate: true,
-  //     shouldHaveShippedDate: true,
-  //     activityFrequency: 0.3, // TODO: Get real value
-  //     ageInDays: 100, // TODO: Get real value
-  //     // dormancy length?
-  //     isExternal: true,
-  //     available: false
-  //   }
-  // }
 ];
 
 testCases.forEach(runTest);
@@ -106,13 +103,12 @@ function runTest(testCase) {
       'available is correct.'
     );
 
-    t.ok(activityGroup.activities, 'Group has activities.');
-    t.equal(
-      activityGroup.activities.length,
-      testCase.expected.numberOfActivities,
-      'Group as correct number of activities.'
-    );
-    if (activityGroup.activities.length > 0) {
+    if (activityGroup.activities && activityGroup.activities.length > 0) {
+      t.equal(
+        activityGroup.activities.length,
+        testCase.expected.numberOfActivities,
+        'Group has correct number of activities.'
+      );
       activityGroup.activities.forEach(checkActivity);
 
       t.equal(
@@ -120,16 +116,9 @@ function runTest(testCase) {
         1,
         'Has a start activity.'
       );
-      if (testCase.expected.shouldHaveShippedDate) {
-        t.equal(
-          activityGroup.activities.filter(activity => activity.isShipPoint)
-            .length,
-          1,
-          'Has a ship-point activity.'
-        );
-      }
-      t.end();
     }
+
+    t.end();
 
     function checkActivity(activity) {
       t.ok(activity.id, 'Activity has an id.');

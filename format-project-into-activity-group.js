@@ -9,6 +9,10 @@ function formatProjectIntoActivityGroup(project, nowInEpochTime = Date.now()) {
     available: project.available
   };
 
+  if (project.shippedDate) {
+    activityGroup.shippedDate = new Date(project.shippedDate);
+  }
+
   if (project.deeds && project.deeds.length > 0) {
     var activities = project.deeds.map(makeActivity);
     activities.sort(aIsEarlierThanB);

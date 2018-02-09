@@ -31,7 +31,9 @@
     "id": "MDEwOlJlcG9zaXRvcnkxMjAyNDg1OTQ=",
     "pushedAt": "2018-02-05T03:11:11Z",
     "description": "A bot that makes scenes of attempts to play things as adventure games.",
-    "lastCheckedDate": "2018-02-06T05:00:07.060Z"
+    "lastCheckedDate": "2018-02-06T05:00:07.060Z",
+    "isExternal": true,
+    "available": true
   },
   {
     "name": "shotbot",
@@ -39,6 +41,9 @@
     "pushedAt": "2018-02-01T12:28:37Z",
     "description": "Multi-tenant app for bots that post screenshots of web pages.",
     "lastCheckedDate": "2018-02-06T05:00:07.060Z",
+    "isExternal": true,
+    "available": true,
+    "shippedDate": "2018-02-01T12:28:37Z",
     "deeds": [
       {
         "abbreviatedOid": "196fe37",
@@ -72,6 +77,9 @@
     "pushedAt": "2013-03-12T18:26:28Z",
     "description": "An app that calculates the sums of items in boxes and updates all other client instances about its changes. A test drive of Meteor, svg, and d3.js.",
     "lastCheckedDate": "2018-02-06T05:00:04.875Z",
+    "isExternal": true,
+    "available": false,
+    "shippedDate": "2013-03-12T18:26:28Z",
     "deeds": [
       {
         "abbreviatedOid": "013ec55",
