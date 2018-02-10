@@ -19,12 +19,23 @@ function RenderActivityView({ user }) {
       var activityGroups = activityGroupRoot
         .selectAll('.activity-group')
         .data(activityData, accessor());
+
       activityGroups.exit().remove();
-      var newGroups = activityGroups.enter().append('rect');
+
+      // console.log('activityGroups.enter().size()', activityGroups.enter().size())
+      var newGroups = activityGroups
+        .enter()
+        .append('rect')
+        .classed('activity-group', true);
       newGroups.attr('height', 40);
-      newGroups
-        .merge(activityGroups)
-        .attr('width', group => 20 * group.activities.length)
+
+      var groupsToUpdate = newGroups.merge(activityGroups);
+      // console.log('groupsToUpdate size', groupsToUpdate.size())
+      groupsToUpdate
+        .attr(
+          'width',
+          group => 20 * (group.activities ? group.activities.length : 0)
+        )
         .attr('y', (group, i) => 40 * i);
     }
     // activityGroups.selectAll('.activity-group').data()

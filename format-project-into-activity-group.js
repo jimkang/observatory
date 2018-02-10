@@ -30,7 +30,7 @@ function formatProjectIntoActivityGroup(project, nowInEpochTime = Date.now()) {
       activityGroup.startDate
     );
     activityGroup.activities = activities;
-    console.log(activityGroup.activities);
+    // console.log(activityGroup.activities);
   }
   return activityGroup;
 }
