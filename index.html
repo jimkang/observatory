@@ -16,6 +16,7 @@
   <div class="view-nav">
     <a id="garden-view-button" class="view-button" data-viewname="garden">Garden</a> |
     <a id="activity-button" class="view-button" data-viewname="activity">Activity</a> | 
+    <a id="deedsort-button" class="view-button" data-viewname="deedsort">Sorted by deed quantity</a> | 
     <a id="list-view-button" class="view-button" data-viewname="plain">Simple List</a>
   </div>
 </header>
@@ -59,6 +60,13 @@
   <div>Activity</div>
   <svg id="activity-board" width="1000" height="1000">
     <g id="activity-groups"></g>
+  </svg>
+</div>
+
+<div id="deedsort-container" class="view-root">
+  <div>Sorted by deed quantity</div>
+  <svg id="deedsort-board" width="1000" height="1000">
+    <g class="deed-groups"></g>
   </svg>
 </div>
 

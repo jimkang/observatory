@@ -58,7 +58,7 @@ function followRoute(routeDict) {
   ) {
     // Token's expired and we want user-specific info. Start the redirect cycle again.
     redirectToGitHubAuth({
-      routeDict: routeDict,
+      routeDict,
       clientId:
         window.location.hostname === 'localhost'
           ? config.githubTest.clientId
