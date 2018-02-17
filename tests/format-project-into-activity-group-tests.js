@@ -74,13 +74,13 @@ function runTest(testCase) {
     t.ok(activityGroup.name, 'Group has a name.');
     t.ok(activityGroup.description, 'Group has a description.');
     if (testCase.expected.shouldHaveStartDate) {
-      t.ok(activityGroup.startDate, 'Group has a startDate.');
+      t.ok(activityGroup.startDate instanceof Date, 'Group has a startDate.');
     }
     if (testCase.expected.shouldHaveShippedDate) {
-      t.ok(activityGroup.shippedDate, 'Group has a shippedDate.');
+      t.ok(activityGroup.shippedDate instanceof Date, 'Group has a shippedDate.');
     }
     if (testCase.expected.shouldHaveLastActiveDate) {
-      t.ok(activityGroup.lastActiveDate, 'Group has a lastActiveDate.');
+      t.ok(activityGroup.lastActiveDate instanceof Date, 'Group has a lastActiveDate.');
     }
     t.equal(
       activityGroup.ageInDays,
