@@ -11,14 +11,41 @@ var activityGroupRoot = d3.select('#activity-groups');
 function RenderActivityView({ user }) {
   return EaseThrottle({ fn: renderActivityView });
 
+// TODO: Draw activities in postion
   function renderActivityView({ projectData }) {
     d3.selectAll('.view-root:not(#activity-container)').classed('hidden', true);
     activityContainer.classed('hidden', false);
-    var activityData = projectData.map(formatProjectIntoActivityGroup);
-    if (activityData[0].activities) {
+    var activityGroupData = [];
+    var earliestActivityDate;
+    var latestActivityDate;
+
+    for (var i = 0; i < projectData.length; ++i) {
+      let ag = formatProjectIntoActivityGroup(projectData[i]);
+      activityGroupData.push(ag);
+      if (ag.startDate) {
+        if (!earliestActivityDate) {
+          earliestActivityDate = ag.startDate;
+        } else if (ag.startDate < earliestActivityDate) {
+          earliestActivityDate = ag.startDate;
+        }
+      }
+      if (ag.lastActiveDate) {
+        if (!latestActivityDate) {
+          latestActivityDate = ag.lastActiveDate;
+        } else if (ag.lastActiveDate > latestActivityDate) {
+          latestActivityDate = ag.lastActiveDate;
+        }
+      }
+    }
+    console.log('earliestActivityDate', earliestActivityDate);
+    console.log('latestActivityDate', latestActivityDate);
+    // TODO: Use these dates to determine the x scale.
+    // One day should at least be some amount of pixels. 20?
+
+    if (activityGroupData[0].activities) {
       var activityGroups = activityGroupRoot
         .selectAll('.activity-group')
-        .data(activityData, accessor());
+        .data(activityGroupData, accessor());
 
       activityGroups.exit().remove();
 
