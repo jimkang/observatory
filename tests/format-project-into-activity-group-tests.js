@@ -77,10 +77,16 @@ function runTest(testCase) {
       t.ok(activityGroup.startDate instanceof Date, 'Group has a startDate.');
     }
     if (testCase.expected.shouldHaveShippedDate) {
-      t.ok(activityGroup.shippedDate instanceof Date, 'Group has a shippedDate.');
+      t.ok(
+        activityGroup.shippedDate instanceof Date,
+        'Group has a shippedDate.'
+      );
     }
     if (testCase.expected.shouldHaveLastActiveDate) {
-      t.ok(activityGroup.lastActiveDate instanceof Date, 'Group has a lastActiveDate.');
+      t.ok(
+        activityGroup.lastActiveDate instanceof Date,
+        'Group has a lastActiveDate.'
+      );
     }
     t.equal(
       activityGroup.ageInDays,

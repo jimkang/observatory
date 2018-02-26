@@ -33,7 +33,7 @@ function ProjectsFlow({ token, user, userEmail, verbose }) {
     plain: RenderPlain({ user }),
     garden: renderGarden,
     activity: RenderActivityView({ user }),
-    deedsort: RenderDeedSortView({ user})
+    deedsort: RenderDeedSortView({ user })
   };
 
   var githubProjectsSource = GitHubProjectsSource({
