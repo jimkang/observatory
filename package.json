@@ -39,7 +39,7 @@
     "uglify-js": "^2.4.17"
   },
   "dependencies": {
-    "accessor": "^1.1.1",
+    "accessor": "^2.0.0",
     "add-deed-to-project": "^1.0.0",
     "basic-browser-request": "^7.3.0",
     "call-next-tick": "^2.0.1",
