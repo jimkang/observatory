@@ -5,9 +5,10 @@ var EaseThrottle = require('../ease-throttle');
 var formatProjectIntoActivityGroup = require('../format-project-into-activity-group');
 var scale = require('d3-scale');
 var Zoom = require('d3-zoom');
+var comparators = require('../comparators');
 
-const groupHeight = 40;
-const dayWidth = 20;
+const groupWidth = 40;
+const dayHeight = 20;
 const dayInMS = 24 * 60 * 60 * 1000;
 
 var activityContainer = d3.select('#activity-container');
@@ -52,19 +53,22 @@ function RenderActivityView({ user }) {
       return;
     }
 
+    activityGroupData.sort(comparators.compareActivityGroupStartDateAsc);
+    // console.log(activityGroupData.map(g => g.name));
+
     var totalDaysSpan =
       (latestActivityDate.getTime() - earliestActivityDate.getTime()) / dayInMS;
     console.log('totalDateSpan', totalDaysSpan);
     // TODO: Display totalDateSpan somewhere.
-    var xWidth = totalDaysSpan * dayWidth;
-    
-    // activityBoard.attr('height', activityGroupData.length * groupHeight);
-    // activityBoard.attr('width', xWidth);
+    var graphHeight = totalDaysSpan * dayHeight;
+
+    // activityBoard.attr('height', activityGroupData.length * groupWidth);
+    // activityBoard.attr('width', graphHeight);
 
     var timeScale = scale
       .scaleTime()
-      .domain([earliestActivityDate, latestActivityDate])
-      .range([0, xWidth]);
+      .domain([latestActivityDate, earliestActivityDate])
+      .range([0, graphHeight]);
 
     var activityGroups = activityGroupRoot
       .selectAll('.activity-group')
@@ -78,11 +82,11 @@ function RenderActivityView({ user }) {
       .append('g')
       .classed('activity-group', true);
 
-    newGroups.append('line').classed('project-line', true)
-      .attr('x1', 0)
-      .attr('x2', xWidth)
-      .attr('y1', groupHeight/4)
-      .attr('y2', groupHeight/4)
+    newGroups
+      .append('line')
+      .classed('project-line', true)
+      .attr('x1', groupWidth / 4)
+      .attr('x2', groupWidth / 4)
       .attr('stroke', 'black')
       .attr('stroke-width', 2);
 
@@ -93,7 +97,10 @@ function RenderActivityView({ user }) {
       //   'width',
       //   group => 20 * (group.activities ? group.activities.length : 0)
       // )
-      .attr('transform', (group, i) => `translate(0, ${groupHeight * i})`);
+      .attr('transform', (group, i) => `translate(${groupWidth * i}, 0)`)
+      .select('.project-line')
+      .attr('y1', getLastActiveY)
+      .attr('y2', getStartDateY);
 
     var activities = groupsToUpdate
       .selectAll('.activity')
@@ -109,8 +116,8 @@ function RenderActivityView({ user }) {
       .attr('width', 20)
       .attr('height', 20);
     var activitiesToUpdate = newActivities.merge(activities);
-    // activitiesToUpdate.attr('x', timeScale(accessor('committedDate')));
-    activitiesToUpdate.attr('x', getActivityX);
+    activitiesToUpdate.attr('x', 0);
+    activitiesToUpdate.attr('y', getActivityY);
 
     function updateSpanDates(group) {
       if (group.startDate) {
@@ -129,8 +136,16 @@ function RenderActivityView({ user }) {
       }
     }
 
-    function getActivityX(d) {
+    function getActivityY(d) {
       return timeScale(d.committedDate);
+    }
+
+    function getLastActiveY(group) {
+      return timeScale(group.lastActiveDate);
+    }
+
+    function getStartDateY(group) {
+      return timeScale(group.startDate);
     }
   }
 }

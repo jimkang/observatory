@@ -3,6 +3,7 @@ var accessor = require('accessor');
 var GetPropertySafely = require('get-property-safely');
 var EaseThrottle = require('../ease-throttle');
 var renderDetailInnards = require('./render-detail-innards');
+var comparators = require('../comparators');
 
 const projectDetailsSkeleton = `<div class="project-details">
       <a class="name-link" target="_blank"></a>
@@ -24,6 +25,7 @@ function RenderPlain({ user }) {
   return EaseThrottle({ fn: renderPlain });
 
   function renderPlain({ projectData }) {
+    projectData.sort(comparators.compareLastUpdatedDesc);
     var projects = basicProjectListRoot.selectAll('.project').data(projectData);
     // projects.exit().remove();
     var newProjects = projects

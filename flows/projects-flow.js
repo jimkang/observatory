@@ -154,7 +154,7 @@ function ProjectsFlow({ token, user, userEmail, verbose }) {
   function callRender({ expensiveRenderIsOK = false }) {
     if (render) {
       render({
-        projectData: collectedProjects.sort(compareLastUpdatedDesc),
+        projectData: collectedProjects,
         expensiveRenderIsOK: expensiveRenderIsOK,
         onDeedClick: renderDeedDetails
       });
@@ -186,14 +186,6 @@ function ProjectsFlow({ token, user, userEmail, verbose }) {
       callRender({ expensiveRenderIsOK: true });
     }
     // Otherwise, the various event handlers will call callRender.
-  }
-}
-
-function compareLastUpdatedDesc(projectA, projectB) {
-  if (new Date(projectA.pushedAt) > new Date(projectB.pushedAt)) {
-    return -1;
-  } else {
-    return 1;
   }
 }
 
