@@ -336,6 +336,15 @@ a {
   margin-bottom: 1em;
 }
 
+.group-name text {
+  text-anchor: middle;
+  fill: #555;
+}
+
+.activity {
+  fill: hsla(0, 0%, 30%, 0.5);
+}
+
 @media all and (max-height: 568px) {
   body {
     font-size: 18px;
@@ -371,6 +380,7 @@ a {
 #activity-board {
   border: 2px dashed #aaa;
 }
+
 
 @media all and (max-height: 320px) {
   .details-box {

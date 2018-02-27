@@ -9,8 +9,14 @@ var comparators = require('../comparators');
 var pluck = require('lodash.pluck');
 // var curry = require('lodash.curry');
 
-const groupWidth = 40;
 const dayHeight = 20;
+const groupWidth = dayHeight * 2;
+const verticalRuleXWithinGroup = dayHeight;
+const labelTextY = -dayHeight;
+const activitySize = dayHeight / 2;
+// Center the squire in the middle of the group.
+const activityXWithinGroup = groupWidth / 2 - activitySize / 2;
+
 const dayInMS = 24 * 60 * 60 * 1000;
 
 var activityContainer = d3.select('#activity-container');
@@ -19,10 +25,12 @@ var activityGroupRoot = d3.select('#activity-groups');
 var fixedXRoot = activityBoard.select('.fixed-x-labels');
 var fixedYRoot = activityBoard.select('.fixed-y-labels');
 
+var groupLabelY = activityBoard.attr('height') / 2;
+
 (function setUpZoom() {
   var zoomLayer = activityBoard.select('.zoomable-activity');
   var zoom = Zoom.zoom()
-    .scaleExtent([0.01, 2])
+    .scaleExtent([0.03, 2])
     .on('zoom', zoomed);
 
   activityBoard.call(zoom);
@@ -76,7 +84,11 @@ function RenderActivityView({ user }) {
       .range([0, graphHeight]);
 
     renderActivityGroups({ activityGroupData, timeScale });
-    renderProjectLabels({ activityGroupData });
+    renderGroupRulers({
+      activityGroupData,
+      graphHeight,
+      boardHeight: activityBoard.attr('height')
+    });
 
     function updateSpanDates(group) {
       if (group.startDate) {
@@ -113,8 +125,8 @@ function renderActivityGroups({ activityGroupData, timeScale }) {
   newGroups
     .append('line')
     .classed('project-line', true)
-    .attr('x1', groupWidth / 4)
-    .attr('x2', groupWidth / 4)
+    .attr('x1', verticalRuleXWithinGroup)
+    .attr('x2', verticalRuleXWithinGroup)
     .attr('stroke', 'black')
     .attr('stroke-width', 2);
 
@@ -143,10 +155,10 @@ function renderActivityGroups({ activityGroupData, timeScale }) {
   newActivities
     // .attr('fill', 'blue')
     // .attr('r', 5)
-    .attr('width', 20)
-    .attr('height', 20);
+    .attr('width', activitySize)
+    .attr('height', activitySize);
   var activitiesToUpdate = newActivities.merge(activities);
-  activitiesToUpdate.attr('x', 0).attr('y', getActivityY);
+  activitiesToUpdate.attr('x', activityXWithinGroup).attr('y', getActivityY);
   // .attr('cx', 10)
   // .attr('cy', getActivityY);
 
@@ -163,34 +175,48 @@ function renderActivityGroups({ activityGroupData, timeScale }) {
   }
 }
 
-function renderProjectLabels({ activityGroupData }) {
-  var groupNames = fixedYRoot
+function renderGroupRulers({ activityGroupData, graphHeight }) {
+  var groupRulers = fixedYRoot
     .selectAll('.group-name')
     .data(pluck(activityGroupData, 'name'), accessor('identity'));
 
-  groupNames.exit().remove();
+  groupRulers.exit().remove();
 
-  var newNames = groupNames
+  var newRulers = groupRulers
     .enter()
-    .append('text')
-    .classed('group-name', true)
-    .attr('transform', 'rotate(90)');
+    .append('g')
+    .classed('group-name', true);
 
-  var currentGroupNames = newNames.merge(groupNames);
-  currentGroupNames.text(accessor('identity')).attr('y', getNameLabelY);
+  newRulers
+    .append('line')
+    .attr('x1', verticalRuleXWithinGroup)
+    .attr('x2', verticalRuleXWithinGroup)
+    .attr('y1', -graphHeight)
+    .attr('y2', graphHeight)
+    .attr('stroke', '#ccc')
+    .attr('stroke-width', 1);
+
+  newRulers
+    .append('text')
+    .attr('transform', 'rotate(90)')
+    .attr('y', labelTextY); // Since we're rotated, this moves it horizontally.
+
+  var updateRulers = newRulers.merge(groupRulers);
+  updateRulers.attr('transform', getRulerTransform);
+  updateRulers.select('text').text(accessor('identity'));
+  // .attr('y', getNameLabelY);
 }
 
 function hasDeeds(project) {
   return project && project.deeds && project.deeds.length > 0;
 }
 
-// The label is rotated 90 degrees, so we set y to move it horizontally.
-function getNameLabelY(name, i) {
-  return -groupWidth * i;
+function getRulerTransform(name, i) {
+  return `translate(${groupWidth * i}, 0)`;
 }
 
 function getFixedYLayerTransform({ x, k }) {
-  return `translate(${x}, 100) scale(${k})`;
+  return `translate(${x}, ${groupLabelY}) scale(${k})`;
 }
 
 module.exports = RenderActivityView;
