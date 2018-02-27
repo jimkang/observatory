@@ -58,8 +58,16 @@
 
 <div id="activity-container" class="view-root">
   <div>Activity</div>
-  <svg id="activity-board" width="1000" height="1000">
-    <g id="activity-groups"></g>
+  <div class="zoom-controls">
+    <label for="activity-zoom-slider">Slide to the right to make activities bigger; left to make them smaller.</label>
+    <input type="range" class="slider" id="activity-zoom-slider" min="25" max="400" value="100"></input>
+  </div>
+  <svg id="activity-board" width="960" height="640">
+    <g class="zoomable-activity">
+      <g id="activity-groups"></g>
+    </g>
+    <g class="unzoomable-activity">
+    </g>
   </svg>
 </div>
 

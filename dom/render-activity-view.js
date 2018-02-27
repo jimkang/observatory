@@ -4,12 +4,34 @@ var GetPropertySafely = require('get-property-safely');
 var EaseThrottle = require('../ease-throttle');
 var formatProjectIntoActivityGroup = require('../format-project-into-activity-group');
 var scale = require('d3-scale');
+var Zoom = require('d3-zoom');
 
 const groupHeight = 40;
+const dayWidth = 20;
 const dayInMS = 24 * 60 * 60 * 1000;
 var activityContainer = d3.select('#activity-container');
 var activityBoard = d3.select('#activity-board');
 var activityGroupRoot = d3.select('#activity-groups');
+var zoomSlider = d3.select('#activity-zoom-slider');
+
+(function setUpZoom() {
+  var zoomLayer = activityBoard.select('.zoomable-activity');
+  var zoom = Zoom.zoom()
+    .scaleExtent([0.01, 2])
+    .on('zoom', zoomed);
+
+  activityBoard.call(zoom);
+  // zoomSlider.on('change.zoom-slider', null);
+  // zoomSlider.on('change.zoom-slider', zoomed);
+
+  function zoomed() {
+    // console.log(d3.event.transform.toString());
+    zoomLayer.attr('transform', d3.event.transform);
+    // var scale = zoomSlider.node().value/100;
+    // var xTranslate = -1 * scale * 500;
+    // zoomLayer.attr('transform', `translate(${xTranslate}, 0) scale(${scale}, 1)`)
+  }
+})();
 
 function RenderActivityView({ user }) {
   return EaseThrottle({ fn: renderActivityView });
@@ -39,13 +61,15 @@ function RenderActivityView({ user }) {
       (latestActivityDate.getTime() - earliestActivityDate.getTime()) / dayInMS;
     console.log('totalDateSpan', totalDaysSpan);
     // TODO: Display totalDateSpan somewhere.
+    var xWidth = totalDaysSpan * dayWidth;
     
-    activityBoard.attr('height', activityGroupData.length * groupHeight);
+    // activityBoard.attr('height', activityGroupData.length * groupHeight);
+    // activityBoard.attr('width', xWidth);
 
     var timeScale = scale
       .scaleTime()
       .domain([earliestActivityDate, latestActivityDate])
-      .range([0, 960]);
+      .range([0, xWidth]);
 
     var activityGroups = activityGroupRoot
       .selectAll('.activity-group')
@@ -58,6 +82,14 @@ function RenderActivityView({ user }) {
       .enter()
       .append('g')
       .classed('activity-group', true);
+
+    newGroups.append('line').classed('project-line', true)
+      .attr('x1', 0)
+      .attr('x2', xWidth)
+      .attr('y1', groupHeight/4)
+      .attr('y2', groupHeight/4)
+      .attr('stroke', 'black')
+      .attr('stroke-width', 2);
 
     var groupsToUpdate = newGroups.merge(activityGroups);
     // console.log('groupsToUpdate size', groupsToUpdate.size())

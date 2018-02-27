@@ -364,6 +364,14 @@ a {
   }
 }
 
+#activity-groups {
+  transform: translate(100, 0);
+}
+
+#activity-board {
+  border: 2px dashed #aaa;
+}
+
 @media all and (max-height: 320px) {
   .details-box {
     max-height: 240px;

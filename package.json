@@ -52,6 +52,7 @@
     "d3-scale": "^1.0.6",
     "d3-selection": "^1.1.0",
     "d3-timer": "^1.0.7",
+    "d3-zoom": "^1.7.1",
     "get-property-safely": "^1.0.0",
     "github-projects-source": "^1.1.2",
     "handle-error-web": "^1.0.1",
