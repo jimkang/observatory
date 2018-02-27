@@ -9,10 +9,10 @@ var Zoom = require('d3-zoom');
 const groupHeight = 40;
 const dayWidth = 20;
 const dayInMS = 24 * 60 * 60 * 1000;
+
 var activityContainer = d3.select('#activity-container');
 var activityBoard = d3.select('#activity-board');
 var activityGroupRoot = d3.select('#activity-groups');
-var zoomSlider = d3.select('#activity-zoom-slider');
 
 (function setUpZoom() {
   var zoomLayer = activityBoard.select('.zoomable-activity');
@@ -21,15 +21,10 @@ var zoomSlider = d3.select('#activity-zoom-slider');
     .on('zoom', zoomed);
 
   activityBoard.call(zoom);
-  // zoomSlider.on('change.zoom-slider', null);
-  // zoomSlider.on('change.zoom-slider', zoomed);
 
   function zoomed() {
     // console.log(d3.event.transform.toString());
     zoomLayer.attr('transform', d3.event.transform);
-    // var scale = zoomSlider.node().value/100;
-    // var xTranslate = -1 * scale * 500;
-    // zoomLayer.attr('transform', `translate(${xTranslate}, 0) scale(${scale}, 1)`)
   }
 })();
 
