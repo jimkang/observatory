@@ -7,6 +7,9 @@ var scale = require('d3-scale');
 var Zoom = require('d3-zoom');
 var comparators = require('../comparators');
 var pluck = require('lodash.pluck');
+var axis = require('d3-axis');
+var time = require('d3-time');
+var timeFormat = require('d3-time-format').timeFormat;
 // var curry = require('lodash.curry');
 
 const dayHeight = 20;
@@ -24,8 +27,11 @@ var activityBoard = d3.select('#activity-board');
 var activityGroupRoot = d3.select('#activity-groups');
 var fixedXRoot = activityBoard.select('.fixed-x-labels');
 var fixedYRoot = activityBoard.select('.fixed-y-labels');
+var weekRuler = fixedXRoot.select('.week-ruler');
+var yearRuler = fixedXRoot.select('.year-ruler');
 
 var groupLabelY = activityBoard.attr('height') / 2;
+var timeRulerX = activityBoard.attr('width') / 2;
 
 (function setUpZoom() {
   var zoomLayer = activityBoard.select('.zoomable-activity');
@@ -39,6 +45,7 @@ var groupLabelY = activityBoard.attr('height') / 2;
     // console.log(d3.event.transform.toString());
     zoomLayer.attr('transform', d3.event.transform);
     fixedYRoot.attr('transform', getFixedYLayerTransform(d3.event.transform));
+    fixedXRoot.attr('transform', getFixedXLayerTransform(d3.event.transform));
   }
 })();
 
@@ -89,6 +96,7 @@ function RenderActivityView({ user }) {
       graphHeight,
       boardHeight: activityBoard.attr('height')
     });
+    renderTimeRulers({ timeScale });
 
     function updateSpanDates(group) {
       if (group.startDate) {
@@ -202,7 +210,7 @@ function renderGroupRulers({ activityGroupData, graphHeight }) {
     .attr('y', labelTextY); // Since we're rotated, this moves it horizontally.
 
   var updateRulers = newRulers.merge(groupRulers);
-  updateRulers.attr('transform', getRulerTransform);
+  updateRulers.attr('transform', getGroupRulerTransform);
   updateRulers.select('text').text(accessor('identity'));
   // .attr('y', getNameLabelY);
 }
@@ -211,12 +219,33 @@ function hasDeeds(project) {
   return project && project.deeds && project.deeds.length > 0;
 }
 
-function getRulerTransform(name, i) {
+function renderTimeRulers({ timeScale }) {
+  weekRuler.attr('transform', 'translate(300, 0)');
+  yearRuler.attr('transform', 'translate(300, 0)');
+
+  var weekAxis = axis.axisLeft(timeScale);
+  weekAxis.ticks(time.timeWeek.every(1));
+  weekAxis.tickSize(50);
+
+  var yearAxis = axis.axisLeft(timeScale);
+  yearAxis.ticks(time.timeYear.every(1));
+  yearAxis.tickFormat(timeFormat('%Y'));
+  yearAxis.tickSize(100);
+
+  weekRuler.call(weekAxis);
+  yearRuler.call(yearAxis);
+}
+
+function getGroupRulerTransform(name, i) {
   return `translate(${groupWidth * i}, 0)`;
 }
 
 function getFixedYLayerTransform({ x, k }) {
   return `translate(${x}, ${groupLabelY}) scale(${k})`;
+}
+
+function getFixedXLayerTransform({ y, k }) {
+  return `translate(${timeRulerX}, ${y}) scale(${k})`;
 }
 
 module.exports = RenderActivityView;
