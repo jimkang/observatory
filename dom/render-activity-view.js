@@ -30,8 +30,9 @@ var fixedYRoot = activityBoard.select('.fixed-y-labels');
 var weekRuler = fixedXRoot.select('.week-ruler');
 var yearRuler = fixedXRoot.select('.year-ruler');
 
-var groupLabelY = activityBoard.attr('height') / 2;
-var timeRulerX = activityBoard.attr('width') / 2;
+const groupLabelY = activityBoard.attr('height') / 2;
+const timeRulerX = 0;//activityBoard.attr('width') / 2;
+const dateTickLength = 2000;
 
 (function setUpZoom() {
   var zoomLayer = activityBoard.select('.zoomable-activity');
@@ -220,12 +221,12 @@ function hasDeeds(project) {
 }
 
 function renderTimeRulers({ timeScale }) {
-  weekRuler.attr('transform', 'translate(300, 0)');
-  yearRuler.attr('transform', 'translate(300, 0)');
+  // weekRuler.attr('transform', 'translate(300, 0)');
+  // yearRuler.attr('transform', 'translate(300, 0)');
 
-  var weekAxis = axis.axisLeft(timeScale);
+  var weekAxis = axis.axisRight(timeScale);
   weekAxis.ticks(time.timeWeek.every(1));
-  weekAxis.tickSize(50);
+  weekAxis.tickSize(dateTickLength);
 
   var yearAxis = axis.axisLeft(timeScale);
   yearAxis.ticks(time.timeYear.every(1));

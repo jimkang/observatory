@@ -3,6 +3,13 @@ observatory
 
 Observes the work you've done; kind of an anti-planner.
 
+TODO:
+
+- Canvas
+- Flip back to projects on the y-axis again.
+- Make activities squares within a column instead of squares on a line.
+- Make weeks columns instead of lines.
+
 Installation
 ------------
 
