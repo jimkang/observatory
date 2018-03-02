@@ -336,6 +336,11 @@ a {
   margin-bottom: 1em;
 }
 
+#activity-container {
+  width: 1000px;
+  height: 768px;
+}
+
 .group-name text {
   text-anchor: middle;
   fill: #555;
@@ -343,6 +348,27 @@ a {
 
 .activity {
   fill: hsla(0, 0%, 30%, 0.5);
+}
+
+#activity-board {
+  z-index: 0;
+  position: absolute;
+}
+
+#activities-canvas {
+  z-index: 1;
+  position: absolute;
+}
+
+#activities-labels {
+  z-index: 2;
+  position: absolute;
+}
+
+#activities-targets-canvas {
+  position: absolute;
+  opacity: 0;
+  z-index: 3;
 }
 
 @media all and (max-height: 568px) {

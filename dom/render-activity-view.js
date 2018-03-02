@@ -29,26 +29,37 @@ var fixedXRoot = activityBoard.select('.fixed-x-labels');
 var fixedYRoot = activityBoard.select('.fixed-y-labels');
 var weekRuler = fixedXRoot.select('.week-ruler');
 var yearRuler = fixedXRoot.select('.year-ruler');
+var targetsCanvas = d3.select('#activities-targets-canvas');
+var activitiesContext = d3.select('#activities-canvas').node().getContext('2d', { alpha: true });
 
 const groupLabelY = activityBoard.attr('height') / 2;
 const timeRulerX = 0;//activityBoard.attr('width') / 2;
 const dateTickLength = 2000;
 
-(function setUpZoom() {
+function setUpZoom(draw, graphWidth, graphHeight) {
   var zoomLayer = activityBoard.select('.zoomable-activity');
   var zoom = Zoom.zoom()
     .scaleExtent([0.03, 2])
     .on('zoom', zoomed);
 
-  activityBoard.call(zoom);
+  targetsCanvas.call(zoom);
 
   function zoomed() {
     // console.log(d3.event.transform.toString());
+    activitiesContext.clearRect(0, 0, graphWidth, graphHeight);
+    console.log(d3.event.transform);
+    activitiesContext.save();
+    // TODO: Semantic zoom to preserve line thickness.
+    activitiesContext.translate(d3.event.transform.x, d3.event.transform.y);
+    activitiesContext.scale(d3.event.transform.k, d3.event.transform.k);
+    draw();
+    activitiesContext.restore();
+
     zoomLayer.attr('transform', d3.event.transform);
     fixedYRoot.attr('transform', getFixedYLayerTransform(d3.event.transform));
     fixedXRoot.attr('transform', getFixedXLayerTransform(d3.event.transform));
   }
-})();
+}
 
 function RenderActivityView({ user }) {
   return EaseThrottle({ fn: renderActivityView });
@@ -82,6 +93,7 @@ function RenderActivityView({ user }) {
     console.log('totalDateSpan', totalDaysSpan);
     // TODO: Display totalDateSpan somewhere.
     var graphHeight = totalDaysSpan * dayHeight;
+    var graphWidth = activityBoard.attr('width');
 
     // activityBoard.attr('height', activityGroupData.length * groupWidth);
     // activityBoard.attr('width', graphHeight);
@@ -91,13 +103,18 @@ function RenderActivityView({ user }) {
       .domain([latestActivityDate, earliestActivityDate])
       .range([0, graphHeight]);
 
-    renderActivityGroups({ activityGroupData, timeScale });
-    renderGroupRulers({
-      activityGroupData,
-      graphHeight,
-      boardHeight: activityBoard.attr('height')
-    });
-    renderTimeRulers({ timeScale });
+    setUpZoom(draw, graphWidth, graphHeight);
+    draw(); // TODO: Use current zoom.
+
+    function draw() {
+      renderActivityGroups({ activityGroupData, timeScale, graphWidth, graphHeight });
+      renderGroupRulers({
+        activityGroupData,
+        graphHeight,
+        boardHeight: activityBoard.attr('height')
+      });
+      renderTimeRulers({ timeScale });
+    }
 
     function updateSpanDates(group) {
       if (group.startDate) {
@@ -118,56 +135,66 @@ function RenderActivityView({ user }) {
   }
 }
 
-function renderActivityGroups({ activityGroupData, timeScale }) {
-  var activityGroups = activityGroupRoot
-    .selectAll('.activity-group')
-    .data(activityGroupData, accessor());
+function renderActivityGroups({ activityGroupData, timeScale, graphWidth, graphHeight }) {
+  activitiesContext.strokeStyle = 'red';
+  activitiesContext.beginPath();
+  activityGroupData.forEach(renderGroup);
+  activitiesContext.stroke();
+  console.log('Drawn!');
 
-  activityGroups.exit().remove();
+  function renderGroup(activityGroup, i) {
+    // console.log('draw group at', groupWidth * i, getLastActiveY(activityGroup), 'to', groupWidth * i, getStartDateY(activityGroup));
+    activitiesContext.moveTo(groupWidth * i, getLastActiveY(activityGroup));
+    activitiesContext.lineTo(groupWidth * i, getStartDateY(activityGroup));
+  }
+  // var activityGroups = activityGroupRoot
+  //   .selectAll('.activity-group')
+  //   .data(activityGroupData, accessor());
 
-  // console.log('activityGroups.enter().size()', activityGroups.enter().size())
-  var newGroups = activityGroups
-    .enter()
-    .append('g')
-    .classed('activity-group', true);
+  // activityGroups.exit().remove();
 
-  newGroups
-    .append('line')
-    .classed('project-line', true)
-    .attr('x1', verticalRuleXWithinGroup)
-    .attr('x2', verticalRuleXWithinGroup)
-    .attr('stroke', 'black')
-    .attr('stroke-width', 2);
+  // var newGroups = activityGroups
+  //   .enter()
+  //   .append('g')
+  //   .classed('activity-group', true);
 
-  var groupsToUpdate = newGroups.merge(activityGroups);
-  // console.log('groupsToUpdate size', groupsToUpdate.size())
-  groupsToUpdate
-    // .attr(
-    //   'width',
-    //   group => 20 * (group.activities ? group.activities.length : 0)
-    // )
-    .attr('transform', (group, i) => `translate(${groupWidth * i}, 0)`)
-    .select('.project-line')
-    .attr('y1', getLastActiveY)
-    .attr('y2', getStartDateY);
+  // newGroups
+  //   .append('line')
+  //   .classed('project-line', true)
+  //   .attr('x1', verticalRuleXWithinGroup)
+  //   .attr('x2', verticalRuleXWithinGroup)
+  //   .attr('stroke', 'black')
+  //   .attr('stroke-width', 2);
 
-  var activities = groupsToUpdate
-    .selectAll('.activity')
-    .data(accessor('activities'), accessor());
+  // var groupsToUpdate = newGroups.merge(activityGroups);
+  // // console.log('groupsToUpdate size', groupsToUpdate.size())
+  // groupsToUpdate
+  //   // .attr(
+  //   //   'width',
+  //   //   group => 20 * (group.activities ? group.activities.length : 0)
+  //   // )
+  //   .attr('transform', (group, i) => `translate(${groupWidth * i}, 0)`)
+  //   .select('.project-line')
+  //   .attr('y1', getLastActiveY)
+  //   .attr('y2', getStartDateY);
 
-  activities.exit().remove();
-  var newActivities = activities
-    .enter()
-    .append('rect')
-    // .append('circle')
-    .classed('activity', true);
-  newActivities
-    // .attr('fill', 'blue')
-    // .attr('r', 5)
-    .attr('width', activitySize)
-    .attr('height', activitySize);
-  var activitiesToUpdate = newActivities.merge(activities);
-  activitiesToUpdate.attr('x', activityXWithinGroup).attr('y', getActivityY);
+  // var activities = groupsToUpdate
+  //   .selectAll('.activity')
+  //   .data(accessor('activities'), accessor());
+
+  // activities.exit().remove();
+  // var newActivities = activities
+  //   .enter()
+  //   .append('rect')
+  //   // .append('circle')
+  //   .classed('activity', true);
+  // newActivities
+  //   // .attr('fill', 'blue')
+  //   // .attr('r', 5)
+  //   .attr('width', activitySize)
+  //   .attr('height', activitySize);
+  // var activitiesToUpdate = newActivities.merge(activities);
+  // activitiesToUpdate.attr('x', activityXWithinGroup).attr('y', getActivityY);
   // .attr('cx', 10)
   // .attr('cy', getActivityY);
 
