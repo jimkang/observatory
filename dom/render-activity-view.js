@@ -30,10 +30,13 @@ var fixedYRoot = activityBoard.select('.fixed-y-labels');
 var weekRuler = fixedXRoot.select('.week-ruler');
 var yearRuler = fixedXRoot.select('.year-ruler');
 var targetsCanvas = d3.select('#activities-targets-canvas');
-var activitiesContext = d3.select('#activities-canvas').node().getContext('2d', { alpha: true });
+var aCtx = d3
+  .select('#activities-canvas')
+  .node()
+  .getContext('2d', { alpha: true });
 
 const groupLabelY = activityBoard.attr('height') / 2;
-const timeRulerX = 0;//activityBoard.attr('width') / 2;
+const timeRulerX = 0; //activityBoard.attr('width') / 2;
 const dateTickLength = 2000;
 
 function setUpZoom(draw, graphWidth, graphHeight) {
@@ -46,14 +49,8 @@ function setUpZoom(draw, graphWidth, graphHeight) {
 
   function zoomed() {
     // console.log(d3.event.transform.toString());
-    activitiesContext.clearRect(0, 0, graphWidth, graphHeight);
     console.log(d3.event.transform);
-    activitiesContext.save();
-    // TODO: Semantic zoom to preserve line thickness.
-    activitiesContext.translate(d3.event.transform.x, d3.event.transform.y);
-    activitiesContext.scale(d3.event.transform.k, d3.event.transform.k);
-    draw();
-    activitiesContext.restore();
+    draw(d3.event.transform);
 
     zoomLayer.attr('transform', d3.event.transform);
     fixedYRoot.attr('transform', getFixedYLayerTransform(d3.event.transform));
@@ -104,10 +101,17 @@ function RenderActivityView({ user }) {
       .range([0, graphHeight]);
 
     setUpZoom(draw, graphWidth, graphHeight);
-    draw(); // TODO: Use current zoom.
+    draw(Zoom.zoomIdentity); // TODO: Use current zoom.
 
-    function draw() {
-      renderActivityGroups({ activityGroupData, timeScale, graphWidth, graphHeight });
+    function draw(transform) {
+      aCtx.clearRect(0, 0, graphWidth, graphHeight);
+      renderActivityGroups({
+        activityGroupData,
+        timeScale,
+        graphWidth,
+        graphHeight,
+        transform
+      });
       renderGroupRulers({
         activityGroupData,
         graphHeight,
@@ -135,17 +139,29 @@ function RenderActivityView({ user }) {
   }
 }
 
-function renderActivityGroups({ activityGroupData, timeScale, graphWidth, graphHeight }) {
-  activitiesContext.strokeStyle = 'red';
-  activitiesContext.beginPath();
+function renderActivityGroups({
+  activityGroupData,
+  timeScale,
+  graphWidth,
+  graphHeight,
+  transform
+}) {
+  aCtx.strokeStyle = 'red';
+  aCtx.beginPath();
   activityGroupData.forEach(renderGroup);
-  activitiesContext.stroke();
+  aCtx.stroke();
   console.log('Drawn!');
 
   function renderGroup(activityGroup, i) {
     // console.log('draw group at', groupWidth * i, getLastActiveY(activityGroup), 'to', groupWidth * i, getStartDateY(activityGroup));
-    activitiesContext.moveTo(groupWidth * i, getLastActiveY(activityGroup));
-    activitiesContext.lineTo(groupWidth * i, getStartDateY(activityGroup));
+    aCtx.moveTo.apply(
+      aCtx,
+      transform.apply([groupWidth * i, getLastActiveY(activityGroup)])
+    );
+    aCtx.lineTo.apply(
+      aCtx,
+      transform.apply([groupWidth * i, getStartDateY(activityGroup)])
+    );
   }
   // var activityGroups = activityGroupRoot
   //   .selectAll('.activity-group')
