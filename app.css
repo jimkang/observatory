@@ -407,6 +407,9 @@ a {
   border: 2px dashed #aaa;
 }
 
+.date-labels text {
+  font-size: 0.5em;
+}
 
 @media all and (max-height: 320px) {
   .details-box {

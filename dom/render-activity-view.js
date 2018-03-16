@@ -29,8 +29,8 @@ var activityBoard = d3.select('#activity-board');
 var activityGroupRoot = d3.select('#activity-groups');
 var fixedXRoot = activityBoard.select('.fixed-x-labels');
 var fixedYRoot = activityBoard.select('.fixed-y-labels');
-var weekRuler = fixedYRoot.select('.week-ruler');
-var yearRuler = fixedYRoot.select('.year-ruler');
+var dateLabels = fixedYRoot.select('.date-labels');
+var yearLabels = fixedYRoot.select('.year-labels');
 var targetsCanvas = d3.select('#activities-targets-canvas');
 var aCtx = d3
   .select('#activities-canvas')
@@ -45,7 +45,7 @@ var currentTransform = Zoom.zoomIdentity;
 function setUpZoom(draw) {
   var zoomLayer = activityBoard.select('.zoomable-activity');
   var zoom = Zoom.zoom()
-    .scaleExtent([0.03, 2])
+    .scaleExtent([0.03, 100])
     .on('zoom', zoomed);
 
   targetsCanvas.call(zoom);
@@ -118,7 +118,7 @@ function RenderActivityView({ user }) {
         activityGroupData,
         graphWidth
       });
-      renderTimeRulers({ timeScale });
+      renderTimeRulers({ timeScale, graphWidth, graphHeight });
     }
 
     function updateSpanDates(group) {
@@ -234,9 +234,13 @@ function renderGroupRulers({ activityGroupData, graphWidth }) {
   activityGroupData.forEach(drawGroupRuler);
   aCtx.stroke();
 
-  var groupLabels = fixedXRoot.selectAll('text').data(activityGroupData, accessor());
+  var groupLabels = fixedXRoot
+    .selectAll('text')
+    .data(activityGroupData, accessor());
   groupLabels.exit().remove();
-  groupLabels.enter().append('text')
+  groupLabels
+    .enter()
+    .append('text')
     .merge(groupLabels)
     .text(accessor('name'))
     .attr('transform', getGroupLabelTransform);
@@ -244,7 +248,7 @@ function renderGroupRulers({ activityGroupData, graphWidth }) {
   function drawGroupRuler(g, i) {
     var y = getGroupStartY(g, i);
     aCtx.moveTo(0, y);
-    aCtx.lineTo(graphWidth, y)
+    aCtx.lineTo(graphWidth, y);
   }
 
   function getGroupStartY(g, i) {
@@ -268,22 +272,50 @@ function hasDeeds(project) {
   return project && project.deeds && project.deeds.length > 0;
 }
 
-function renderTimeRulers({ timeScale }) {
+function renderTimeRulers({ timeScale, graphWidth, graphHeight }) {
+  var zoomedTimeScale = currentTransform.rescaleX(timeScale);
+  zoomedTimeScale.range([0, graphWidth]);
+  var tickDates = zoomedTimeScale.ticks(time.timeMonth.every(1));
   // weekRuler.attr('transform', 'translate(300, 0)');
   // yearRuler.attr('transform', 'translate(300, 0)');
-  var zoomedTimeScale = currentTransform.rescaleX(timeScale);
+  aCtx.strokeStyle = '#666';
+  aCtx.lineWidth = 1;
+  aCtx.beginPath();
+  tickDates.forEach(drawDateTick);
+  aCtx.stroke();
 
-  var weekAxis = axis.axisBottom(zoomedTimeScale);
-  weekAxis.ticks(time.timeWeek.every(1));
-  weekAxis.tickSize(dateTickLength);
+  var tickTexts = dateLabels
+    .selectAll('text')
+    .data(tickDates, accessor('identity'));
+  tickTexts.exit().remove();
+  tickTexts
+    .enter()
+    .append('text')
+    .attr('y', graphHeight / 8)
+    .merge(tickTexts)
+    .attr('x', zoomedTimeScale)
+    .text(accessor('identity'));
 
-  var yearAxis = axis.axisBottom(zoomedTimeScale);
-  yearAxis.ticks(time.timeYear.every(1));
-  yearAxis.tickFormat(timeFormat('%Y'));
-  yearAxis.tickSize(100);
+  function drawDateTick(date) {
+    var x = zoomedTimeScale(date);
+    aCtx.moveTo(x, 0);
+    aCtx.lineTo(x, graphHeight / 8);
+  }
 
-  weekRuler.call(weekAxis);
-  yearRuler.call(yearAxis);
+  // console.log('start', zoomedTimeScale.invert(0));
+  // console.log('end', zoomedTimeScale.invert(graphWidth));
+
+  // var weekAxis = axis.axisBottom(zoomedTimeScale);
+  // weekAxis.ticks(time.timeWeek.every(1));
+  // weekAxis.tickSize(dateTickLength);
+
+  // var yearAxis = axis.axisBottom(zoomedTimeScale);
+  // yearAxis.ticks(time.timeYear.every(1));
+  // yearAxis.tickFormat(timeFormat('%Y'));
+  // yearAxis.tickSize(100);
+
+  // weekRuler.call(weekAxis);
+  // yearRuler.call(yearAxis);
 }
 
 function getGroupRulerTransform(name, i) {
