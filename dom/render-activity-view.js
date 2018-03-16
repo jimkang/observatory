@@ -1,6 +1,6 @@
 var d3 = require('d3-selection');
 var accessor = require('accessor')();
-var GetPropertySafely = require('get-property-safely');
+// var GetPropertySafely = require('get-property-safely');
 var EaseThrottle = require('../ease-throttle');
 var formatProjectIntoActivityGroup = require('../format-project-into-activity-group');
 var scale = require('d3-scale');
@@ -12,13 +12,15 @@ var time = require('d3-time');
 var timeFormat = require('d3-time-format').timeFormat;
 // var curry = require('lodash.curry');
 
-const dayHeight = 20;
-const groupWidth = dayHeight * 2;
-const verticalRuleXWithinGroup = dayHeight;
-const labelTextY = -dayHeight;
-const activitySize = dayHeight / 2;
-// Center the squire in the middle of the group.
-const activityXWithinGroup = groupWidth / 2 - activitySize / 2;
+const dayWidth = 20;
+const groupHeight = dayWidth * 2;
+
+// const horizontalRuleYWithinGroup = dayWidth;
+// const labelTextX = -dayWidth;
+const activitySize = dayWidth / 2;
+// Center the square in the middle of the group.
+// const activityYWithinGroup = groupWidth / 2 - activitySize / 2;
+const dateTickLength = dayWidth;
 
 const dayInMS = 24 * 60 * 60 * 1000;
 
@@ -27,8 +29,8 @@ var activityBoard = d3.select('#activity-board');
 var activityGroupRoot = d3.select('#activity-groups');
 var fixedXRoot = activityBoard.select('.fixed-x-labels');
 var fixedYRoot = activityBoard.select('.fixed-y-labels');
-var weekRuler = fixedXRoot.select('.week-ruler');
-var yearRuler = fixedXRoot.select('.year-ruler');
+var weekRuler = fixedYRoot.select('.week-ruler');
+var yearRuler = fixedYRoot.select('.year-ruler');
 var targetsCanvas = d3.select('#activities-targets-canvas');
 var aCtx = d3
   .select('#activities-canvas')
@@ -37,9 +39,10 @@ var aCtx = d3
 
 const groupLabelY = activityBoard.attr('height') / 2;
 const timeRulerX = 0; //activityBoard.attr('width') / 2;
-const dateTickLength = 2000;
 
-function setUpZoom(draw, graphWidth, graphHeight) {
+var currentTransform = Zoom.zoomIdentity;
+
+function setUpZoom(draw) {
   var zoomLayer = activityBoard.select('.zoomable-activity');
   var zoom = Zoom.zoom()
     .scaleExtent([0.03, 2])
@@ -49,12 +52,12 @@ function setUpZoom(draw, graphWidth, graphHeight) {
 
   function zoomed() {
     // console.log(d3.event.transform.toString());
-    console.log(d3.event.transform);
-    draw(d3.event.transform);
+    currentTransform = d3.event.transform;
+    draw();
 
-    zoomLayer.attr('transform', d3.event.transform);
-    fixedYRoot.attr('transform', getFixedYLayerTransform(d3.event.transform));
-    fixedXRoot.attr('transform', getFixedXLayerTransform(d3.event.transform));
+    // zoomLayer.attr('transform', d3.event.transform);
+    // fixedYRoot.attr('transform', getFixedYLayerTransform(d3.event.transform));
+    // fixedXRoot.attr('transform', getFixedXLayerTransform(d3.event.transform));
   }
 }
 
@@ -89,7 +92,7 @@ function RenderActivityView({ user }) {
       (latestActivityDate.getTime() - earliestActivityDate.getTime()) / dayInMS;
     console.log('totalDateSpan', totalDaysSpan);
     // TODO: Display totalDateSpan somewhere.
-    var graphHeight = totalDaysSpan * dayHeight;
+    var graphHeight = activityBoard.attr('height');
     var graphWidth = activityBoard.attr('width');
 
     // activityBoard.attr('height', activityGroupData.length * groupWidth);
@@ -98,24 +101,22 @@ function RenderActivityView({ user }) {
     var timeScale = scale
       .scaleTime()
       .domain([latestActivityDate, earliestActivityDate])
-      .range([0, graphHeight]);
+      .range([0, graphWidth]);
 
-    setUpZoom(draw, graphWidth, graphHeight);
-    draw(Zoom.zoomIdentity); // TODO: Use current zoom.
+    setUpZoom(draw);
+    draw();
 
-    function draw(transform) {
+    function draw() {
       aCtx.clearRect(0, 0, graphWidth, graphHeight);
       renderActivityGroups({
         activityGroupData,
         timeScale,
         graphWidth,
-        graphHeight,
-        transform
+        graphHeight
       });
       renderGroupRulers({
         activityGroupData,
-        graphHeight,
-        boardHeight: activityBoard.attr('height')
+        graphWidth
       });
       renderTimeRulers({ timeScale });
     }
@@ -143,8 +144,7 @@ function renderActivityGroups({
   activityGroupData,
   timeScale,
   graphWidth,
-  graphHeight,
-  transform
+  graphHeight
 }) {
   aCtx.strokeStyle = 'red';
   aCtx.beginPath();
@@ -156,11 +156,11 @@ function renderActivityGroups({
     // console.log('draw group at', groupWidth * i, getLastActiveY(activityGroup), 'to', groupWidth * i, getStartDateY(activityGroup));
     aCtx.moveTo.apply(
       aCtx,
-      transform.apply([groupWidth * i, getLastActiveY(activityGroup)])
+      currentTransform.apply([getLastActiveX(activityGroup), groupHeight * i])
     );
     aCtx.lineTo.apply(
       aCtx,
-      transform.apply([groupWidth * i, getStartDateY(activityGroup)])
+      currentTransform.apply([getStartDateX(activityGroup), groupHeight * i])
     );
   }
   // var activityGroups = activityGroupRoot
@@ -214,49 +214,54 @@ function renderActivityGroups({
   // .attr('cx', 10)
   // .attr('cy', getActivityY);
 
-  function getActivityY(d) {
+  function getActivityX(d) {
     return timeScale(d.committedDate);
   }
 
-  function getLastActiveY(group) {
+  function getLastActiveX(group) {
     return timeScale(group.lastActiveDate);
   }
 
-  function getStartDateY(group) {
+  function getStartDateX(group) {
     return timeScale(group.startDate);
   }
 }
 
-function renderGroupRulers({ activityGroupData, graphHeight }) {
-  var groupRulers = fixedYRoot
-    .selectAll('.group-name')
-    .data(pluck(activityGroupData, 'name'), accessor('identity'));
+function renderGroupRulers({ activityGroupData, graphWidth }) {
+  aCtx.strokeStyle = '#ccc';
+  aCtx.lineWidth = 1;
+  aCtx.beginPath();
+  activityGroupData.forEach(drawGroupRuler);
+  aCtx.stroke();
 
-  groupRulers.exit().remove();
+  var groupLabels = fixedXRoot.selectAll('text').data(activityGroupData, accessor());
+  groupLabels.exit().remove();
+  groupLabels.enter().append('text')
+    .merge(groupLabels)
+    .text(accessor('name'))
+    .attr('transform', getGroupLabelTransform);
 
-  var newRulers = groupRulers
-    .enter()
-    .append('g')
-    .classed('group-name', true);
+  function drawGroupRuler(g, i) {
+    var y = getGroupStartY(g, i);
+    aCtx.moveTo(0, y);
+    aCtx.lineTo(graphWidth, y)
+  }
 
-  newRulers
-    .append('line')
-    .attr('x1', verticalRuleXWithinGroup)
-    .attr('x2', verticalRuleXWithinGroup)
-    .attr('y1', -graphHeight)
-    .attr('y2', graphHeight)
-    .attr('stroke', '#ccc')
-    .attr('stroke-width', 1);
+  function getGroupStartY(g, i) {
+    return currentTransform.applyY(i * groupHeight);
+  }
 
-  newRulers
-    .append('text')
-    .attr('transform', 'rotate(90)')
-    .attr('y', labelTextY); // Since we're rotated, this moves it horizontally.
+  function getGroupLabelTransform(g, i) {
+    return `translate(0, ${getGroupStartY(g, i)}) scale(${currentTransform.k})`;
+  }
+}
 
-  var updateRulers = newRulers.merge(groupRulers);
-  updateRulers.attr('transform', getGroupRulerTransform);
-  updateRulers.select('text').text(accessor('identity'));
-  // .attr('y', getNameLabelY);
+function getGroupRulerY1(d, i) {
+  return i * groupHeight;
+}
+
+function getGroupRulerY2(d, i) {
+  return (i + 1) * groupHeight;
 }
 
 function hasDeeds(project) {
@@ -266,12 +271,13 @@ function hasDeeds(project) {
 function renderTimeRulers({ timeScale }) {
   // weekRuler.attr('transform', 'translate(300, 0)');
   // yearRuler.attr('transform', 'translate(300, 0)');
+  var zoomedTimeScale = currentTransform.rescaleX(timeScale);
 
-  var weekAxis = axis.axisRight(timeScale);
+  var weekAxis = axis.axisBottom(zoomedTimeScale);
   weekAxis.ticks(time.timeWeek.every(1));
   weekAxis.tickSize(dateTickLength);
 
-  var yearAxis = axis.axisLeft(timeScale);
+  var yearAxis = axis.axisBottom(zoomedTimeScale);
   yearAxis.ticks(time.timeYear.every(1));
   yearAxis.tickFormat(timeFormat('%Y'));
   yearAxis.tickSize(100);
@@ -281,7 +287,7 @@ function renderTimeRulers({ timeScale }) {
 }
 
 function getGroupRulerTransform(name, i) {
-  return `translate(${groupWidth * i}, 0)`;
+  return `translate(${groupHeight * i}, 0)`;
 }
 
 function getFixedYLayerTransform({ x, k }) {
