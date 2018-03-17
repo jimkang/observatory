@@ -24,6 +24,15 @@ const dateTickLength = dayWidth;
 
 const dayInMS = 24 * 60 * 60 * 1000;
 
+var formatMillisecond = timeFormat('.%L'),
+  formatSecond = timeFormat(':%S'),
+  formatMinute = timeFormat('%I:%M'),
+  formatHour = timeFormat('%I %p'),
+  formatDay = timeFormat('%a %d'),
+  formatWeek = timeFormat('%b %d'),
+  formatMonth = timeFormat('%B'),
+  formatYear = timeFormat('%Y');
+
 var activityContainer = d3.select('#activity-container');
 var activityBoard = d3.select('#activity-board');
 var activityGroupRoot = d3.select('#activity-groups');
@@ -275,7 +284,8 @@ function hasDeeds(project) {
 function renderTimeRulers({ timeScale, graphWidth, graphHeight }) {
   var zoomedTimeScale = currentTransform.rescaleX(timeScale);
   zoomedTimeScale.range([0, graphWidth]);
-  var tickDates = zoomedTimeScale.ticks(time.timeMonth.every(1));
+  // zoomedTimeScale.domain(zoomedTimeScale.invert([0, graphWidth]));
+  var tickDates = zoomedTimeScale.ticks(); //time.timeMonth.every(1));
   // weekRuler.attr('transform', 'translate(300, 0)');
   // yearRuler.attr('transform', 'translate(300, 0)');
   aCtx.strokeStyle = '#666';
@@ -294,7 +304,7 @@ function renderTimeRulers({ timeScale, graphWidth, graphHeight }) {
     .attr('y', graphHeight / 8)
     .merge(tickTexts)
     .attr('x', zoomedTimeScale)
-    .text(accessor('identity'));
+    .text(multiFormat);
 
   function drawDateTick(date) {
     var x = zoomedTimeScale(date);
@@ -328,6 +338,20 @@ function getFixedYLayerTransform({ x, k }) {
 
 function getFixedXLayerTransform({ y, k }) {
   return `translate(${timeRulerX}, ${y}) scale(${k})`;
+}
+
+function multiFormat(date) {
+  return (time.timeSecond(date) < date
+    ? formatMillisecond
+    : time.timeMinute(date) < date
+      ? formatSecond
+      : time.timeHour(date) < date
+        ? formatMinute
+        : time.timeDay(date) < date
+          ? formatHour
+          : time.timeMonth(date) < date
+            ? time.timeWeek(date) < date ? formatDay : formatWeek
+            : time.timeYear(date) < date ? formatMonth : formatYear)(date);
 }
 
 module.exports = RenderActivityView;
