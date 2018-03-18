@@ -10,7 +10,7 @@ var pluck = require('lodash.pluck');
 var axis = require('d3-axis');
 var time = require('d3-time');
 var timeFormat = require('d3-time-format').timeFormat;
-// var curry = require('lodash.curry');
+var curry = require('lodash.curry');
 
 const dayWidth = 20;
 const groupHeight = dayWidth * 2;
@@ -34,10 +34,10 @@ var formatMillisecond = timeFormat('.%L'),
   formatYear = timeFormat('%Y');
 
 var activityContainer = d3.select('#activity-container');
-var activityBoard = d3.select('#activity-board');
+var labelBoard = d3.select('#label-board');
 var activityGroupRoot = d3.select('#activity-groups');
-var fixedXRoot = activityBoard.select('.fixed-x-labels');
-var fixedYRoot = activityBoard.select('.fixed-y-labels');
+var fixedXRoot = labelBoard.select('.fixed-x-labels');
+var fixedYRoot = labelBoard.select('.fixed-y-labels');
 var dateLabels = fixedYRoot.select('.date-labels');
 var yearLabels = fixedYRoot.select('.year-labels');
 var targetsCanvas = d3.select('#activities-targets-canvas');
@@ -46,13 +46,13 @@ var aCtx = d3
   .node()
   .getContext('2d', { alpha: true });
 
-const groupLabelY = activityBoard.attr('height') / 2;
-const timeRulerX = 0; //activityBoard.attr('width') / 2;
+const groupLabelY = labelBoard.attr('height') / 2;
+const timeRulerX = 0; //labelBoard.attr('width') / 2;
 
 var currentTransform = Zoom.zoomIdentity;
 
 function setUpZoom(draw) {
-  var zoomLayer = activityBoard.select('.zoomable-activity');
+  var zoomLayer = labelBoard.select('.zoomable-activity');
   var zoom = Zoom.zoom()
     .scaleExtent([0.03, 100])
     .on('zoom', zoomed);
@@ -99,13 +99,13 @@ function RenderActivityView({ user }) {
 
     var totalDaysSpan =
       (latestActivityDate.getTime() - earliestActivityDate.getTime()) / dayInMS;
-    console.log('totalDateSpan', totalDaysSpan);
+    // console.log('totalDateSpan', totalDaysSpan);
     // TODO: Display totalDateSpan somewhere.
-    var graphHeight = activityBoard.attr('height');
-    var graphWidth = activityBoard.attr('width');
+    var graphHeight = labelBoard.attr('height');
+    var graphWidth = labelBoard.attr('width');
 
-    // activityBoard.attr('height', activityGroupData.length * groupWidth);
-    // activityBoard.attr('width', graphHeight);
+    // labelBoard.attr('height', activityGroupData.length * groupWidth);
+    // labelBoard.attr('width', graphHeight);
 
     var timeScale = scale
       .scaleTime()
@@ -117,17 +117,18 @@ function RenderActivityView({ user }) {
 
     function draw() {
       aCtx.clearRect(0, 0, graphWidth, graphHeight);
+
+      renderTimeRulers({ timeScale, graphWidth, graphHeight });
+      renderGroupRulers({
+        activityGroupData,
+        graphWidth
+      });
       renderActivityGroups({
         activityGroupData,
         timeScale,
         graphWidth,
         graphHeight
       });
-      renderGroupRulers({
-        activityGroupData,
-        graphWidth
-      });
-      renderTimeRulers({ timeScale, graphWidth, graphHeight });
     }
 
     function updateSpanDates(group) {
@@ -159,7 +160,7 @@ function renderActivityGroups({
   aCtx.beginPath();
   activityGroupData.forEach(renderGroup);
   aCtx.stroke();
-  console.log('Drawn!');
+  // console.log('Drawn!');
 
   function renderGroup(activityGroup, i) {
     // console.log('draw group at', groupWidth * i, getLastActiveY(activityGroup), 'to', groupWidth * i, getStartDateY(activityGroup));
@@ -284,8 +285,21 @@ function hasDeeds(project) {
 function renderTimeRulers({ timeScale, graphWidth, graphHeight }) {
   var zoomedTimeScale = currentTransform.rescaleX(timeScale);
   zoomedTimeScale.range([0, graphWidth]);
-  // zoomedTimeScale.domain(zoomedTimeScale.invert([0, graphWidth]));
+  // zoomedTimeScale.domain(zoomedTimeScale.invert(0), zoomedTimeScale.invert(graphWidth));
   var tickDates = zoomedTimeScale.ticks(); //time.timeMonth.every(1));
+  // If we're zoomed out far enough that the ticks are years, don't show them.
+  // The year blocks take care of that.
+  if (tickDates.length < 1 || time.timeYear(tickDates[0]) >= tickDates[0]) {
+    tickDates = [];
+  }
+  var tickYears = zoomedTimeScale.ticks(time.timeYear.every(1));
+  var yearWidth = graphWidth;
+  if (tickYears.length > 1) {
+    yearWidth = zoomedTimeScale(tickYears[1]) - zoomedTimeScale(tickYears[0]);
+  }
+
+  tickYears.forEach(curry(drawYearBlock)(yearWidth));
+
   // weekRuler.attr('transform', 'translate(300, 0)');
   // yearRuler.attr('transform', 'translate(300, 0)');
   aCtx.strokeStyle = '#666';
@@ -294,9 +308,7 @@ function renderTimeRulers({ timeScale, graphWidth, graphHeight }) {
   tickDates.forEach(drawDateTick);
   aCtx.stroke();
 
-  var tickTexts = dateLabels
-    .selectAll('text')
-    .data(tickDates, accessor('identity'));
+  var tickTexts = dateLabels.selectAll('text').data(tickDates);
   tickTexts.exit().remove();
   tickTexts
     .enter()
@@ -306,12 +318,32 @@ function renderTimeRulers({ timeScale, graphWidth, graphHeight }) {
     .attr('x', zoomedTimeScale)
     .text(multiFormat);
 
+  var yearTexts = yearLabels.selectAll('text').data(tickYears);
+  yearTexts.exit().remove();
+  yearTexts
+    .enter()
+    .append('text')
+    .attr('transform', `rotate(-90)`)
+    .attr('x', -graphHeight / 2) // Because we're rotated, this is the vertical position.
+    .merge(yearTexts)
+    .attr('y', getYearLabelHorizontalPosition)
+    .attr('font-size', `${2 * currentTransform.k}em`)
+    .text(formatYear);
+
   function drawDateTick(date) {
     var x = zoomedTimeScale(date);
     aCtx.moveTo(x, 0);
     aCtx.lineTo(x, graphHeight / 8);
   }
 
+  function drawYearBlock(blockWidth, date) {
+    aCtx.fillStyle = date.getFullYear() % 2 ? 'white' : 'hsl(220, 40%, 80%)';
+    aCtx.fillRect(zoomedTimeScale(date), 0, blockWidth, graphHeight);
+  }
+
+  function getYearLabelHorizontalPosition(date) {
+    return zoomedTimeScale(date) - currentTransform.k * graphWidth / 18;
+  }
   // console.log('start', zoomedTimeScale.invert(0));
   // console.log('end', zoomedTimeScale.invert(graphWidth));
 
@@ -340,6 +372,7 @@ function getFixedXLayerTransform({ y, k }) {
   return `translate(${timeRulerX}, ${y}) scale(${k})`;
 }
 
+// Don't format years; leave that up to the year blocks.
 function multiFormat(date) {
   return (time.timeSecond(date) < date
     ? formatMillisecond
@@ -351,7 +384,7 @@ function multiFormat(date) {
           ? formatHour
           : time.timeMonth(date) < date
             ? time.timeWeek(date) < date ? formatDay : formatWeek
-            : time.timeYear(date) < date ? formatMonth : formatYear)(date);
+            : formatMonth)(date);
 }
 
 module.exports = RenderActivityView;
