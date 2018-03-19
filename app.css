@@ -372,8 +372,20 @@ a {
 }
 
 .year-labels text {
-  fill: #aaa;
+  fill: hsla(0, 0%, 0%, 0.4);
   text-anchor: middle;
+}
+
+#activity-groups {
+  transform: translate(100, 0);
+}
+
+#activity-board {
+  border: 2px dashed #aaa;
+}
+
+.date-labels text {
+  font-size: 0.5em;
 }
 
 @media all and (max-height: 568px) {
@@ -390,9 +402,9 @@ a {
     padding-right: 2em;
   }
 
-#list-container {
-  max-width: 100%;
-}
+  #list-container {
+    max-width: 100%;
+  }
 
   .name-link {
     font-size: 1.2em;
@@ -402,18 +414,6 @@ a {
     height: 568px;
     padding: 0;
   }
-}
-
-#activity-groups {
-  transform: translate(100, 0);
-}
-
-#activity-board {
-  border: 2px dashed #aaa;
-}
-
-.date-labels text {
-  font-size: 0.5em;
 }
 
 @media all and (max-height: 320px) {

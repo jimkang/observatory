@@ -11,7 +11,11 @@ var axis = require('d3-axis');
 var time = require('d3-time');
 var timeFormat = require('d3-time-format').timeFormat;
 var curry = require('lodash.curry');
+var probable = require('probable');
 
+const yearBlockColor1 = '#fff';
+// hsl(108, 10%, 90%)
+const yearBlockColor2 = `hsl(${probable.roll(360)}, 10%, 90%)`;
 const dayWidth = 20;
 const groupHeight = dayWidth * 2;
 
@@ -323,7 +327,7 @@ function renderTimeRulers({ timeScale, graphWidth, graphHeight }) {
   yearTexts
     .enter()
     .append('text')
-    .attr('transform', `rotate(-90)`)
+    .attr('transform', 'rotate(-90)')
     .attr('x', -graphHeight / 2) // Because we're rotated, this is the vertical position.
     .merge(yearTexts)
     .attr('y', getYearLabelHorizontalPosition)
@@ -337,7 +341,7 @@ function renderTimeRulers({ timeScale, graphWidth, graphHeight }) {
   }
 
   function drawYearBlock(blockWidth, date) {
-    aCtx.fillStyle = date.getFullYear() % 2 ? 'white' : 'hsl(220, 40%, 80%)';
+    aCtx.fillStyle = date.getFullYear() % 2 ? yearBlockColor1 : yearBlockColor2;
     aCtx.fillRect(zoomedTimeScale(date), 0, blockWidth, graphHeight);
   }
 
