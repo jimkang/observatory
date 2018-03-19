@@ -6,8 +6,8 @@ var formatProjectIntoActivityGroup = require('../format-project-into-activity-gr
 var scale = require('d3-scale');
 var Zoom = require('d3-zoom');
 var comparators = require('../comparators');
-var pluck = require('lodash.pluck');
-var axis = require('d3-axis');
+// var pluck = require('lodash.pluck');
+// var axis = require('d3-axis');
 var time = require('d3-time');
 var timeFormat = require('d3-time-format').timeFormat;
 var curry = require('lodash.curry');
@@ -16,6 +16,9 @@ var probable = require('probable');
 const yearBlockColor1 = '#fff';
 // hsl(108, 10%, 90%)
 const yearBlockColor2 = `hsl(${probable.roll(360)}, 10%, 90%)`;
+
+const groupLabelMaxScale = 4;
+const maxYearLabelFontSize = 8; // in em.
 const dayWidth = 20;
 const groupHeight = dayWidth * 2;
 
@@ -24,7 +27,7 @@ const groupHeight = dayWidth * 2;
 const activitySize = dayWidth / 2;
 // Center the square in the middle of the group.
 // const activityYWithinGroup = groupWidth / 2 - activitySize / 2;
-const dateTickLength = dayWidth;
+// const dateTickLength = dayWidth;
 
 const dayInMS = 24 * 60 * 60 * 1000;
 
@@ -56,7 +59,6 @@ const timeRulerX = 0; //labelBoard.attr('width') / 2;
 var currentTransform = Zoom.zoomIdentity;
 
 function setUpZoom(draw) {
-  var zoomLayer = labelBoard.select('.zoomable-activity');
   var zoom = Zoom.zoom()
     .scaleExtent([0.03, 100])
     .on('zoom', zoomed);
@@ -101,8 +103,8 @@ function RenderActivityView({ user }) {
     activityGroupData.sort(comparators.compareActivityGroupStartDateAsc);
     // console.log(activityGroupData.map(g => g.name));
 
-    var totalDaysSpan =
-      (latestActivityDate.getTime() - earliestActivityDate.getTime()) / dayInMS;
+    // var totalDaysSpan =
+    //   (latestActivityDate.getTime() - earliestActivityDate.getTime()) / dayInMS;
     // console.log('totalDateSpan', totalDaysSpan);
     // TODO: Display totalDateSpan somewhere.
     var graphHeight = labelBoard.attr('height');
@@ -270,17 +272,21 @@ function renderGroupRulers({ activityGroupData, graphWidth }) {
   }
 
   function getGroupLabelTransform(g, i) {
-    return `translate(0, ${getGroupStartY(g, i)}) scale(${currentTransform.k})`;
+    var scale = currentTransform.k;
+    if (scale > groupLabelMaxScale) {
+      scale = groupLabelMaxScale;
+    }
+    return `translate(0, ${getGroupStartY(g, i)}) scale(${scale})`;
   }
 }
 
-function getGroupRulerY1(d, i) {
-  return i * groupHeight;
-}
+// function getGroupRulerY1(d, i) {
+//   return i * groupHeight;
+// }
 
-function getGroupRulerY2(d, i) {
-  return (i + 1) * groupHeight;
-}
+// function getGroupRulerY2(d, i) {
+//   return (i + 1) * groupHeight;
+// }
 
 function hasDeeds(project) {
   return project && project.deeds && project.deeds.length > 0;
@@ -322,6 +328,10 @@ function renderTimeRulers({ timeScale, graphWidth, graphHeight }) {
     .attr('x', zoomedTimeScale)
     .text(multiFormat);
 
+  var yearLabelFontSize = 2 * currentTransform.k;
+  if (yearLabelFontSize > maxYearLabelFontSize) {
+    yearLabelFontSize = maxYearLabelFontSize;
+  }
   var yearTexts = yearLabels.selectAll('text').data(tickYears);
   yearTexts.exit().remove();
   yearTexts
@@ -331,7 +341,7 @@ function renderTimeRulers({ timeScale, graphWidth, graphHeight }) {
     .attr('x', -graphHeight / 2) // Because we're rotated, this is the vertical position.
     .merge(yearTexts)
     .attr('y', getYearLabelHorizontalPosition)
-    .attr('font-size', `${2 * currentTransform.k}em`)
+    .attr('font-size', `${yearLabelFontSize}em`)
     .text(formatYear);
 
   function drawDateTick(date) {
@@ -364,17 +374,9 @@ function renderTimeRulers({ timeScale, graphWidth, graphHeight }) {
   // yearRuler.call(yearAxis);
 }
 
-function getGroupRulerTransform(name, i) {
-  return `translate(${groupHeight * i}, 0)`;
-}
-
-function getFixedYLayerTransform({ x, k }) {
-  return `translate(${x}, ${groupLabelY}) scale(${k})`;
-}
-
-function getFixedXLayerTransform({ y, k }) {
-  return `translate(${timeRulerX}, ${y}) scale(${k})`;
-}
+// function getGroupRulerTransform(name, i) {
+//   return `translate(${groupHeight * i}, 0)`;
+// }
 
 // Don't format years; leave that up to the year blocks.
 function multiFormat(date) {
