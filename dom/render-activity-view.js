@@ -30,6 +30,8 @@ const activitySize = dayWidth / 2;
 // const dateTickLength = dayWidth;
 
 const dayInMS = 24 * 60 * 60 * 1000;
+const today = new Date();
+const yesterday = new Date(today.getTime() - dayInMS);
 
 var formatMillisecond = timeFormat('.%L'),
   formatSecond = timeFormat(':%S'),
@@ -57,6 +59,8 @@ const groupLabelY = labelBoard.attr('height') / 2;
 const timeRulerX = 0; //labelBoard.attr('width') / 2;
 
 var currentTransform = Zoom.zoomIdentity;
+var timeScale;
+var zoomedTimeScale;
 
 function setUpZoom(draw) {
   var zoom = Zoom.zoom()
@@ -68,6 +72,7 @@ function setUpZoom(draw) {
   function zoomed() {
     // console.log(d3.event.transform.toString());
     currentTransform = d3.event.transform;
+    zoomedTimeScale = currentTransform.rescaleX(timeScale);
     draw();
 
     // zoomLayer.attr('transform', d3.event.transform);
@@ -113,10 +118,11 @@ function RenderActivityView({ user }) {
     // labelBoard.attr('height', activityGroupData.length * groupWidth);
     // labelBoard.attr('width', graphHeight);
 
-    var timeScale = scale
+    timeScale = scale
       .scaleTime()
       .domain([latestActivityDate, earliestActivityDate])
       .range([0, graphWidth]);
+    zoomedTimeScale = timeScale;
 
     setUpZoom(draw);
     draw();
@@ -162,22 +168,40 @@ function renderActivityGroups({
   graphWidth,
   graphHeight
 }) {
+  var dayWidth = zoomedTimeScale(today) - zoomedTimeScale(yesterday);
   aCtx.strokeStyle = 'red';
+  aCtx.fillStyle = 'orange';
   aCtx.beginPath();
   activityGroupData.forEach(renderGroup);
   aCtx.stroke();
   // console.log('Drawn!');
 
-  function renderGroup(activityGroup, i) {
+  function renderGroup(activityGroup, groupIndex) {
     // console.log('draw group at', groupWidth * i, getLastActiveY(activityGroup), 'to', groupWidth * i, getStartDateY(activityGroup));
+    activityGroup.activities.forEach(renderActivity);
     aCtx.moveTo.apply(
       aCtx,
-      currentTransform.apply([getLastActiveX(activityGroup), groupHeight * i])
+      currentTransform.apply([
+        getLastActiveX(activityGroup),
+        groupHeight * groupIndex
+      ])
     );
     aCtx.lineTo.apply(
       aCtx,
-      currentTransform.apply([getStartDateX(activityGroup), groupHeight * i])
+      currentTransform.apply([
+        getStartDateX(activityGroup),
+        groupHeight * groupIndex
+      ])
     );
+
+    function renderActivity(activity) {
+      aCtx.fillRect(
+        currentTransform.applyX(getActivityX(activity)),
+        currentTransform.applyY(groupHeight * groupIndex),
+        dayWidth,
+        currentTransform.k * activitySize
+      );
+    }
   }
   // var activityGroups = activityGroupRoot
   //   .selectAll('.activity-group')
@@ -292,8 +316,7 @@ function hasDeeds(project) {
   return project && project.deeds && project.deeds.length > 0;
 }
 
-function renderTimeRulers({ timeScale, graphWidth, graphHeight }) {
-  var zoomedTimeScale = currentTransform.rescaleX(timeScale);
+function renderTimeRulers({ graphWidth, graphHeight }) {
   zoomedTimeScale.range([0, graphWidth]);
   // zoomedTimeScale.domain(zoomedTimeScale.invert(0), zoomedTimeScale.invert(graphWidth));
   var tickDates = zoomedTimeScale.ticks(); //time.timeMonth.every(1));
