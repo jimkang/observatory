@@ -5,10 +5,8 @@ Observes the work you've done; kind of an anti-planner.
 
 TODO:
 
-- Make ticks render in Canvas. Hide days when zoomed way out.
 - Disable panning beyond earliest and latest activities.
 - Make activities squares within a column instead of squares on a line.
-- Make weeks columns instead of lines.
 
 Installation
 ------------

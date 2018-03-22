@@ -64,7 +64,7 @@ var zoomedTimeScale;
 
 function setUpZoom(draw) {
   var zoom = Zoom.zoom()
-    .scaleExtent([0.03, 100])
+    .scaleExtent([0.03, 500])
     .on('zoom', zoomed);
 
   targetsCanvas.call(zoom);
@@ -195,65 +195,16 @@ function renderActivityGroups({
     );
 
     function renderActivity(activity) {
-      aCtx.fillRect(
-        currentTransform.applyX(getActivityX(activity)),
-        currentTransform.applyY(groupHeight * groupIndex),
-        dayWidth,
-        currentTransform.k * activitySize
-      );
+      // TODO: Go back to trying to make these squares, see if that makes
+      // zoom more natural.
+      var x = currentTransform.applyX(getActivityX(activity));
+      var y = currentTransform.applyY(groupHeight * groupIndex);
+      var activityHeight = currentTransform.k * groupHeight;
+
+      aCtx.fillRect(x, y, dayWidth, activityHeight);
+      aCtx.strokeRect(x, y, dayWidth, activityHeight);
     }
   }
-  // var activityGroups = activityGroupRoot
-  //   .selectAll('.activity-group')
-  //   .data(activityGroupData, accessor());
-
-  // activityGroups.exit().remove();
-
-  // var newGroups = activityGroups
-  //   .enter()
-  //   .append('g')
-  //   .classed('activity-group', true);
-
-  // newGroups
-  //   .append('line')
-  //   .classed('project-line', true)
-  //   .attr('x1', verticalRuleXWithinGroup)
-  //   .attr('x2', verticalRuleXWithinGroup)
-  //   .attr('stroke', 'black')
-  //   .attr('stroke-width', 2);
-
-  // var groupsToUpdate = newGroups.merge(activityGroups);
-  // // console.log('groupsToUpdate size', groupsToUpdate.size())
-  // groupsToUpdate
-  //   // .attr(
-  //   //   'width',
-  //   //   group => 20 * (group.activities ? group.activities.length : 0)
-  //   // )
-  //   .attr('transform', (group, i) => `translate(${groupWidth * i}, 0)`)
-  //   .select('.project-line')
-  //   .attr('y1', getLastActiveY)
-  //   .attr('y2', getStartDateY);
-
-  // var activities = groupsToUpdate
-  //   .selectAll('.activity')
-  //   .data(accessor('activities'), accessor());
-
-  // activities.exit().remove();
-  // var newActivities = activities
-  //   .enter()
-  //   .append('rect')
-  //   // .append('circle')
-  //   .classed('activity', true);
-  // newActivities
-  //   // .attr('fill', 'blue')
-  //   // .attr('r', 5)
-  //   .attr('width', activitySize)
-  //   .attr('height', activitySize);
-  // var activitiesToUpdate = newActivities.merge(activities);
-  // activitiesToUpdate.attr('x', activityXWithinGroup).attr('y', getActivityY);
-  // .attr('cx', 10)
-  // .attr('cy', getActivityY);
-
   function getActivityX(d) {
     return timeScale(d.committedDate);
   }
