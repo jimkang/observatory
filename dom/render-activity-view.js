@@ -108,8 +108,8 @@ function RenderActivityView({ user }) {
     activityGroupData.sort(comparators.compareActivityGroupStartDateAsc);
     // console.log(activityGroupData.map(g => g.name));
 
-    // var totalDaysSpan =
-    //   (latestActivityDate.getTime() - earliestActivityDate.getTime()) / dayInMS;
+    var totalDaysSpan =
+      (latestActivityDate.getTime() - earliestActivityDate.getTime()) / dayInMS;
     // console.log('totalDateSpan', totalDaysSpan);
     // TODO: Display totalDateSpan somewhere.
     var graphHeight = labelBoard.attr('height');
@@ -121,6 +121,7 @@ function RenderActivityView({ user }) {
     timeScale = scale
       .scaleTime()
       .domain([latestActivityDate, earliestActivityDate])
+      // .range([0, totalDaysSpan * activitySize])
       .range([0, graphWidth]);
     zoomedTimeScale = timeScale;
 
@@ -168,9 +169,11 @@ function renderActivityGroups({
   graphWidth,
   graphHeight
 }) {
-  var dayWidth = zoomedTimeScale(today) - zoomedTimeScale(yesterday);
+  var dayWidth = currentTransform.k * activitySize;//  zoomedTimeScale(today) - zoomedTimeScale(yesterday);
   aCtx.strokeStyle = 'red';
-  aCtx.fillStyle = 'orange';
+  // TODO: Don't let this change every render; avoid flashing.
+  var activityFillHueA = probable.roll(360);
+  var activityFillHueB = (activityFillHueA) + 40 % 360;
   aCtx.beginPath();
   activityGroupData.forEach(renderGroup);
   aCtx.stroke();
@@ -194,15 +197,16 @@ function renderActivityGroups({
       ])
     );
 
-    function renderActivity(activity) {
+    function renderActivity(activity, i) {
       // TODO: Go back to trying to make these squares, see if that makes
       // zoom more natural.
       var x = currentTransform.applyX(getActivityX(activity));
       var y = currentTransform.applyY(groupHeight * groupIndex);
       var activityHeight = currentTransform.k * groupHeight;
+      aCtx.fillStyle = `hsl(${i % 2 === 0 ? activityFillHueA : activityFillHueB }, 50%, 50%)`;
 
       aCtx.fillRect(x, y, dayWidth, activityHeight);
-      aCtx.strokeRect(x, y, dayWidth, activityHeight);
+      // aCtx.strokeRect(x, y, dayWidth, activityHeight);
     }
   }
   function getActivityX(d) {
