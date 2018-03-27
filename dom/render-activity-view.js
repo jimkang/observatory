@@ -16,6 +16,8 @@ var probable = require('probable');
 const yearBlockColor1 = '#fff';
 // hsl(108, 10%, 90%)
 const yearBlockColor2 = `hsl(${probable.roll(360)}, 10%, 90%)`;
+const activityFillHueA = probable.roll(360);
+const activityFillHueB = activityFillHueA + 40 % 360;
 
 const groupLabelMaxScale = 4;
 const maxYearLabelFontSize = 8; // in em.
@@ -169,11 +171,8 @@ function renderActivityGroups({
   graphWidth,
   graphHeight
 }) {
-  var dayWidth = currentTransform.k * activitySize;//  zoomedTimeScale(today) - zoomedTimeScale(yesterday);
+  var dayWidth = currentTransform.k * activitySize; //  zoomedTimeScale(today) - zoomedTimeScale(yesterday);
   aCtx.strokeStyle = 'red';
-  // TODO: Don't let this change every render; avoid flashing.
-  var activityFillHueA = probable.roll(360);
-  var activityFillHueB = (activityFillHueA) + 40 % 360;
   aCtx.beginPath();
   activityGroupData.forEach(renderGroup);
   aCtx.stroke();
@@ -203,7 +202,9 @@ function renderActivityGroups({
       var x = currentTransform.applyX(getActivityX(activity));
       var y = currentTransform.applyY(groupHeight * groupIndex);
       var activityHeight = currentTransform.k * groupHeight;
-      aCtx.fillStyle = `hsl(${i % 2 === 0 ? activityFillHueA : activityFillHueB }, 50%, 50%)`;
+      aCtx.fillStyle = `hsl(${
+        i % 2 === 0 ? activityFillHueA : activityFillHueB
+      }, 50%, 50%)`;
 
       aCtx.fillRect(x, y, dayWidth, activityHeight);
       // aCtx.strokeRect(x, y, dayWidth, activityHeight);
