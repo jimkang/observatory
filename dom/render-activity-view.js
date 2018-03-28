@@ -107,7 +107,7 @@ function RenderActivityView({ user }) {
       return;
     }
 
-    activityGroupData.sort(comparators.compareActivityGroupStartDateAsc);
+    activityGroupData.sort(comparators.compareLastUpdatedDesc);
     // console.log(activityGroupData.map(g => g.name));
 
     var totalDaysSpan =

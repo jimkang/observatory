@@ -6,7 +6,8 @@ function formatProjectIntoActivityGroup(project, nowInEpochTime = Date.now()) {
     name: project.name,
     description: project.description,
     isExternal: project.isExternal,
-    available: project.available
+    available: project.available,
+    pushedAt: project.pushedAt
   };
 
   if (project.shippedDate) {
