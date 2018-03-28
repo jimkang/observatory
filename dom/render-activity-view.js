@@ -248,7 +248,7 @@ function renderGroupRulers({ activityGroupData, graphWidth }) {
   }
 
   function getGroupStartY(g, i) {
-    return currentTransform.applyY(i * groupHeight);
+    return currentTransform.applyY((i + 1) * groupHeight);
   }
 
   function getGroupLabelTransform(g, i) {
