@@ -32,9 +32,9 @@ const baseGroupSpacing = baseDayLength * 2;
 // const activityYWithinGroup = groupWidth / 2 - activitySize / 2;
 // const dateTickLength = dayWidth;
 
-// const dayInMS = 24 * 60 * 60 * 1000;
-// const today = new Date();
-//const yesterday = new Date(today.getTime() - dayInMS);
+const dayInMS = 24 * 60 * 60 * 1000;
+const today = new Date();
+const yesterday = new Date(today.getTime() - dayInMS);
 
 var formatMillisecond = timeFormat('.%L'),
   formatSecond = timeFormat(':%S'),
@@ -111,8 +111,8 @@ function RenderActivityView() {
     activityGroupData.sort(comparators.compareLastUpdatedDesc);
     // console.log(activityGroupData.map(g => g.name));
 
-    //var totalDaysSpan =
-    //  (latestActivityDate.getTime() - earliestActivityDate.getTime()) / dayInMS;
+    var totalDaysSpan =
+      (latestActivityDate.getTime() - earliestActivityDate.getTime()) / dayInMS;
     // console.log('totalDateSpan', totalDaysSpan);
     // TODO: Display totalDateSpan somewhere.
     var graphHeight = labelBoard.attr('height');
@@ -124,8 +124,8 @@ function RenderActivityView() {
     timeScale = scale
       .scaleTime()
       .domain([latestActivityDate, earliestActivityDate])
-      // .range([0, totalDaysSpan * activitySize])
-      .range([0, graphWidth]);
+      .range([0, totalDaysSpan * baseDayLength]);
+      //.range([0, graphWidth]);
     zoomedTimeScale = timeScale;
 
     setUpZoom(draw);
@@ -172,7 +172,7 @@ function renderActivityGroups({
   // graphWidth,
   // graphHeight
 }) {
-  var dayLength = currentTransform.k * baseDayLength; //  zoomedTimeScale(today) - zoomedTimeScale(yesterday);
+  var dayLength = zoomedTimeScale(today) - zoomedTimeScale(yesterday);
   aCtx.strokeStyle = 'red';
   aCtx.beginPath();
   activityGroupData.forEach(renderGroup);
@@ -200,7 +200,7 @@ function renderActivityGroups({
     function renderActivity(activity, i) {
       // TODO: Go back to trying to make these squares, see if that makes
       // zoom more natural.
-      var x = currentTransform.applyX(getActivityX(activity));
+      var x = getActivityX(activity);
       var y = currentTransform.applyY(baseGroupSpacing * groupIndex);
       //var activityHeight = currentTransform.k * baseGroupSpacing;
       aCtx.fillStyle = i % 2 === 0 ? activityColorA : activityColorB;
@@ -209,7 +209,7 @@ function renderActivityGroups({
     }
   }
   function getActivityX(d) {
-    return timeScale(d.committedDate);
+    return zoomedTimeScale(time.timeDay.floor(d.committedDate));
   }
 
   function getLastActiveX(group) {
