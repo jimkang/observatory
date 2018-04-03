@@ -18,22 +18,23 @@ const yearBlockColor1 = '#fff';
 const yearBlockColor2 = `hsl(${probable.roll(360)}, 10%, 90%)`;
 const activityFillHueA = probable.roll(360);
 const activityFillHueB = activityFillHueA + 40 % 360;
+const activityColorA = `hsl(${activityFillHueA}, 50%, 50%, 0.3)`;
+const activityColorB = `hsl(${activityFillHueB}, 50%, 50%, 0.3)`;
 
 const groupLabelMaxScale = 4;
 const maxYearLabelFontSize = 8; // in em.
-const dayWidth = 20;
-const groupHeight = dayWidth * 2;
+const baseDayLength = 40;
+const baseGroupSpacing = baseDayLength * 2;
 
 // const horizontalRuleYWithinGroup = dayWidth;
 // const labelTextX = -dayWidth;
-const activitySize = dayWidth / 2;
 // Center the square in the middle of the group.
 // const activityYWithinGroup = groupWidth / 2 - activitySize / 2;
 // const dateTickLength = dayWidth;
 
-const dayInMS = 24 * 60 * 60 * 1000;
-const today = new Date();
-const yesterday = new Date(today.getTime() - dayInMS);
+// const dayInMS = 24 * 60 * 60 * 1000;
+// const today = new Date();
+//const yesterday = new Date(today.getTime() - dayInMS);
 
 var formatMillisecond = timeFormat('.%L'),
   formatSecond = timeFormat(':%S'),
@@ -46,7 +47,7 @@ var formatMillisecond = timeFormat('.%L'),
 
 var activityContainer = d3.select('#activity-container');
 var labelBoard = d3.select('#label-board');
-var activityGroupRoot = d3.select('#activity-groups');
+//var activityGroupRoot = d3.select('#activity-groups');
 var fixedXRoot = labelBoard.select('.fixed-x-labels');
 var fixedYRoot = labelBoard.select('.fixed-y-labels');
 var dateLabels = fixedYRoot.select('.date-labels');
@@ -57,8 +58,8 @@ var aCtx = d3
   .node()
   .getContext('2d', { alpha: true });
 
-const groupLabelY = labelBoard.attr('height') / 2;
-const timeRulerX = 0; //labelBoard.attr('width') / 2;
+//const groupLabelY = labelBoard.attr('height') / 2;
+//const timeRulerX = 0; //labelBoard.attr('width') / 2;
 
 var currentTransform = Zoom.zoomIdentity;
 var timeScale;
@@ -83,7 +84,7 @@ function setUpZoom(draw) {
   }
 }
 
-function RenderActivityView({ user }) {
+function RenderActivityView() {
   return EaseThrottle({ fn: renderActivityView });
 
   // TODO: Draw activities in postion
@@ -110,8 +111,8 @@ function RenderActivityView({ user }) {
     activityGroupData.sort(comparators.compareLastUpdatedDesc);
     // console.log(activityGroupData.map(g => g.name));
 
-    var totalDaysSpan =
-      (latestActivityDate.getTime() - earliestActivityDate.getTime()) / dayInMS;
+    //var totalDaysSpan =
+    //  (latestActivityDate.getTime() - earliestActivityDate.getTime()) / dayInMS;
     // console.log('totalDateSpan', totalDaysSpan);
     // TODO: Display totalDateSpan somewhere.
     var graphHeight = labelBoard.attr('height');
@@ -168,10 +169,10 @@ function RenderActivityView({ user }) {
 function renderActivityGroups({
   activityGroupData,
   timeScale,
-  graphWidth,
-  graphHeight
+  // graphWidth,
+  // graphHeight
 }) {
-  var dayWidth = currentTransform.k * activitySize; //  zoomedTimeScale(today) - zoomedTimeScale(yesterday);
+  var dayLength = currentTransform.k * baseDayLength; //  zoomedTimeScale(today) - zoomedTimeScale(yesterday);
   aCtx.strokeStyle = 'red';
   aCtx.beginPath();
   activityGroupData.forEach(renderGroup);
@@ -185,14 +186,14 @@ function renderActivityGroups({
       aCtx,
       currentTransform.apply([
         getLastActiveX(activityGroup),
-        groupHeight * groupIndex
+        baseGroupSpacing * groupIndex
       ])
     );
     aCtx.lineTo.apply(
       aCtx,
       currentTransform.apply([
         getStartDateX(activityGroup),
-        groupHeight * groupIndex
+        baseGroupSpacing * groupIndex
       ])
     );
 
@@ -200,13 +201,10 @@ function renderActivityGroups({
       // TODO: Go back to trying to make these squares, see if that makes
       // zoom more natural.
       var x = currentTransform.applyX(getActivityX(activity));
-      var y = currentTransform.applyY(groupHeight * groupIndex);
-      var activityHeight = currentTransform.k * groupHeight;
-      aCtx.fillStyle = `hsl(${
-        i % 2 === 0 ? activityFillHueA : activityFillHueB
-      }, 50%, 50%)`;
-
-      aCtx.fillRect(x, y, dayWidth, activityHeight);
+      var y = currentTransform.applyY(baseGroupSpacing * groupIndex);
+      //var activityHeight = currentTransform.k * baseGroupSpacing;
+      aCtx.fillStyle = i % 2 === 0 ? activityColorA : activityColorB;
+      aCtx.fillRect(x, y, dayLength, dayLength);
       // aCtx.strokeRect(x, y, dayWidth, activityHeight);
     }
   }
@@ -224,6 +222,7 @@ function renderActivityGroups({
 }
 
 function renderGroupRulers({ activityGroupData, graphWidth }) {
+  var groupSpacing = baseGroupSpacing * currentTransform.k;
   aCtx.strokeStyle = '#ccc';
   aCtx.lineWidth = 1;
   aCtx.beginPath();
@@ -248,7 +247,7 @@ function renderGroupRulers({ activityGroupData, graphWidth }) {
   }
 
   function getGroupStartY(g, i) {
-    return currentTransform.applyY((i + 1) * groupHeight);
+    return currentTransform.applyY((i + 1) * groupSpacing);
   }
 
   function getGroupLabelTransform(g, i) {
