@@ -1,56 +1,73 @@
 var d3 = require('d3-selection');
 var accessor = require('accessor')();
-var GetPropertySafely = require('get-property-safely');
+// var GetPropertySafely = require('get-property-safely');
 var EaseThrottle = require('../ease-throttle');
 var formatProjectIntoActivityGroup = require('../format-project-into-activity-group');
 var scale = require('d3-scale');
 var Zoom = require('d3-zoom');
 var comparators = require('../comparators');
-var pluck = require('lodash.pluck');
-var axis = require('d3-axis');
+// var pluck = require('lodash.pluck');
+// var axis = require('d3-axis');
 var time = require('d3-time');
-var timeFormat = require('d3-time-format').timeFormat;
-// var curry = require('lodash.curry');
+var renderTimeRuler = require('./render-time-ruler');
+var probable = require('probable');
 
-const dayHeight = 20;
-const groupWidth = dayHeight * 2;
-const verticalRuleXWithinGroup = dayHeight;
-const labelTextY = -dayHeight;
-const activitySize = dayHeight / 2;
-// Center the squire in the middle of the group.
-const activityXWithinGroup = groupWidth / 2 - activitySize / 2;
+const activityFillHueA = probable.roll(360);
+const activityFillHueB = activityFillHueA + 40 % 360;
+const activityColorA = `hsl(${activityFillHueA}, 50%, 50%, 0.3)`;
+const activityColorB = `hsl(${activityFillHueB}, 50%, 50%, 0.3)`;
+
+const groupLabelMaxScale = 4;
+const baseDayLength = 40;
+const baseGroupSpacing = baseDayLength * 2;
+
+// const horizontalRuleYWithinGroup = dayWidth;
+// const labelTextX = -dayWidth;
+// Center the square in the middle of the group.
+// const activityYWithinGroup = groupWidth / 2 - activitySize / 2;
+// const dateTickLength = dayWidth;
 
 const dayInMS = 24 * 60 * 60 * 1000;
+const today = new Date();
+const yesterday = new Date(today.getTime() - dayInMS);
 
 var activityContainer = d3.select('#activity-container');
-var activityBoard = d3.select('#activity-board');
-var activityGroupRoot = d3.select('#activity-groups');
-var fixedXRoot = activityBoard.select('.fixed-x-labels');
-var fixedYRoot = activityBoard.select('.fixed-y-labels');
-var weekRuler = fixedXRoot.select('.week-ruler');
-var yearRuler = fixedXRoot.select('.year-ruler');
+var labelBoard = d3.select('#label-board');
+//var activityGroupRoot = d3.select('#activity-groups');
+var fixedXRoot = labelBoard.select('.fixed-x-labels');
+var targetsCanvas = d3.select('#activities-targets-canvas');
+var aCtx = d3
+  .select('#activities-canvas')
+  .node()
+  .getContext('2d', { alpha: true });
 
-const groupLabelY = activityBoard.attr('height') / 2;
-const timeRulerX = 0;//activityBoard.attr('width') / 2;
-const dateTickLength = 2000;
+//const groupLabelY = labelBoard.attr('height') / 2;
+//const timeRulerX = 0; //labelBoard.attr('width') / 2;
 
-(function setUpZoom() {
-  var zoomLayer = activityBoard.select('.zoomable-activity');
+var currentTransform = Zoom.zoomIdentity;
+var timeScale;
+var zoomedTimeScale;
+
+function setUpZoom(draw) {
   var zoom = Zoom.zoom()
-    .scaleExtent([0.03, 2])
+    .scaleExtent([0.03, 500])
     .on('zoom', zoomed);
 
-  activityBoard.call(zoom);
+  targetsCanvas.call(zoom);
 
   function zoomed() {
     // console.log(d3.event.transform.toString());
-    zoomLayer.attr('transform', d3.event.transform);
-    fixedYRoot.attr('transform', getFixedYLayerTransform(d3.event.transform));
-    fixedXRoot.attr('transform', getFixedXLayerTransform(d3.event.transform));
-  }
-})();
+    currentTransform = d3.event.transform;
+    zoomedTimeScale = currentTransform.rescaleX(timeScale);
+    draw();
 
-function RenderActivityView({ user }) {
+    // zoomLayer.attr('transform', d3.event.transform);
+    // fixedYRoot.attr('transform', getFixedYLayerTransform(d3.event.transform));
+    // fixedXRoot.attr('transform', getFixedXLayerTransform(d3.event.transform));
+  }
+}
+
+function RenderActivityView() {
   return EaseThrottle({ fn: renderActivityView });
 
   // TODO: Draw activities in postion
@@ -74,30 +91,50 @@ function RenderActivityView({ user }) {
       return;
     }
 
-    activityGroupData.sort(comparators.compareActivityGroupStartDateAsc);
+    activityGroupData.sort(comparators.compareLastUpdatedDesc);
     // console.log(activityGroupData.map(g => g.name));
 
     var totalDaysSpan =
       (latestActivityDate.getTime() - earliestActivityDate.getTime()) / dayInMS;
-    console.log('totalDateSpan', totalDaysSpan);
+    // console.log('totalDateSpan', totalDaysSpan);
     // TODO: Display totalDateSpan somewhere.
-    var graphHeight = totalDaysSpan * dayHeight;
+    var graphHeight = labelBoard.attr('height');
+    var graphWidth = labelBoard.attr('width');
 
-    // activityBoard.attr('height', activityGroupData.length * groupWidth);
-    // activityBoard.attr('width', graphHeight);
+    // labelBoard.attr('height', activityGroupData.length * groupWidth);
+    // labelBoard.attr('width', graphHeight);
 
-    var timeScale = scale
+    timeScale = scale
       .scaleTime()
       .domain([latestActivityDate, earliestActivityDate])
-      .range([0, graphHeight]);
+      .range([0, totalDaysSpan * baseDayLength]);
+    //.range([0, graphWidth]);
+    zoomedTimeScale = timeScale;
 
-    renderActivityGroups({ activityGroupData, timeScale });
-    renderGroupRulers({
-      activityGroupData,
-      graphHeight,
-      boardHeight: activityBoard.attr('height')
-    });
-    renderTimeRulers({ timeScale });
+    setUpZoom(draw);
+    draw();
+
+    function draw() {
+      aCtx.clearRect(0, 0, graphWidth, graphHeight);
+
+      renderTimeRuler({
+        timeScale: zoomedTimeScale,
+        graphWidth,
+        graphHeight,
+        currentTransform,
+        ctx: aCtx
+      });
+      renderGroupRulers({
+        activityGroupData,
+        graphWidth
+      });
+      renderActivityGroups({
+        activityGroupData,
+        timeScale,
+        graphWidth,
+        graphHeight
+      });
+    }
 
     function updateSpanDates(group) {
       if (group.startDate) {
@@ -118,135 +155,113 @@ function RenderActivityView({ user }) {
   }
 }
 
-function renderActivityGroups({ activityGroupData, timeScale }) {
-  var activityGroups = activityGroupRoot
-    .selectAll('.activity-group')
-    .data(activityGroupData, accessor());
+function renderActivityGroups({
+  activityGroupData,
+  timeScale
+  // graphWidth,
+  // graphHeight
+}) {
+  var dayLength = zoomedTimeScale(today) - zoomedTimeScale(yesterday);
+  aCtx.strokeStyle = 'red';
+  aCtx.beginPath();
+  activityGroupData.forEach(renderGroup);
+  aCtx.stroke();
+  // console.log('Drawn!');
 
-  activityGroups.exit().remove();
+  function renderGroup(activityGroup, groupIndex) {
+    // console.log('draw group at', groupWidth * i, getLastActiveY(activityGroup), 'to', groupWidth * i, getStartDateY(activityGroup));
+    activityGroup.activities.forEach(renderActivity);
+    aCtx.moveTo.apply(
+      aCtx,
+      currentTransform.apply([
+        getLastActiveX(activityGroup),
+        baseGroupSpacing * groupIndex
+      ])
+    );
+    aCtx.lineTo.apply(
+      aCtx,
+      currentTransform.apply([
+        getStartDateX(activityGroup),
+        baseGroupSpacing * groupIndex
+      ])
+    );
 
-  // console.log('activityGroups.enter().size()', activityGroups.enter().size())
-  var newGroups = activityGroups
-    .enter()
-    .append('g')
-    .classed('activity-group', true);
-
-  newGroups
-    .append('line')
-    .classed('project-line', true)
-    .attr('x1', verticalRuleXWithinGroup)
-    .attr('x2', verticalRuleXWithinGroup)
-    .attr('stroke', 'black')
-    .attr('stroke-width', 2);
-
-  var groupsToUpdate = newGroups.merge(activityGroups);
-  // console.log('groupsToUpdate size', groupsToUpdate.size())
-  groupsToUpdate
-    // .attr(
-    //   'width',
-    //   group => 20 * (group.activities ? group.activities.length : 0)
-    // )
-    .attr('transform', (group, i) => `translate(${groupWidth * i}, 0)`)
-    .select('.project-line')
-    .attr('y1', getLastActiveY)
-    .attr('y2', getStartDateY);
-
-  var activities = groupsToUpdate
-    .selectAll('.activity')
-    .data(accessor('activities'), accessor());
-
-  activities.exit().remove();
-  var newActivities = activities
-    .enter()
-    .append('rect')
-    // .append('circle')
-    .classed('activity', true);
-  newActivities
-    // .attr('fill', 'blue')
-    // .attr('r', 5)
-    .attr('width', activitySize)
-    .attr('height', activitySize);
-  var activitiesToUpdate = newActivities.merge(activities);
-  activitiesToUpdate.attr('x', activityXWithinGroup).attr('y', getActivityY);
-  // .attr('cx', 10)
-  // .attr('cy', getActivityY);
-
-  function getActivityY(d) {
-    return timeScale(d.committedDate);
+    function renderActivity(activity, i) {
+      // TODO: Go back to trying to make these squares, see if that makes
+      // zoom more natural.
+      var x = getActivityX(activity);
+      var y = currentTransform.applyY(baseGroupSpacing * groupIndex);
+      //var activityHeight = currentTransform.k * baseGroupSpacing;
+      aCtx.fillStyle = i % 2 === 0 ? activityColorA : activityColorB;
+      aCtx.fillRect(x, y, dayLength, dayLength);
+      // aCtx.strokeRect(x, y, dayWidth, activityHeight);
+    }
+  }
+  function getActivityX(d) {
+    return zoomedTimeScale(time.timeDay.floor(d.committedDate));
   }
 
-  function getLastActiveY(group) {
+  function getLastActiveX(group) {
     return timeScale(group.lastActiveDate);
   }
 
-  function getStartDateY(group) {
+  function getStartDateX(group) {
     return timeScale(group.startDate);
   }
 }
 
-function renderGroupRulers({ activityGroupData, graphHeight }) {
-  var groupRulers = fixedYRoot
-    .selectAll('.group-name')
-    .data(pluck(activityGroupData, 'name'), accessor('identity'));
+function renderGroupRulers({ activityGroupData, graphWidth }) {
+  var groupSpacing = baseGroupSpacing * currentTransform.k;
+  aCtx.strokeStyle = '#ccc';
+  aCtx.lineWidth = 1;
+  aCtx.beginPath();
+  activityGroupData.forEach(drawGroupRuler);
+  aCtx.stroke();
 
-  groupRulers.exit().remove();
-
-  var newRulers = groupRulers
+  var groupLabels = fixedXRoot
+    .selectAll('text')
+    .data(activityGroupData, accessor());
+  groupLabels.exit().remove();
+  groupLabels
     .enter()
-    .append('g')
-    .classed('group-name', true);
-
-  newRulers
-    .append('line')
-    .attr('x1', verticalRuleXWithinGroup)
-    .attr('x2', verticalRuleXWithinGroup)
-    .attr('y1', -graphHeight)
-    .attr('y2', graphHeight)
-    .attr('stroke', '#ccc')
-    .attr('stroke-width', 1);
-
-  newRulers
     .append('text')
-    .attr('transform', 'rotate(90)')
-    .attr('y', labelTextY); // Since we're rotated, this moves it horizontally.
+    .merge(groupLabels)
+    .text(accessor('name'))
+    .attr('transform', getGroupLabelTransform);
 
-  var updateRulers = newRulers.merge(groupRulers);
-  updateRulers.attr('transform', getGroupRulerTransform);
-  updateRulers.select('text').text(accessor('identity'));
-  // .attr('y', getNameLabelY);
+  function drawGroupRuler(g, i) {
+    var y = getGroupStartY(g, i);
+    aCtx.moveTo(0, y);
+    aCtx.lineTo(graphWidth, y);
+  }
+
+  function getGroupStartY(g, i) {
+    return currentTransform.applyY((i + 1) * groupSpacing);
+  }
+
+  function getGroupLabelTransform(g, i) {
+    var scale = currentTransform.k;
+    if (scale > groupLabelMaxScale) {
+      scale = groupLabelMaxScale;
+    }
+    return `translate(0, ${getGroupStartY(g, i)}) scale(${scale})`;
+  }
 }
+
+// function getGroupRulerY1(d, i) {
+//   return i * groupHeight;
+// }
+
+// function getGroupRulerY2(d, i) {
+//   return (i + 1) * groupHeight;
+// }
 
 function hasDeeds(project) {
   return project && project.deeds && project.deeds.length > 0;
 }
 
-function renderTimeRulers({ timeScale }) {
-  // weekRuler.attr('transform', 'translate(300, 0)');
-  // yearRuler.attr('transform', 'translate(300, 0)');
-
-  var weekAxis = axis.axisRight(timeScale);
-  weekAxis.ticks(time.timeWeek.every(1));
-  weekAxis.tickSize(dateTickLength);
-
-  var yearAxis = axis.axisLeft(timeScale);
-  yearAxis.ticks(time.timeYear.every(1));
-  yearAxis.tickFormat(timeFormat('%Y'));
-  yearAxis.tickSize(100);
-
-  weekRuler.call(weekAxis);
-  yearRuler.call(yearAxis);
-}
-
-function getGroupRulerTransform(name, i) {
-  return `translate(${groupWidth * i}, 0)`;
-}
-
-function getFixedYLayerTransform({ x, k }) {
-  return `translate(${x}, ${groupLabelY}) scale(${k})`;
-}
-
-function getFixedXLayerTransform({ y, k }) {
-  return `translate(${timeRulerX}, ${y}) scale(${k})`;
-}
+// function getGroupRulerTransform(name, i) {
+//   return `translate(${groupHeight * i}, 0)`;
+// }
 
 module.exports = RenderActivityView;

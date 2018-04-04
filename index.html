@@ -59,18 +59,16 @@
 <div id="activity-container" class="view-root">
   <div>Activity</div>
 
-  <svg id="activity-board" width="960" height="640">
-    <g class="fixed-x-labels">
-      <g class="week-ruler"></g>
-      <g class="year-ruler"></g>
+  <svg id="label-board" width="960" height="640">
+    <g class="fixed-y-labels">
+      <g class="date-labels"></g>
+      <g class="year-labels"></g>
     </g>
-    <g class="fixed-y-labels"></g>
-    <g class="zoomable-activity">
-      <g id="activity-groups"></g>
-    </g>
-    <g class="unzoomable-activity">
-    </g>
+    <g class="fixed-x-labels"></g>
   </svg>
+  <!-- <canvas id="rulers-canvas" width="960" height="640"></canvas> -->
+  <canvas id="activities-canvas" width="960" height="640"></canvas>
+  <canvas id="activities-targets-canvas" width="960" height="640"></canvas>
 </div>
 
 <div id="deedsort-container" class="view-root">
