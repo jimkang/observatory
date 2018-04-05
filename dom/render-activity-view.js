@@ -2,24 +2,15 @@ var d3 = require('d3-selection');
 var EaseThrottle = require('../ease-throttle');
 var formatProjectIntoActivityGroup = require('../format-project-into-activity-group');
 var scale = require('d3-scale');
-var time = require('d3-time');
 var Zoom = require('d3-zoom');
 var comparators = require('../comparators');
 var renderTimeRuler = require('./render-time-ruler');
 var renderGroupRulers = require('./render-group-rulers');
-var probable = require('probable');
-
-const activityFillHueA = probable.roll(360);
-const activityFillHueB = activityFillHueA + 40 % 360;
-const activityColorA = `hsl(${activityFillHueA}, 50%, 50%, 0.3)`;
-const activityColorB = `hsl(${activityFillHueB}, 50%, 50%, 0.3)`;
+var renderActivityGroups = require('./render-activity-groups');
 
 const baseDayLength = 40;
 const baseGroupSpacing = baseDayLength * 2;
-
 const dayInMS = 24 * 60 * 60 * 1000;
-const today = new Date();
-const yesterday = new Date(today.getTime() - dayInMS);
 
 var activityContainer = d3.select('#activity-container');
 var labelBoard = d3.select('#label-board');
@@ -109,9 +100,10 @@ function RenderActivityView() {
       });
       renderActivityGroups({
         activityGroupData,
-        timeScale,
-        graphWidth,
-        graphHeight
+        timeScale: zoomedTimeScale,
+        ctx: aCtx,
+        currentTransform,
+        baseGroupSpacing
       });
     }
 
@@ -131,55 +123,6 @@ function RenderActivityView() {
         }
       }
     }
-  }
-}
-
-function renderActivityGroups({
-  activityGroupData,
-  timeScale
-}) {
-  var dayLength = zoomedTimeScale(today) - zoomedTimeScale(yesterday);
-  aCtx.strokeStyle = 'red';
-  aCtx.beginPath();
-  activityGroupData.forEach(renderGroup);
-  aCtx.stroke();
-
-  function renderGroup(activityGroup, groupIndex) {
-    // console.log('draw group at', groupWidth * i, getLastActiveY(activityGroup), 'to', groupWidth * i, getStartDateY(activityGroup));
-    activityGroup.activities.forEach(renderActivity);
-    aCtx.moveTo.apply(
-      aCtx,
-      currentTransform.apply([
-        getLastActiveX(activityGroup),
-        baseGroupSpacing * groupIndex
-      ])
-    );
-    aCtx.lineTo.apply(
-      aCtx,
-      currentTransform.apply([
-        getStartDateX(activityGroup),
-        baseGroupSpacing * groupIndex
-      ])
-    );
-
-    function renderActivity(activity, i) {
-      var x = getActivityX(activity);
-      var y = currentTransform.applyY(baseGroupSpacing * groupIndex);
-      aCtx.fillStyle = i % 2 === 0 ? activityColorA : activityColorB;
-      aCtx.fillRect(x, y, dayLength, dayLength);
-    }
-  }
-
-  function getActivityX(d) {
-    return zoomedTimeScale(time.timeDay.floor(d.committedDate));
-  }
-
-  function getLastActiveX(group) {
-    return timeScale(group.lastActiveDate);
-  }
-
-  function getStartDateX(group) {
-    return timeScale(group.startDate);
   }
 }
 
