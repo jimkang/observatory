@@ -72,8 +72,8 @@ function renderTimeRuler({
   yearTexts
     .enter()
     .append('text')
-    .attr('transform', 'rotate(-90)')
-    .attr('x', -graphHeight / 2) // Because we're rotated, this is the vertical position.
+    .attr('transform', 'rotate(90)')
+    .attr('x', graphHeight / 2) // Because we're rotated, this is the vertical position.
     .merge(yearTexts)
     .attr('y', getYearLabelHorizontalPosition)
     .attr('font-size', `${yearLabelFontSize}em`)
@@ -91,7 +91,7 @@ function renderTimeRuler({
   }
 
   function getYearLabelHorizontalPosition(date) {
-    return timeScale(date) - currentTransform.k * graphWidth / 18;
+    return -timeScale(date); // - currentTransform.k * graphWidth / 18;
   }
   // console.log('start', timeScale.invert(0));
   // console.log('end', timeScale.invert(graphWidth));

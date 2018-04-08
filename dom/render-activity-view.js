@@ -72,7 +72,7 @@ function RenderActivityView() {
 
     timeScale = scale
       .scaleTime()
-      .domain([latestActivityDate, earliestActivityDate])
+      .domain([earliestActivityDate, latestActivityDate])
       .range([0, totalDaysSpan * baseDayLength]);
     //.range([0, graphWidth]);
     zoomedTimeScale = timeScale;
