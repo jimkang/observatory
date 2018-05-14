@@ -8,7 +8,7 @@ function getUserCommitsFromServer(
   ndjsonParsingStream.on('data', emitObject);
 
   var reqOpts = {
-    url: 'http://107.170.58.24/observatory-cache/jimkang-cache.json',
+    url: 'https://smidgeo.com/observatory-cache/jimkang-cache.json',
     method: 'GET',
     onData: writeToStream
   };

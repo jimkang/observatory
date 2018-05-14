@@ -6,6 +6,7 @@ var renderHeader = require('../dom/render-header');
 var RenderDeedDetails = require('../dom/render-deed-details');
 var RenderActivityView = require('../dom/render-activity-view');
 var RenderDeedSortView = require('../dom/render-deed-sort-view');
+var RenderFactsView = require('../dom/render-facts-view');
 var values = require('lodash.values');
 var addDeedToProject = require('add-deed-to-project');
 var leveljs = require('level-js');
@@ -33,7 +34,8 @@ function ProjectsFlow({ token, user, userEmail, verbose }) {
     plain: RenderPlain({ user }),
     garden: renderGarden,
     activity: RenderActivityView({ user }),
-    deedsort: RenderDeedSortView({ user })
+    deedsort: RenderDeedSortView({ user }),
+    facts: RenderFactsView({ user })
   };
 
   var githubProjectsSource = GitHubProjectsSource({
