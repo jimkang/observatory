@@ -120,7 +120,9 @@ function multiFormat(date) {
         : time.timeDay(date) < date
           ? formatHour
           : time.timeMonth(date) < date
-            ? time.timeWeek(date) < date ? formatDay : formatWeek
+            ? time.timeWeek(date) < date
+              ? formatDay
+              : formatWeek
             : formatMonth)(date);
 }
 

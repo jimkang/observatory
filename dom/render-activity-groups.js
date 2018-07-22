@@ -2,7 +2,7 @@
 var probable = require('probable');
 
 const activityFillHueA = probable.roll(360);
-const activityFillHueB = activityFillHueA + 40 % 360;
+const activityFillHueB = activityFillHueA + (40 % 360);
 const activityColorA = `hsl(${activityFillHueA}, 50%, 50%, 0.3)`;
 const activityColorB = `hsl(${activityFillHueB}, 50%, 50%, 0.3)`;
 const dayInMS = 24 * 60 * 60 * 1000;
