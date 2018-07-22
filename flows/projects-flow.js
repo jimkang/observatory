@@ -21,7 +21,7 @@ const expensiveRenderThreshold = 5;
 // ProjectsFlow is per-data-source. If you need to get from a new data source,
 // you need to create another projectSource.
 // changeRenderer changes the rendering while still using the same data source.
-function ProjectsFlow({ token, user, userEmail, verbose }) {
+function ProjectsFlow({ user, userEmail, verbose }) {
   var collectedProjectsByName = {};
   var collectedProjects = [];
   var streamEndEventReceived = false;
@@ -39,40 +39,24 @@ function ProjectsFlow({ token, user, userEmail, verbose }) {
   };
 
   var githubProjectsSource = GitHubProjectsSource({
-    githubToken: token,
     username: user,
     userEmail: userEmail,
-    request: request,
+    request,
     onNonFatalError: handleError,
     onDeed: collectDeed,
     onProject: collectProject,
     // filterProject: weCareAboutThisProject,
     dbName: 'observatory-deeds',
     db: leveljs,
-    getUserCommits: token ? undefined : getUserCommitsFromServer,
-    skipMetadata: token ? false : true
+    getUserCommits: getUserCommitsFromServer,
+    skipMetadata: true
   });
 
   return {
     start,
     cancel,
-    changeRenderer,
-    newDataSourceMatches
+    changeRenderer
   };
-
-  function newDataSourceMatches({
-    newToken,
-    newUser,
-    newUserEmail,
-    newVerbose
-  }) {
-    return (
-      token === newToken &&
-      user === newUser &&
-      userEmail === newUserEmail &&
-      verbose === newVerbose
-    );
-  }
 
   function start() {
     githubProjectsSource.startStream(
