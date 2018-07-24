@@ -3,6 +3,11 @@ observatory
 
 Observes the work you've done; kind of an anti-planner.
 
+TODO:
+
+- Disable panning beyond earliest and latest activities.
+- Make activities squares within a column instead of squares on a line.
+
 Installation
 ------------
 

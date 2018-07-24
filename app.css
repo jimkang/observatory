@@ -68,6 +68,7 @@ div[contenteditable] {
 
 #status-message {
   background-color: #ffffee;
+  width: 80%;
 }
 
 .zoom-protect-container {
@@ -335,6 +336,58 @@ a {
   margin-bottom: 1em;
 }
 
+#activity-container {
+  width: 1000px;
+  height: 768px;
+}
+
+.group-name text {
+  text-anchor: middle;
+  fill: #555;
+}
+
+.activity {
+  fill: hsla(0, 0%, 30%, 0.5);
+}
+
+#label-board {
+  z-index: 1;
+  position: absolute;
+}
+
+#activities-canvas {
+  z-index: 0;
+  position: absolute;
+}
+
+#activities-labels {
+  z-index: 2;
+  position: absolute;
+}
+
+#activities-targets-canvas {
+  position: absolute;
+  opacity: 0;
+  z-index: 3;
+}
+
+.year-labels text {
+  fill: hsla(0, 0%, 0%, 0.4);
+  text-anchor: middle;
+}
+
+#activity-groups {
+  transform: translate(100, 0);
+}
+
+#activity-board {
+  border: 2px dashed #aaa;
+}
+
+.date-labels text {
+  font-size: 0.5em;
+}
+
 @media all and (max-height: 568px) {
   body {
     font-size: 18px;
@@ -349,9 +402,9 @@ a {
     padding-right: 2em;
   }
 
-#list-container {
-  max-width: 100%;
-}
+  #list-container {
+    max-width: 100%;
+  }
 
   .name-link {
     font-size: 1.2em;

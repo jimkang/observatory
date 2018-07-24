@@ -7,7 +7,7 @@
 </head>
 <body>
 
-<div id="status-message" class="hidden"></div>
+<pre id="status-message" class="hidden"></pre>
 
 <header>
   <div class="title">
@@ -15,12 +15,16 @@
   </div>
   <div class="view-nav">
     <a id="garden-view-button" class="view-button" data-viewname="garden">Garden</a> |
-    <a id="activity-button" class="view-button hidden" data-viewname="activity">Activity Lines</a> <!-- | -->
+<!--
+    <a id="facts-button" class="view-button" data-viewname="facts">Facts</a> | 
+    <a id="activity-button" class="view-button" data-viewname="activity">Activity</a> | 
+    <a id="deedsort-button" class="view-button" data-viewname="deedsort">Sorted by deed quantity</a> | 
+-->
     <a id="list-view-button" class="view-button" data-viewname="plain">Simple List</a>
   </div>
 </header>
 
-<div id="list-container" class="view-root">
+<div id="plain-container" class="view-root">
   <ul id="basic-project-list">
   </ul>
 </div>
@@ -56,7 +60,25 @@
 </div>
 
 <div id="activity-container" class="view-root">
-  Activity
+  <div>Activity</div>
+
+  <svg id="label-board" width="960" height="640">
+    <g class="fixed-y-labels">
+      <g class="date-labels"></g>
+      <g class="year-labels"></g>
+    </g>
+    <g class="fixed-x-labels"></g>
+  </svg>
+  <!-- <canvas id="rulers-canvas" width="960" height="640"></canvas> -->
+  <canvas id="activities-canvas" width="960" height="640"></canvas>
+  <canvas id="activities-targets-canvas" width="960" height="640"></canvas>
+</div>
+
+<div id="deedsort-container" class="view-root">
+  <div>Sorted by deed quantity</div>
+  <svg id="deedsort-board" width="1000" height="1000">
+    <g class="deed-groups"></g>
+  </svg>
 </div>
 
  <div class="explanation">
@@ -66,23 +88,7 @@
 <section class="github-info">
   <div class="title">Want to see your own projects?</div>
 
-  <div class="form-pair">
-    <label>GitHub username</label>
-    <div class="value-container">
-      <input type="text" id="github-username" value="" required></input>
-    </div>
-  </div>
-
-  <div class="form-pair">
-    <label>Git email</label>
-    <div class="value-container">
-      <input type="email" id="github-user-email" value="<The email that is used for your git commits>" required></input>
-    </div>
-  </div>
-
-  <button id="github-form-submit" class="button">Show my projects!</button>
-
-  <div id="form-status-message" class="hidden"></div>
+  <a href="mailto:jimkang@gmail.com">Email me if you're interested!</a>
 </section>
 
  <div class="explanation">

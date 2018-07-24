@@ -53,7 +53,6 @@ function interpolateInSegment(segmentIndex) {
 }
 
 function swatchForColor(color, i) {
-  return `<rect width="${swatchWidth}" height="${swatchWidth}" fill="${
-    color
-  }" x="${i * swatchWidth}"></rect>`;
+  return `<rect width="${swatchWidth}" height="${swatchWidth}" fill="${color}" x="${i *
+    swatchWidth}"></rect>`;
 }

@@ -1,8 +1,9 @@
 var d3 = require('d3-selection');
-var accessor = require('accessor');
+var accessor = require('accessor')();
 var GetPropertySafely = require('get-property-safely');
 var EaseThrottle = require('../ease-throttle');
 var renderDetailInnards = require('./render-detail-innards');
+var comparators = require('../comparators');
 
 const projectDetailsSkeleton = `<div class="project-details">
       <a class="name-link" target="_blank"></a>
@@ -24,9 +25,7 @@ function RenderPlain({ user }) {
   return EaseThrottle({ fn: renderPlain });
 
   function renderPlain({ projectData }) {
-    d3.selectAll('.view-root:not(#list-container)').classed('hidden', true);
-    d3.select('#list-container').classed('hidden', false);
-
+    projectData.sort(comparators.compareLastUpdatedDesc);
     var projects = basicProjectListRoot.selectAll('.project').data(projectData);
     // projects.exit().remove();
     var newProjects = projects

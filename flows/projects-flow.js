@@ -1,16 +1,18 @@
-var GitHubProjectsSource = require('github-projects-source');
 var request = require('basic-browser-request');
 var RenderPlain = require('../dom/render-plain');
 var renderGarden = require('../dom/render-garden');
 var renderHeader = require('../dom/render-header');
 var RenderDeedDetails = require('../dom/render-deed-details');
 var RenderActivityView = require('../dom/render-activity-view');
+var RenderDeedSortView = require('../dom/render-deed-sort-view');
+var RenderFactsView = require('../dom/render-facts-view');
 var values = require('lodash.values');
+var omit = require('lodash.omit');
 var addDeedToProject = require('add-deed-to-project');
-var leveljs = require('level-js');
 var getUserCommitsFromServer = require('../get-user-commits-from-server');
 var handleError = require('handle-error-web');
 var countDeedsInProjects = require('../count-deeds-in-projects');
+var switchViewRoot = require('../dom/switch-view-root');
 
 const expensiveRenderInterval = 5;
 const expensiveRenderThreshold = 5;
@@ -18,7 +20,7 @@ const expensiveRenderThreshold = 5;
 // ProjectsFlow is per-data-source. If you need to get from a new data source,
 // you need to create another projectSource.
 // changeRenderer changes the rendering while still using the same data source.
-function ProjectsFlow({ token, user, userEmail, verbose }) {
+function ProjectsFlow({ user, verbose }) {
   var collectedProjectsByName = {};
   var collectedProjects = [];
   var streamEndEventReceived = false;
@@ -30,58 +32,29 @@ function ProjectsFlow({ token, user, userEmail, verbose }) {
   var renderers = {
     plain: RenderPlain({ user }),
     garden: renderGarden,
-    activity: RenderActivityView({ user })
+    activity: RenderActivityView({ user }),
+    deedsort: RenderDeedSortView({ user }),
+    facts: RenderFactsView({ user })
   };
-
-  var githubProjectsSource = GitHubProjectsSource({
-    githubToken: token,
-    username: user,
-    userEmail: userEmail,
-    request: request,
-    onNonFatalError: handleError,
-    onDeed: collectDeed,
-    onProject: collectProject,
-    // filterProject: weCareAboutThisProject,
-    dbName: 'observatory-deeds',
-    db: leveljs,
-    getUserCommits: token ? undefined : getUserCommitsFromServer,
-    skipMetadata: token ? false : true
-  });
 
   return {
     start,
-    cancel,
-    changeRenderer,
-    newDataSourceMatches
+    changeRenderer
   };
 
-  function newDataSourceMatches({
-    newToken,
-    newUser,
-    newUserEmail,
-    newVerbose
-  }) {
-    return (
-      token === newToken &&
-      user === newUser &&
-      userEmail === newUserEmail &&
-      verbose === newVerbose
-    );
-  }
-
   function start() {
-    githubProjectsSource.startStream(
-      { sources: ['local', 'API'] },
-      onStreamEnd
-    );
+    getUserCommitsFromServer({
+      request,
+      onRepo: collectProject,
+      onCommit: collectDeed
+    }, onStreamEnd);
   }
 
-  // TODO: Actually implement cancel in GitHubProjectsSource.
-  function cancel() {
-    ignoreSourceEvents = true;
-  }
+  function collectDeed(commit, source) {
+    var deed = omit(commit, 'id', 'repoName');
+    deed.id = commit.abbreviatedOid;
+    deed.projectName = commit.repoName;
 
-  function collectDeed(deed, source) {
     if (ignoreSourceEvents) {
       if (verbose) {
         console.log('Flow is cancelled. Ignoring deed!');
@@ -151,8 +124,8 @@ function ProjectsFlow({ token, user, userEmail, verbose }) {
   function callRender({ expensiveRenderIsOK = false }) {
     if (render) {
       render({
-        projectData: collectedProjects.sort(compareLastUpdatedDesc),
-        expensiveRenderIsOK: expensiveRenderIsOK,
+        projectData: collectedProjects,
+        expensiveRenderIsOK,
         onDeedClick: renderDeedDetails
       });
       renderCount += 1;
@@ -176,20 +149,13 @@ function ProjectsFlow({ token, user, userEmail, verbose }) {
     });
     // Using name instead of id because deeds/commits do not have project ids.
     render = renderers[viewName];
+    switchViewRoot(viewName);
     renderCount = 0;
 
     if (streamEndEventReceived) {
       callRender({ expensiveRenderIsOK: true });
     }
     // Otherwise, the various event handlers will call callRender.
-  }
-}
-
-function compareLastUpdatedDesc(projectA, projectB) {
-  if (new Date(projectA.pushedAt) > new Date(projectB.pushedAt)) {
-    return -1;
-  } else {
-    return 1;
   }
 }
 
