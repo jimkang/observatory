@@ -3,3 +3,4 @@ node_modules
 projects.yaml
 config.js
 test-config.js
+*.swp

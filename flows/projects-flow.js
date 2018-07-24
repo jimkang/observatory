@@ -1,4 +1,3 @@
-var GitHubProjectsSource = require('github-projects-source');
 var request = require('basic-browser-request');
 var RenderPlain = require('../dom/render-plain');
 var renderGarden = require('../dom/render-garden');
@@ -8,8 +7,8 @@ var RenderActivityView = require('../dom/render-activity-view');
 var RenderDeedSortView = require('../dom/render-deed-sort-view');
 var RenderFactsView = require('../dom/render-facts-view');
 var values = require('lodash.values');
+var omit = require('lodash.omit');
 var addDeedToProject = require('add-deed-to-project');
-var leveljs = require('level-js');
 var getUserCommitsFromServer = require('../get-user-commits-from-server');
 var handleError = require('handle-error-web');
 var countDeedsInProjects = require('../count-deeds-in-projects');
@@ -21,7 +20,7 @@ const expensiveRenderThreshold = 5;
 // ProjectsFlow is per-data-source. If you need to get from a new data source,
 // you need to create another projectSource.
 // changeRenderer changes the rendering while still using the same data source.
-function ProjectsFlow({ user, userEmail, verbose }) {
+function ProjectsFlow({ user, verbose }) {
   var collectedProjectsByName = {};
   var collectedProjects = [];
   var streamEndEventReceived = false;
@@ -38,39 +37,24 @@ function ProjectsFlow({ user, userEmail, verbose }) {
     facts: RenderFactsView({ user })
   };
 
-  var githubProjectsSource = GitHubProjectsSource({
-    username: user,
-    userEmail: userEmail,
-    request,
-    onNonFatalError: handleError,
-    onDeed: collectDeed,
-    onProject: collectProject,
-    // filterProject: weCareAboutThisProject,
-    dbName: 'observatory-deeds',
-    db: leveljs,
-    getUserCommits: getUserCommitsFromServer,
-    skipMetadata: true
-  });
-
   return {
     start,
-    cancel,
     changeRenderer
   };
 
   function start() {
-    githubProjectsSource.startStream(
-      { sources: ['local', 'API'] },
-      onStreamEnd
-    );
+    getUserCommitsFromServer({
+      request,
+      onRepo: collectProject,
+      onCommit: collectDeed
+    }, onStreamEnd);
   }
 
-  // TODO: Actually implement cancel in GitHubProjectsSource.
-  function cancel() {
-    ignoreSourceEvents = true;
-  }
+  function collectDeed(commit, source) {
+    var deed = omit(commit, 'id', 'repoName');
+    deed.id = commit.abbreviatedOid;
+    deed.projectName = commit.repoName;
 
-  function collectDeed(deed, source) {
     if (ignoreSourceEvents) {
       if (verbose) {
         console.log('Flow is cancelled. Ignoring deed!');
@@ -141,7 +125,7 @@ function ProjectsFlow({ user, userEmail, verbose }) {
     if (render) {
       render({
         projectData: collectedProjects,
-        expensiveRenderIsOK: expensiveRenderIsOK,
+        expensiveRenderIsOK,
         onDeedClick: renderDeedDetails
       });
       renderCount += 1;
