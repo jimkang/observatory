@@ -22,4 +22,4 @@ prettier:
 	prettier --single-quote --write "**/*.js"
 
 test:
-	node tests/format-project-into-activity-group-tests.js
+	node tests/decorate-project-tests.js

@@ -45,11 +45,14 @@ function ProjectsFlow({ user, verbose }) {
   };
 
   function start() {
-    getUserCommitsFromServer({
-      request,
-      onRepo: collectProject,
-      onCommit: collectDeed
-    }, onStreamEnd);
+    getUserCommitsFromServer(
+      {
+        request,
+        onRepo: collectProject,
+        onCommit: collectDeed
+      },
+      onStreamEnd
+    );
   }
 
   function collectDeed(commit, source) {

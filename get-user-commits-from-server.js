@@ -1,9 +1,6 @@
 var ndjson = require('ndjson');
 
-function getUserCommitsFromServer(
-  { request, onRepo, onCommit },
-  done
-) {
+function getUserCommitsFromServer({ request, onRepo, onCommit }, done) {
   var ndjsonParsingStream = ndjson.parse();
   ndjsonParsingStream.on('data', emitObject);
 
