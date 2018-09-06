@@ -16,8 +16,8 @@ function RenderYearView({ user }) {
     d3.selectAll('.view-root:not(#year-container)').classed('hidden', true);
     deedContainer.classed('hidden', false);
     projectData.forEach(decorateProject);
-    var projectsByYear = arrangeProjectDataByYear({ projectData });
-    console.log('projectsByYear', projectsByYear);
+    var yearKits = arrangeProjectDataByYear({ projectData });
+    console.log('yearKits', yearKits);
   }
 }
 

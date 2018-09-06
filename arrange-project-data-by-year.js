@@ -1,7 +1,7 @@
 function arrangeProjectDataByYear({ projectData, sortBy = 'startDate' }) {
   var projectsByYear = {};
   projectData.forEach(placeProject);
-  return projectsByYear;
+  return Object.keys(projectsByYear).map(convertToYearKit);
 
   function placeProject(project) {
     var year;
@@ -17,6 +17,14 @@ function arrangeProjectDataByYear({ projectData, sortBy = 'startDate' }) {
       projectsForYear.push(project);
     }
   }
+
+  function convertToYearKit(year) {
+    return {
+      year,
+      projects: projectsByYear[year]
+    };
+  }
+
 }
 
 module.exports = arrangeProjectDataByYear;
