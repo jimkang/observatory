@@ -416,6 +416,12 @@ a {
   }
 }
 
+.year-title {
+  font-size: 2em;
+  font-weight: 500;
+  margin-bottom: 0.5em;
+}
+
 @media all and (max-height: 320px) {
   .details-box {
     max-height: 240px;
