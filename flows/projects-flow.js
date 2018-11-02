@@ -21,7 +21,7 @@ const expensiveRenderThreshold = 5;
 // ProjectsFlow is per-data-source. If you need to get from a new data source,
 // you need to create another projectSource.
 // changeRenderer changes the rendering while still using the same data source.
-function ProjectsFlow({ user, verbose }) {
+function ProjectsFlow({ user, verbose, sortBy }) {
   var collectedProjectsByName = {};
   var collectedProjects = [];
   var streamEndEventReceived = false;
@@ -36,7 +36,7 @@ function ProjectsFlow({ user, verbose }) {
     activity: RenderActivityView({ user }),
     deedsort: RenderDeedSortView({ user }),
     facts: RenderFactsView({ user }),
-    year: RenderYearView({ user })
+    year: RenderYearView({ sortBy })
   };
 
   return {

@@ -7,14 +7,14 @@ var arrangeProjectDataByYear = require('../arrange-project-data-by-year');
 var yearContainer = d3.select('#year-container');
 var yearsRoot = d3.select('#years-root');
 
-function RenderYearView({ user }) {
+function RenderYearView({ sortBy }) {
   return EaseThrottle({ fn: renderYearView });
 
   function renderYearView({ projectData }) {
     d3.selectAll('.view-root:not(#year-container)').classed('hidden', true);
     yearContainer.classed('hidden', false);
     projectData.forEach(decorateProject);
-    var yearKits = arrangeProjectDataByYear({ projectData });
+    var yearKits = arrangeProjectDataByYear({ projectData, sortBy });
     console.log('yearKits', yearKits);
 
     var years = yearsRoot.selectAll('year').data(yearKits, accessor('year'));
@@ -24,14 +24,34 @@ function RenderYearView({ user }) {
       .append('div')
       .classed('year', true);
     newYears.append('div').classed('year-title', true);
-    newYears.append('div').classed('year-project-root', true);
+    newYears.append('div').classed('month-root', true);
 
     var yearsToUpdate = newYears.merge(years);
 
     yearsToUpdate.select('.year-title').text(accessor('year'));
 
-    var projects = yearsToUpdate
-      .selectAll('.year-project-root')
+    // The select, then selectAll is here because we want to put months under month-root
+    // rather than directly under year.
+    var months = yearsToUpdate
+      .select('.month-root')
+      .selectAll('.month')
+      .data(accessor('monthKits'), accessor('month'));
+
+    months.exit().remove();
+    var newMonths = months
+      .enter()
+      .append('div')
+      .classed('month', true);
+    newMonths.append('div').classed('month-title', true);
+    newMonths.append('div').classed('month-project-root', true);
+
+    var monthsToUpdate = newMonths.merge(months);
+    monthsToUpdate.select('.month-title').text(accessor('name'));
+
+    // Put projects under .month-project-root rather than directly under month.
+    var projects = monthsToUpdate
+      .select('.month-project-root')
+      .selectAll('.project')
       .data(accessor('projects'));
 
     projects.exit().remove();
@@ -40,7 +60,7 @@ function RenderYearView({ user }) {
       .append('div')
       .classed('project', true);
     newProjects.append('div').classed('project-name', true);
-    newProjects.append('div').classed('year-deed-root', true);
+    newProjects.append('div').classed('project-deed-root', true);
 
     var projectsToUpdate = newProjects.merge(projects);
     projectsToUpdate.select('.project-name').text(accessor('name'));

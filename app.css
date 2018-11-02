@@ -422,6 +422,16 @@ a {
   margin-bottom: 0.5em;
 }
 
+.month-title {
+  font-size: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.month-project-root {
+  margin-left: 1em;
+  margin-bottom: 1em;
+}
+
 @media all and (max-height: 320px) {
   .details-box {
     max-height: 240px;
