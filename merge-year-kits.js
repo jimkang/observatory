@@ -1,14 +1,29 @@
 var findWhere = require('lodash.findwhere');
 var pluck = require('lodash.pluck');
+var curry = require('lodash.curry');
 
 function mergeYearKits(yearKitsForSorts) {
   var years = getPropsInAllSorts('year', yearKitsForSorts);
-  years.forEach(mergeKitsForYears);
-  return years;
+  var mergedKits = years.map(mergeKitsForYears);
+  return mergedKits;
 
   function mergeKitsForYears(year) {
     var months = getMonthsInYearForAllSorts(year, yearKitsForSorts);
-    console.log('months', months);
+    return {
+      year,
+      monthKits: months.map(curry(mergeKitsForMonths)(year))
+    };
+  }
+
+  function mergeKitsForMonths(year, month) {
+    var mergedMonthKit = { month, projectsBySort: {} };
+    for (var sort in yearKitsForSorts) {
+      let yearKits = yearKitsForSorts[sort];
+      let yearKit = findWhere(yearKits, { year });
+      let monthKit = findWhere(yearKit.monthKits, { month });
+      mergedMonthKit.projectsBySort[sort] = monthKit ? monthKit.projects : [];
+    }
+    return mergedMonthKit;
   }
 }
 

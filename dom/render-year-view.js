@@ -3,19 +3,25 @@ var accessor = require('accessor')();
 var EaseThrottle = require('../ease-throttle');
 var decorateProject = require('../decorate-project');
 var arrangeProjectDataByYear = require('../arrange-project-data-by-year');
+var mergeYearKits = require('../merge-year-kits');
 
 var yearContainer = d3.select('#year-container');
 var yearsRoot = d3.select('#years-root');
 
-function RenderYearView({ sortBy }) {
+function RenderYearView() {
   return EaseThrottle({ fn: renderYearView });
 
   function renderYearView({ projectData }) {
     d3.selectAll('.view-root:not(#year-container)').classed('hidden', true);
     yearContainer.classed('hidden', false);
     projectData.forEach(decorateProject);
-    var yearKits = arrangeProjectDataByYear({ projectData, sortBy });
+    var yearKits = mergeYearKits({
+      startDate: arrangeProjectDataByYear({ projectData, sortBy: 'startDate' }),
+      lastActiveDate: arrangeProjectDataByYear({ projectData, sortBy: 'lastActiveDate' })
+    });
+    console.log('example yearKits:', arrangeProjectDataByYear({ projectData, sortBy: 'startDate' }));
     console.log('yearKits', yearKits);
+    return;
 
     var years = yearsRoot.selectAll('year').data(yearKits, accessor('year'));
     years.exit().remove();
