@@ -25,8 +25,8 @@ function arrangeProjectDataByYear({ projectData, sortBy = 'startDate' }) {
     var year;
     var month;
     if (project[sortBy]) {
-      year = project[sortBy].getFullYear();
-      month = project[sortBy].getMonth();
+      year = +(project[sortBy].getFullYear());
+      month = +(project[sortBy].getMonth());
     }
     if (year && month) {
       var projectsForYear = projectsByYear[year];
@@ -46,13 +46,13 @@ function arrangeProjectDataByYear({ projectData, sortBy = 'startDate' }) {
   function convertToYearKit(year) {
     var projectsByMonth = projectsByYear[year];
     return {
-      year,
+      year: +year,
       monthKits: Object.keys(projectsByMonth).map(convertToMonthKit)
     };
 
     function convertToMonthKit(month) {
       return {
-        month,
+        month: +month,
         name: monthNames[month],
         projects: projectsByMonth[month].sort(compareDescWithSortKey)
       };
