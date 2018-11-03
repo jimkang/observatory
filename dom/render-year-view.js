@@ -17,11 +17,12 @@ function RenderYearView() {
     projectData.forEach(decorateProject);
     var yearKits = mergeYearKits({
       startDate: arrangeProjectDataByYear({ projectData, sortBy: 'startDate' }),
-      lastActiveDate: arrangeProjectDataByYear({ projectData, sortBy: 'lastActiveDate' })
+      lastActiveDate: arrangeProjectDataByYear({
+        projectData,
+        sortBy: 'lastActiveDate'
+      })
     });
-    console.log('example yearKits:', arrangeProjectDataByYear({ projectData, sortBy: 'startDate' }));
-    console.log('yearKits', yearKits);
-    return;
+    //console.log('yearKits', yearKits);
 
     var years = yearsRoot.selectAll('year').data(yearKits, accessor('year'));
     years.exit().remove();
@@ -49,13 +50,30 @@ function RenderYearView() {
       .append('div')
       .classed('month', true);
     newMonths.append('div').classed('month-title', true);
-    newMonths.append('div').classed('month-project-root', true);
+    newMonths.append('div').classed('month-sort-section-root', true);
 
     var monthsToUpdate = newMonths.merge(months);
     monthsToUpdate.select('.month-title').text(accessor('name'));
 
-    // Put projects under .month-project-root rather than directly under month.
-    var projects = monthsToUpdate
+    var monthSortSections = monthsToUpdate
+      .select('.month-sort-section-root')
+      .selectAll('.month-sort-section')
+      .data(accessor('projectsWithSort'), accessor('sort'));
+
+    monthSortSections.exit().remove();
+    var newMonthSortSections = monthSortSections
+      .enter()
+      .append('div')
+      .classed('month-sort-section', true);
+    newMonthSortSections.append('div').classed('month-sort-name', true);
+    newMonthSortSections.append('div').classed('month-project-root', true);
+    var monthSortSectionsToUpdate = newMonthSortSections.merge(
+      monthSortSections
+    );
+    monthSortSectionsToUpdate.select('.month-sort-name').text(accessor('sort'));
+
+    // Put projects under .month-project-root rather than directly under sort section.
+    var projects = monthSortSectionsToUpdate
       .select('.month-project-root')
       .selectAll('.project')
       .data(accessor('projects'));
@@ -70,7 +88,6 @@ function RenderYearView() {
 
     var projectsToUpdate = newProjects.merge(projects);
     projectsToUpdate.select('.project-name').text(accessor('name'));
-    // TODO: deeds under years?
     // Sort by different kinds of dates: Started, shipped, etc.
   }
 }

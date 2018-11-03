@@ -25,8 +25,8 @@ function arrangeProjectDataByYear({ projectData, sortBy = 'startDate' }) {
     var year;
     var month;
     if (project[sortBy]) {
-      year = +(project[sortBy].getFullYear());
-      month = +(project[sortBy].getMonth());
+      year = +project[sortBy].getFullYear();
+      month = +project[sortBy].getMonth();
     }
     if (year && month) {
       var projectsForYear = projectsByYear[year];

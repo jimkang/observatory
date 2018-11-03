@@ -16,12 +16,20 @@ function mergeYearKits(yearKitsForSorts) {
   }
 
   function mergeKitsForMonths(year, month) {
-    var mergedMonthKit = { month, projectsBySort: {} };
+    var mergedMonthKit = { month, projectsWithSort: [] };
     for (var sort in yearKitsForSorts) {
       let yearKits = yearKitsForSorts[sort];
       let yearKit = findWhere(yearKits, { year });
       let monthKit = findWhere(yearKit.monthKits, { month });
-      mergedMonthKit.projectsBySort[sort] = monthKit ? monthKit.projects : [];
+      if (monthKit) {
+        mergedMonthKit.name = monthKit.name;
+        if (monthKit.projects) {
+          mergedMonthKit.projectsWithSort.push({
+            sort,
+            projects: monthKit.projects
+          });
+        }
+      }
     }
     return mergedMonthKit;
   }
@@ -45,11 +53,10 @@ function getMonthsInYearForAllSorts(year, yearKitsForSorts) {
   for (var sort in yearKitsForSorts) {
     let yearKits = yearKitsForSorts[sort];
     let yearKit = findWhere(yearKits, { year });
-    var monthValues  = pluck(yearKit.monthKits, 'month');
+    var monthValues = pluck(yearKit.monthKits, 'month');
     monthValues.forEach(months.add.bind(months));
   }
   return [...months];
 }
 
 module.exports = mergeYearKits;
-
