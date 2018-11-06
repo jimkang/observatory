@@ -416,9 +416,45 @@ a {
   }
 }
 
+#years-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.year {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .year-title {
   font-size: 2em;
   font-weight: 500;
+  margin-bottom: 0.5em;
+}
+
+.month {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.month-sort-section-root {
+  display: flex;
+  width: 80%;
+}
+
+.month-sort-section {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  margin: 1em;
+  width: 50%;
+}
+
+.month-sort-name {
+  font-weight: bold;
   margin-bottom: 0.5em;
 }
 
@@ -428,7 +464,6 @@ a {
 }
 
 .month-project-root {
-  margin-left: 1em;
   margin-bottom: 1em;
 }
 

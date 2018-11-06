@@ -8,6 +8,11 @@ var mergeYearKits = require('../merge-year-kits');
 var yearContainer = d3.select('#year-container');
 var yearsRoot = d3.select('#years-root');
 
+var displayNamesForSort = {
+  startDate: 'Started',
+  lastActiveDate: 'Last Active'
+};
+
 function RenderYearView() {
   return EaseThrottle({ fn: renderYearView });
 
@@ -22,10 +27,11 @@ function RenderYearView() {
         sortBy: 'lastActiveDate'
       })
     });
-    //console.log('yearKits', yearKits);
+    console.log('yearKits', yearKits);
 
-    var years = yearsRoot.selectAll('year').data(yearKits, accessor('year'));
+    var years = yearsRoot.selectAll('.year').data(yearKits, accessor('year'));
     years.exit().remove();
+
     var newYears = years
       .enter()
       .append('div')
@@ -70,13 +76,15 @@ function RenderYearView() {
     var monthSortSectionsToUpdate = newMonthSortSections.merge(
       monthSortSections
     );
-    monthSortSectionsToUpdate.select('.month-sort-name').text(accessor('sort'));
+    monthSortSectionsToUpdate
+      .select('.month-sort-name')
+      .text(getDisplayNameForSort);
 
     // Put projects under .month-project-root rather than directly under sort section.
     var projects = monthSortSectionsToUpdate
       .select('.month-project-root')
       .selectAll('.project')
-      .data(accessor('projects'));
+      .data(accessor('projects'), accessor()); // Need to provide accessor so that things get properly removed/added.
 
     projects.exit().remove();
     var newProjects = projects
@@ -90,6 +98,10 @@ function RenderYearView() {
     projectsToUpdate.select('.project-name').text(accessor('name'));
     // Sort by different kinds of dates: Started, shipped, etc.
   }
+}
+
+function getDisplayNameForSort(d) {
+  return displayNamesForSort[d.sort];
 }
 
 module.exports = RenderYearView;
