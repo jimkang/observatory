@@ -20,6 +20,9 @@ function mergeYearKits(yearKitsForSorts) {
     for (var sort in yearKitsForSorts) {
       let yearKits = yearKitsForSorts[sort];
       let yearKit = findWhere(yearKits, { year });
+      if (!yearKit) {
+        continue;
+      }
       let monthKit = findWhere(yearKit.monthKits, { month });
       if (monthKit) {
         mergedMonthKit.name = monthKit.name;
@@ -53,10 +56,17 @@ function getMonthsInYearForAllSorts(year, yearKitsForSorts) {
   for (var sort in yearKitsForSorts) {
     let yearKits = yearKitsForSorts[sort];
     let yearKit = findWhere(yearKits, { year });
+    if (!yearKit) {
+      continue;
+    }
     var monthValues = pluck(yearKit.monthKits, 'month');
     monthValues.forEach(months.add.bind(months));
   }
-  return [...months];
+  return [...months].sort(compareNumerically);
+}
+
+function compareNumerically(a, b) {
+  return a < b ? -1 : 1;
 }
 
 module.exports = mergeYearKits;
