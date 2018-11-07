@@ -1,6 +1,6 @@
 var request = require('basic-browser-request');
 var RenderPlain = require('../dom/render-plain');
-var renderGarden = require('../dom/render-garden');
+var RenderGarden = require('../dom/render-garden');
 var renderHeader = require('../dom/render-header');
 var RenderDeedDetails = require('../dom/render-deed-details');
 var RenderActivityView = require('../dom/render-activity-view');
@@ -28,15 +28,22 @@ function ProjectsFlow({ user, verbose, sortBy }) {
   var renderCount = 0;
   var render;
   var ignoreSourceEvents = false;
-  var renderDeedDetails = RenderDeedDetails({ user });
+  var renderDetailsOnGarden = RenderDeedDetails({
+    user,
+    detailsLayerSelector: '#garden-details-layer'
+  });
+  var renderDetailsOnYearsView = RenderDeedDetails({
+    user,
+    detailsLayerSelector: '#years-details-layer'
+  });
 
   var renderers = {
     plain: RenderPlain({ user }),
-    garden: renderGarden,
+    garden: RenderGarden({ onDeedClick: renderDetailsOnGarden }),
     activity: RenderActivityView({ user }),
     deedsort: RenderDeedSortView({ user }),
     facts: RenderFactsView({ user }),
-    year: RenderYearView({ sortBy })
+    year: RenderYearView({ onDeedClick: renderDetailsOnYearsView })
   };
 
   return {
@@ -130,8 +137,7 @@ function ProjectsFlow({ user, verbose, sortBy }) {
     if (render) {
       render({
         projectData: collectedProjects,
-        expensiveRenderIsOK,
-        onDeedClick: renderDeedDetails
+        expensiveRenderIsOK
       });
       renderCount += 1;
     }

@@ -13,7 +13,7 @@ var displayNamesForSort = {
   lastActiveDate: 'Last Active'
 };
 
-function RenderYearView() {
+function RenderYearView({ onDeedClick }) {
   return EaseThrottle({ fn: renderYearView });
 
   function renderYearView({ projectData }) {
@@ -93,10 +93,14 @@ function RenderYearView() {
       .classed('project', true);
     newProjects.append('div').classed('project-name', true);
     newProjects.append('div').classed('project-deed-root', true);
+    newProjects.on('click', onProjectClick);
 
     var projectsToUpdate = newProjects.merge(projects);
     projectsToUpdate.select('.project-name').text(accessor('name'));
-    // Sort by different kinds of dates: Started, shipped, etc.
+
+    function onProjectClick(project) {
+      onDeedClick({ project });
+    }
   }
 }
 
