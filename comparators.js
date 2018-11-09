@@ -30,8 +30,26 @@ function compareActivityGroupStartDateAsc(a, b) {
   }
 }
 
+function compareDesc(keyA, keyB) {
+  if (keyA < keyB) {
+    return 1;
+  } else {
+    return -1;
+  }
+}
+
+function compareDescWithSortKey(sortBy, objectA, objectB) {
+  if (objectA[sortBy] < objectB[sortBy]) {
+    return 1;
+  } else {
+    return -1;
+  }
+}
+
 module.exports = {
   compareLastUpdatedDesc,
   compareActivityGroupStartDateDesc,
-  compareActivityGroupStartDateAsc
+  compareActivityGroupStartDateAsc,
+  compareDesc,
+  compareDescWithSortKey
 };

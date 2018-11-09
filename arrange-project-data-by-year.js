@@ -1,3 +1,6 @@
+var comparators = require('./comparators');
+var curry = require('lodash.curry');
+
 var monthNames = [
   'January',
   'February',
@@ -18,7 +21,7 @@ function arrangeProjectDataByYear({ projectData, sortBy = 'startDate' }) {
   projectData.forEach(placeProject);
 
   return Object.keys(projectsByYear)
-    .sort(compareDesc)
+    .sort(comparators.compareDesc)
     .map(convertToYearKit);
 
   function placeProject(project) {
@@ -54,24 +57,10 @@ function arrangeProjectDataByYear({ projectData, sortBy = 'startDate' }) {
       return {
         month: +month,
         name: monthNames[month],
-        projects: projectsByMonth[month].sort(compareDescWithSortKey)
+        projects: projectsByMonth[month].sort(
+          curry(comparators.compareDescWithSortKey)(sortBy)
+        )
       };
-    }
-  }
-
-  function compareDesc(keyA, keyB) {
-    if (keyA < keyB) {
-      return 1;
-    } else {
-      return -1;
-    }
-  }
-
-  function compareDescWithSortKey(objectA, objectB) {
-    if (objectA[sortBy] < objectB[sortBy]) {
-      return 1;
-    } else {
-      return -1;
     }
   }
 }

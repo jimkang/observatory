@@ -1,6 +1,7 @@
 var findWhere = require('lodash.findwhere');
 var pluck = require('lodash.pluck');
 var curry = require('lodash.curry');
+var comparators = require('./comparators');
 
 function mergeYearKits(yearKitsForSorts) {
   var years = getPropsInAllSorts('year', yearKitsForSorts);
@@ -11,7 +12,9 @@ function mergeYearKits(yearKitsForSorts) {
     var months = getMonthsInYearForAllSorts(year, yearKitsForSorts);
     return {
       year,
-      monthKits: months.map(curry(mergeKitsForMonths)(year))
+      monthKits: months
+        .sort(comparators.compareDesc)
+        .map(curry(mergeKitsForMonths)(year))
     };
   }
 

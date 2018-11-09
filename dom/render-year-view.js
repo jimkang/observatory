@@ -99,13 +99,17 @@ function RenderYearView({ onDeedClick }) {
     projectsToUpdate.select('.project-name').text(accessor('name'));
 
     function onProjectClick(project) {
-      onDeedClick({ project });
+      onDeedClick({ project, deed: project.deeds.sort(aIsLaterThanB)[0] });
     }
   }
 }
 
 function getDisplayNameForSort(d) {
   return displayNamesForSort[d.sort];
+}
+
+function aIsLaterThanB(a, b) {
+  return new Date(a.committedDate) > new Date(b.committedDate) ? -1 : 1;
 }
 
 module.exports = RenderYearView;
