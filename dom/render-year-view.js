@@ -10,6 +10,7 @@ var yearsRoot = d3.select('#years-root');
 
 var displayNamesForSort = {
   startDate: 'Started',
+  shippedDate: 'Shipped',
   lastActiveDate: 'Last Active'
 };
 
@@ -20,8 +21,13 @@ function RenderYearView({ onDeedClick }) {
     d3.selectAll('.view-root:not(#year-container)').classed('hidden', true);
     yearContainer.classed('hidden', false);
     projectData.forEach(decorateProject);
+
     var yearKits = mergeYearKits({
       startDate: arrangeProjectDataByYear({ projectData, sortBy: 'startDate' }),
+      shippedDate: arrangeProjectDataByYear({
+        projectData,
+        sortBy: 'shippedDate'
+      }),
       lastActiveDate: arrangeProjectDataByYear({
         projectData,
         sortBy: 'lastActiveDate'

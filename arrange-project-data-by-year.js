@@ -31,7 +31,7 @@ function arrangeProjectDataByYear({ projectData, sortBy = 'startDate' }) {
       year = +project[sortBy].getFullYear();
       month = +project[sortBy].getMonth();
     }
-    if (year && month) {
+    if (year !== undefined && month !== undefined) {
       var projectsForYear = projectsByYear[year];
       if (!projectsForYear) {
         projectsForYear = {};
