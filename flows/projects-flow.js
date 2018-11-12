@@ -14,6 +14,7 @@ var getUserCommitsFromServer = require('../get-user-commits-from-server');
 var handleError = require('handle-error-web');
 var countDeedsInProjects = require('../count-deeds-in-projects');
 var switchViewRoot = require('../dom/switch-view-root');
+var decorateProject = require('../decorate-project');
 
 const expensiveRenderInterval = 5;
 const expensiveRenderThreshold = 5;
@@ -21,7 +22,7 @@ const expensiveRenderThreshold = 5;
 // ProjectsFlow is per-data-source. If you need to get from a new data source,
 // you need to create another projectSource.
 // changeRenderer changes the rendering while still using the same data source.
-function ProjectsFlow({ user, verbose, sortBy }) {
+function ProjectsFlow({ user, verbose }) {
   var collectedProjectsByName = {};
   var collectedProjects = [];
   var streamEndEventReceived = false;
@@ -89,6 +90,7 @@ function ProjectsFlow({ user, verbose, sortBy }) {
         deeds: [deed]
       };
     }
+    decorateProject(collectedProjectsByName[deed.projectName]);
     callRender({ expensiveRenderIsOK: shouldDoExpensiveRender() });
   }
 
@@ -114,6 +116,7 @@ function ProjectsFlow({ user, verbose, sortBy }) {
         project.deeds = existingProject.deeds;
       }
     }
+    decorateProject(project);
     collectedProjectsByName[project.name] = project;
     collectedProjects = values(collectedProjectsByName);
     callRender({ expensiveRenderIsOK: shouldDoExpensiveRender() });

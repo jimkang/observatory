@@ -1,7 +1,6 @@
 var d3 = require('d3-selection');
 var accessor = require('accessor')();
 var EaseThrottle = require('../ease-throttle');
-var decorateProject = require('../decorate-project');
 var arrangeProjectDataByYear = require('../arrange-project-data-by-year');
 var mergeYearKits = require('../merge-year-kits');
 
@@ -20,7 +19,6 @@ function RenderYearView({ onDeedClick }) {
   function renderYearView({ projectData }) {
     d3.selectAll('.view-root:not(#year-container)').classed('hidden', true);
     yearContainer.classed('hidden', false);
-    projectData.forEach(decorateProject);
 
     var yearKits = mergeYearKits({
       startDate: arrangeProjectDataByYear({ projectData, sortBy: 'startDate' }),
