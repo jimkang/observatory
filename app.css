@@ -211,7 +211,7 @@ a {
   z-index: inherit;
   background-color: white;
   width: 40%;
-  min-width: 200px;
+  min-width: 400px;
   margin-left: 28%;
   margin-top: 100px;
   pointer-events: auto;
@@ -226,11 +226,15 @@ a {
   flex-grow: 1;
 }
 
+.project-details > * {
+  margin-bottom: 0.5em;
+}
+
 .name-link {
   font-size: 1.5em;
   font-weight: bold;
   display: block;
-  margin-bottom: 0.25em;
+  margin-bottom: 0.5em;
 }
 
 .date-link {
@@ -262,6 +266,7 @@ a {
 .details-top-part {
   display: flex;
   flex-direction: row-reverse;
+  align-items: start;
 }
 
 .details-box .close-button {
@@ -270,12 +275,14 @@ a {
   cursor: pointer;
   background-color: white;
   padding: 0.5em;
-  border-radius: 1em;
+  /*! border-radius: 1em; */
   border-width: 1px;
   border-color: #333;
   font-family: futura;
   margin-bottom: 1.5em;
   min-width: 44px;
+  font-family: sans-serif;
+  min-height: 44px;
 }
 
 .destroyed {
@@ -465,6 +472,11 @@ a {
 
 .month-project-root {
   margin-bottom: 1em;
+}
+
+#year-container .project-name {
+  text-decoration: underline cornflowerblue;
+  cursor: pointer;
 }
 
 @media all and (max-height: 320px) {
