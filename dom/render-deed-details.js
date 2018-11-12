@@ -1,14 +1,14 @@
 var d3 = require('d3-selection');
 var renderDetailInnards = require('./render-detail-innards');
 
-// Pre-rendering prep with static elements.
-var detailsLayer = d3.select('.details-layer');
-var detailsBox = d3.select('.details-box');
-var closeButton = detailsBox.select('.close-button');
+function RenderDeedDetails({ user, detailsLayerSelector = '.details-layer' }) {
+  // Pre-rendering prep with static elements.
+  var detailsLayer = d3.select(detailsLayerSelector);
+  var detailsBox = detailsLayer.select('.details-box');
+  var closeButton = detailsBox.select('.close-button');
 
-closeButton.on('click', hideBox);
+  closeButton.on('click', hideBox);
 
-function RenderDeedDetails({ user }) {
   return renderDeedDetails;
 
   function renderDeedDetails({ deed, project }) {
@@ -16,14 +16,14 @@ function RenderDeedDetails({ user }) {
       parent: detailsBox,
       deed,
       project,
-      user: user
+      user
     });
     detailsLayer.classed('destroyed', false);
   }
-}
 
-function hideBox() {
-  detailsLayer.classed('destroyed', true);
+  function hideBox() {
+    detailsLayer.classed('destroyed', true);
+  }
 }
 
 module.exports = RenderDeedDetails;

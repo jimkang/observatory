@@ -1,7 +1,8 @@
 function renderDeedDetailInnards({ parent, deed, project, user }) {
   var projectDetails = parent.select('.project-details');
   var projectNameLink = projectDetails.select('.name-link');
-  var projectDate = projectDetails.select('.date');
+  var projectStartDate = projectDetails.select('.date.started');
+  var projectLastActiveDate = projectDetails.select('.date.last-active');
   var projectDescription = projectDetails.select('.description');
   var deedDetails = parent.select('.deed-details');
   var deedName = deedDetails.select('.name');
@@ -9,9 +10,15 @@ function renderDeedDetailInnards({ parent, deed, project, user }) {
 
   projectNameLink.text(project.name);
   projectNameLink.attr('href', getProjectLink(user, project));
-  projectDate.text(dateStringToDisplayForm(project.pushedAt));
+  if (project.startDate) {
+    projectStartDate.text(dateStringToDisplayForm(project.startDate));
+  }
+  if (project.lastActiveDate) {
+    projectLastActiveDate.text(dateStringToDisplayForm(project.lastActiveDate));
+  }
   projectDescription.text(project.description);
 
+  deedDetails.classed('hidden', !deed);
   if (deed) {
     deedName.text(deed.message);
     deedDateLink.text(dateStringToDisplayForm(deed.committedDate));

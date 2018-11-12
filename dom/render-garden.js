@@ -34,159 +34,178 @@ var gardenTargetsContext = gardenTargetsBoard
 
 var treemap;
 
-function renderGarden({ projectData, onDeedClick, expensiveRenderIsOK }) {
-  var width = 0;
-  var height = 0;
+function RenderGarden({ onDeedClick }) {
+  return EaseThrottle({ fn: renderGarden });
 
-  if (!treemap || expensiveRenderIsOK) {
-    let neededArea = countDeedsInProjects(projectData) * squarePixelAreaPerDeed;
-    width = document.body.getBoundingClientRect().width;
+  function renderGarden({ projectData, expensiveRenderIsOK }) {
+    var width = 0;
+    var height = 0;
 
-    if (width > widthLimit) {
-      width = widthLimit;
-    }
-    height = ~~(neededArea / width);
+    if (!treemap || expensiveRenderIsOK) {
+      let neededArea =
+        countDeedsInProjects(projectData) * squarePixelAreaPerDeed;
+      width = document.body.getBoundingClientRect().width;
 
-    gardenContainer.style('width', width);
-    gardenContainer.style('height', height);
-    canvasesContainer.style('width', width);
-    canvasesContainer.style('height', height);
-    gardenBoard.attr('width', width);
-    gardenBoard.attr('height', height);
-    gardenBoardLabels.attr('width', width);
-    gardenBoardLabels.attr('height', height);
-    gardenTargetsBoard.attr('width', width);
-    gardenTargetsBoard.attr('height', height);
-
-    gardenTargetsBoard.on('click', onTargetBoardClick);
-
-    treemap = hierarchy
-      .treemap()
-      .tile(hierarchy.treemapResquarify.ratio(1))
-      .size([width, height])
-      .round(true)
-      .paddingInner(0);
-  }
-
-  var rootData = {
-    name: 'root',
-    deeds: projectData
-  };
-
-  var root = hierarchy.hierarchy(rootData, deedsKey).sum(sumBySize);
-
-  treemap(root);
-
-  gardenContext.clearRect(0, 0, width, height);
-  gardenTargetsContext.clearRect(0, 0, width, height);
-
-  renderProjectRegions(root);
-  renderDeedCells(root);
-  calculateProjectLabelPositions(root);
-  renderProjectLabels(root);
-
-  function onTargetBoardClick() {
-    var mouseX = d3.event.layerX;
-    var mouseY = d3.event.layerY;
-
-    var imageData = gardenTargetsContext.getImageData(mouseX, mouseY, 1, 1)
-      .data;
-    var cell = trackingColorer.getCellForImageData(imageData);
-    onDeedClick({ deed: cell.data, project: cell.parent.data });
-  }
-}
-
-function renderProjectRegions(root) {
-  gardenContext.fillStyle = '#eee';
-  root.children.forEach(drawRegion);
-
-  function drawRegion(region) {
-    gardenContext.fillRect(
-      region.x0,
-      region.y0,
-      getRegionWidth(region),
-      getRegionHeight(region)
-    );
-  }
-}
-
-function calculateProjectLabelPositions(root) {
-  gardenContext.font = initialFontSize + 'px futura';
-  gardenContext.textAlign = 'center';
-  gardenContext.textBaseline = 'middle';
-
-  root.children.forEach(calculateLabelPositionOnCanvas);
-}
-
-function calculateLabelPositionOnCanvas(region) {
-  var regionName = getNestedName(region);
-  var maxWidth = getRegionWidth(region) - 2 * xLabelMargin;
-  var maxHeight = getRegionHeight(region) - 2 * yLabelMargin;
-  var textWidth = gardenContext.measureText(regionName).width;
-
-  if (textWidth > 0) {
-    let labelDisplayDetails = {};
-    // Note: Some amount canvas to svg fudge is built into field-label-layer's transform.
-    labelDisplayDetails.center = {
-      x: ~~(region.x0 + maxWidth / 2) + 0.5 + xLabelMargin,
-      y: ~~(region.y0 + maxHeight / 2) + 0.5 + yLabelMargin
-    };
-    labelDisplayDetails.rotation = 0;
-    let scale = 1.0;
-
-    if (maxWidth < maxHeight) {
-      labelDisplayDetails.rotation = -90;
-
-      if (textWidth > maxHeight) {
-        scale = maxHeight / textWidth;
+      if (width > widthLimit) {
+        width = widthLimit;
       }
-    } else if (textWidth > maxWidth) {
-      scale = maxWidth / textWidth;
+      height = ~~(neededArea / width);
+
+      gardenContainer.style('width', width);
+      gardenContainer.style('height', height);
+      canvasesContainer.style('width', width);
+      canvasesContainer.style('height', height);
+      gardenBoard.attr('width', width);
+      gardenBoard.attr('height', height);
+      gardenBoardLabels.attr('width', width);
+      gardenBoardLabels.attr('height', height);
+      gardenTargetsBoard.attr('width', width);
+      gardenTargetsBoard.attr('height', height);
+
+      gardenTargetsBoard.on('click', onTargetBoardClick);
+
+      treemap = hierarchy
+        .treemap()
+        .tile(hierarchy.treemapResquarify.ratio(1))
+        .size([width, height])
+        .round(true)
+        .paddingInner(0);
     }
 
-    // Font is assumed to be Futura.
-    labelDisplayDetails.fontSize = 48;
-    if (scale !== 1.0) {
-      labelDisplayDetails.fontSize = ~~(initialFontSize * scale);
+    var rootData = {
+      name: 'root',
+      deeds: projectData
+    };
+
+    var root = hierarchy.hierarchy(rootData, deedsKey).sum(sumBySize);
+
+    treemap(root);
+
+    gardenContext.clearRect(0, 0, width, height);
+    gardenTargetsContext.clearRect(0, 0, width, height);
+
+    renderProjectRegions(root);
+    renderDeedCells(root);
+    calculateProjectLabelPositions(root);
+    renderProjectLabels(root);
+
+    function onTargetBoardClick() {
+      var mouseX = d3.event.layerX;
+      var mouseY = d3.event.layerY;
+
+      var imageData = gardenTargetsContext.getImageData(mouseX, mouseY, 1, 1)
+        .data;
+      var cell = trackingColorer.getCellForImageData(imageData);
+      onDeedClick({ deed: cell.data, project: cell.parent.data });
     }
-    region.labelDisplayDetails = labelDisplayDetails;
+
+    function renderDeedCells(root) {
+      gardenContext.strokeStyle = 'white';
+      gardenContext.lineWidth = 1;
+
+      root.leaves().forEach(drawDeedCell);
+
+      function drawDeedCell(cell) {
+        gardenContext.fillStyle = deedColor(cell);
+        var width = getRegionWidth(cell);
+        var height = getRegionHeight(cell);
+        gardenContext.fillRect(cell.x0, cell.y0, width, height);
+        gardenContext.strokeRect(cell.x0 + 0.5, cell.y0 + 0.5, width, height);
+
+        gardenTargetsContext.fillStyle = trackingColorer.getTrackingColorForCell(
+          cell
+        );
+        gardenTargetsContext.fillRect(cell.x0, cell.y0, width, height);
+      }
+    }
+
+    function projectColor(d) {
+      if (d.data.id) {
+        return gardenColors[getColorIndexForString(d.data.id)];
+      } else {
+        return '#fff';
+      }
+    }
+
+    function deedColor(d) {
+      return projectColor(d.parent);
+    }
   }
-}
 
-function renderProjectLabels(root) {
-  var labels = labelLayer.selectAll('.label').data(root.children, getNestedId);
+  function renderProjectRegions(root) {
+    gardenContext.fillStyle = '#eee';
+    root.children.forEach(drawRegion);
 
-  labels.exit().remove();
+    function drawRegion(region) {
+      gardenContext.fillRect(
+        region.x0,
+        region.y0,
+        getRegionWidth(region),
+        getRegionHeight(region)
+      );
+    }
+  }
 
-  var newLabels = labels
-    .enter()
-    .append('text')
-    .classed('label', true)
-    .attr('text-anchor', 'middle');
+  function calculateProjectLabelPositions(root) {
+    gardenContext.font = initialFontSize + 'px futura';
+    gardenContext.textAlign = 'center';
+    gardenContext.textBaseline = 'middle';
 
-  var updateLabels = labels.merge(newLabels);
-  updateLabels.text(getNestedName);
-  updateLabels.style('font-size', getFontSize);
-  updateLabels.attr('transform', getLabelTransform);
-}
+    root.children.forEach(calculateLabelPositionOnCanvas);
+  }
 
-function renderDeedCells(root) {
-  gardenContext.strokeStyle = 'white';
-  gardenContext.lineWidth = 1;
+  function calculateLabelPositionOnCanvas(region) {
+    var regionName = getNestedName(region);
+    var maxWidth = getRegionWidth(region) - 2 * xLabelMargin;
+    var maxHeight = getRegionHeight(region) - 2 * yLabelMargin;
+    var textWidth = gardenContext.measureText(regionName).width;
 
-  root.leaves().forEach(drawDeedCell);
+    if (textWidth > 0) {
+      let labelDisplayDetails = {};
+      // Note: Some amount canvas to svg fudge is built into field-label-layer's transform.
+      labelDisplayDetails.center = {
+        x: ~~(region.x0 + maxWidth / 2) + 0.5 + xLabelMargin,
+        y: ~~(region.y0 + maxHeight / 2) + 0.5 + yLabelMargin
+      };
+      labelDisplayDetails.rotation = 0;
+      let scale = 1.0;
 
-  function drawDeedCell(cell) {
-    gardenContext.fillStyle = deedColor(cell);
-    var width = getRegionWidth(cell);
-    var height = getRegionHeight(cell);
-    gardenContext.fillRect(cell.x0, cell.y0, width, height);
-    gardenContext.strokeRect(cell.x0 + 0.5, cell.y0 + 0.5, width, height);
+      if (maxWidth < maxHeight) {
+        labelDisplayDetails.rotation = -90;
 
-    gardenTargetsContext.fillStyle = trackingColorer.getTrackingColorForCell(
-      cell
-    );
-    gardenTargetsContext.fillRect(cell.x0, cell.y0, width, height);
+        if (textWidth > maxHeight) {
+          scale = maxHeight / textWidth;
+        }
+      } else if (textWidth > maxWidth) {
+        scale = maxWidth / textWidth;
+      }
+
+      // Font is assumed to be Futura.
+      labelDisplayDetails.fontSize = 48;
+      if (scale !== 1.0) {
+        labelDisplayDetails.fontSize = ~~(initialFontSize * scale);
+      }
+      region.labelDisplayDetails = labelDisplayDetails;
+    }
+  }
+
+  function renderProjectLabels(root) {
+    var labels = labelLayer
+      .selectAll('.label')
+      .data(root.children, getNestedId);
+
+    labels.exit().remove();
+
+    var newLabels = labels
+      .enter()
+      .append('text')
+      .classed('label', true)
+      .attr('text-anchor', 'middle');
+
+    var updateLabels = labels.merge(newLabels);
+    updateLabels.text(getNestedName);
+    updateLabels.style('font-size', getFontSize);
+    updateLabels.attr('transform', getLabelTransform);
   }
 }
 
@@ -215,18 +234,6 @@ function getLabelTransform(d) {
     d.labelDisplayDetails.center.y
   })
     rotate(${d.labelDisplayDetails.rotation})`;
-}
-
-function projectColor(d) {
-  if (d.data.id) {
-    return gardenColors[getColorIndexForString(d.data.id)];
-  } else {
-    return '#fff';
-  }
-}
-
-function deedColor(d) {
-  return projectColor(d.parent);
 }
 
 // Reordering the color array by buckets is a way of making sure adjacent hues
@@ -295,4 +302,4 @@ function getFontSize(region) {
   return region.labelDisplayDetails.fontSize;
 }
 
-module.exports = EaseThrottle({ fn: renderGarden });
+module.exports = RenderGarden;

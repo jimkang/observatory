@@ -211,7 +211,7 @@ a {
   z-index: inherit;
   background-color: white;
   width: 40%;
-  min-width: 200px;
+  min-width: 400px;
   margin-left: 28%;
   margin-top: 100px;
   pointer-events: auto;
@@ -226,11 +226,15 @@ a {
   flex-grow: 1;
 }
 
+.project-details > * {
+  margin-bottom: 0.5em;
+}
+
 .name-link {
   font-size: 1.5em;
   font-weight: bold;
   display: block;
-  margin-bottom: 0.25em;
+  margin-bottom: 0.5em;
 }
 
 .date-link {
@@ -262,6 +266,7 @@ a {
 .details-top-part {
   display: flex;
   flex-direction: row-reverse;
+  align-items: start;
 }
 
 .details-box .close-button {
@@ -270,12 +275,14 @@ a {
   cursor: pointer;
   background-color: white;
   padding: 0.5em;
-  border-radius: 1em;
+  /*! border-radius: 1em; */
   border-width: 1px;
   border-color: #333;
   font-family: futura;
   margin-bottom: 1.5em;
   min-width: 44px;
+  font-family: sans-serif;
+  min-height: 44px;
 }
 
 .destroyed {
@@ -371,6 +378,11 @@ a {
   z-index: 3;
 }
 
+.year {
+  width: 100%;
+  /* This is important for consistent widths of month sort sections. */
+}
+
 .year-labels text {
   fill: hsla(0, 0%, 0%, 0.4);
   text-anchor: middle;
@@ -414,6 +426,84 @@ a {
     height: 568px;
     padding: 0;
   }
+}
+
+#years-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.year {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.year-title {
+  font-size: 2em;
+  font-weight: 500;
+  margin-bottom: 0.5em;
+}
+
+.month {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.month-root {
+  width: 100%;
+  /* This is important for consistent widths of month sort sections. */
+}
+
+.month-sort-section-root {
+  display: flex;
+  flex-wrap: wrap;
+  width: 80%;
+}
+
+.month-sort-section {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  margin: 1em;
+  /* Specifying width here will make this element the width 
+ * without the margin added, seemingly even with box-sizing: border-box. */
+  max-width: 33%;
+  flex-basis: 0;
+  flex-grow: 1;
+}
+
+.month-sort-section.startDate {
+  order: 1;
+}
+
+.month-sort-section.shippedDate {
+  order: 2;
+}
+
+.month-sort-section.lastActiveDate {
+  order: 3;
+}
+
+.month-sort-name {
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+.month-title {
+  font-size: 2em;
+  margin-bottom: 1em;
+}
+
+.month-project-root {
+  margin-bottom: 1em;
+}
+
+#year-container .project-name {
+  text-decoration: underline cornflowerblue;
+  cursor: pointer;
 }
 
 @media all and (max-height: 320px) {

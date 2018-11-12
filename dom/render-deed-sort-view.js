@@ -2,7 +2,7 @@ var d3 = require('d3-selection');
 var accessor = require('accessor')();
 var GetPropertySafely = require('get-property-safely');
 var EaseThrottle = require('../ease-throttle');
-var formatProjectIntoActivitySortGroup = require('../format-project-into-activity-group');
+var formatProjectIntoActivitySortGroup = require('../decorate-project');
 
 var deedContainer = d3.select('#deedsort-container');
 // var deedBoard = d3.select('#deed-board');

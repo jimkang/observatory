@@ -1,5 +1,5 @@
 var test = require('tape');
-var formatProjectIntoActivityGroup = require('../format-project-into-activity-group');
+var formatProjectIntoActivityGroup = require('../decorate-project');
 var projectData = require('./fixtures/example-project-data-small.json');
 
 var testCases = [

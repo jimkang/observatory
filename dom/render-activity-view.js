@@ -1,6 +1,6 @@
 var d3 = require('d3-selection');
 var EaseThrottle = require('../ease-throttle');
-var formatProjectIntoActivityGroup = require('../format-project-into-activity-group');
+var formatProjectIntoActivityGroup = require('../decorate-project');
 var scale = require('d3-scale');
 var Zoom = require('d3-zoom');
 var comparators = require('../comparators');

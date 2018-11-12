@@ -12,20 +12,19 @@ var projectsFlow;
   routeState.routeFromHash();
 })();
 
-function followRoute(routeDict) {
-  var user = routeDict.user || 'jimkang';
-
+function followRoute({ user = 'jimkang', userEmail, verbose, view, sortBy }) {
   if (!projectsFlow) {
     projectsFlow = ProjectsFlow({
       user,
-      userEmail: routeDict.userEmail,
-      verbose: routeDict.verbose
+      userEmail,
+      verbose,
+      sortBy
     });
     projectsFlow.start();
   }
 
   projectsFlow.changeRenderer({
-    view: routeDict.view,
+    view,
     changeView
   });
 }
