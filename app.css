@@ -378,6 +378,11 @@ a {
   z-index: 3;
 }
 
+.year {
+  width: 100%;
+  /* This is important for consistent widths of month sort sections. */
+}
+
 .year-labels text {
   fill: hsla(0, 0%, 0%, 0.4);
   text-anchor: middle;
@@ -447,8 +452,14 @@ a {
   align-items: center;
 }
 
+.month-root {
+  width: 100%;
+  /* This is important for consistent widths of month sort sections. */
+}
+
 .month-sort-section-root {
   display: flex;
+  flex-wrap: wrap;
   width: 80%;
 }
 
@@ -457,7 +468,23 @@ a {
   flex-direction: column;
   align-items: start;
   margin: 1em;
-  width: 50%;
+  /* Specifying width here will make this element the width 
+ * without the margin added, seemingly even with box-sizing: border-box. */
+  max-width: 33%;
+  flex-basis: 0;
+  flex-grow: 1;
+}
+
+.month-sort-section.startDate {
+  order: 1;
+}
+
+.month-sort-section.shippedDate {
+  order: 2;
+}
+
+.month-sort-section.lastActiveDate {
+  order: 3;
 }
 
 .month-sort-name {
@@ -466,8 +493,8 @@ a {
 }
 
 .month-title {
-  font-size: 1.5em;
-  margin-bottom: 0.5em;
+  font-size: 2em;
+  margin-bottom: 1em;
 }
 
 .month-project-root {

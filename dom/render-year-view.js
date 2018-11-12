@@ -3,6 +3,7 @@ var accessor = require('accessor')();
 var EaseThrottle = require('../ease-throttle');
 var arrangeProjectDataByYear = require('../arrange-project-data-by-year');
 var mergeYearKits = require('../merge-year-kits');
+var findWhere = require('lodash.findwhere');
 
 var yearContainer = d3.select('#year-container');
 var yearsRoot = d3.select('#years-root');
@@ -31,6 +32,7 @@ function RenderYearView({ onDeedClick }) {
         sortBy: 'lastActiveDate'
       })
     });
+    yearKits.forEach(addPlaceHolderMonthSortSectionsToYearKit);
     console.log('yearKits', yearKits);
 
     var years = yearsRoot.selectAll('.year').data(yearKits, accessor('year'));
@@ -81,6 +83,7 @@ function RenderYearView({ onDeedClick }) {
       monthSortSections
     );
     monthSortSectionsToUpdate
+      .attr('class', getClassesForMonthSortSection)
       .select('.month-sort-name')
       .text(getDisplayNameForSort);
 
@@ -114,6 +117,25 @@ function getDisplayNameForSort(d) {
 
 function aIsLaterThanB(a, b) {
   return new Date(a.committedDate) > new Date(b.committedDate) ? -1 : 1;
+}
+
+function getClassesForMonthSortSection(d) {
+  return `month-sort-section ${d.sort}`;
+}
+
+function addPlaceHolderMonthSortSectionsToYearKit(yearKit) {
+  yearKit.monthKits.forEach(addPlaceHolderMonthSortSectionsToMonthKit);
+}
+
+function addPlaceHolderMonthSortSectionsToMonthKit(monthKit) {
+  for (var sort in displayNamesForSort) {
+    if (!findWhere(monthKit.projectsWithSort, { sort })) {
+      monthKit.projectsWithSort.push({
+        sort,
+        projects: []
+      });
+    }
+  }
 }
 
 module.exports = RenderYearView;
