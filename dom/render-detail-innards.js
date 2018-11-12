@@ -10,8 +10,12 @@ function renderDeedDetailInnards({ parent, deed, project, user }) {
 
   projectNameLink.text(project.name);
   projectNameLink.attr('href', getProjectLink(user, project));
-  projectStartDate.text(dateStringToDisplayForm(project.startDate));
-  projectLastActiveDate.text(dateStringToDisplayForm(project.lastActiveDate));
+  if (project.startDate) {
+    projectStartDate.text(dateStringToDisplayForm(project.startDate));
+  }
+  if (project.lastActiveDate) {
+    projectLastActiveDate.text(dateStringToDisplayForm(project.lastActiveDate));
+  }
   projectDescription.text(project.description);
 
   deedDetails.classed('hidden', !deed);
