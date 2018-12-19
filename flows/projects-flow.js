@@ -7,6 +7,7 @@ var RenderActivityView = require('../dom/render-activity-view');
 var RenderDeedSortView = require('../dom/render-deed-sort-view');
 var RenderFactsView = require('../dom/render-facts-view');
 var RenderYearView = require('../dom/render-year-view');
+var RenderDescriptiveView = require('../dom/render-descriptive-view');
 var values = require('lodash.values');
 var omit = require('lodash.omit');
 var addDeedToProject = require('add-deed-to-project');
@@ -44,7 +45,8 @@ function ProjectsFlow({ user, verbose }) {
     activity: RenderActivityView({ user }),
     deedsort: RenderDeedSortView({ user }),
     facts: RenderFactsView({ user }),
-    year: RenderYearView({ onDeedClick: renderDetailsOnYearsView })
+    year: RenderYearView({ onDeedClick: renderDetailsOnYearsView }),
+    descriptive: RenderDescriptiveView({ user })
   };
 
   return {

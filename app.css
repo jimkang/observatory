@@ -159,7 +159,7 @@ header {
 }
 
 header {
-  margin-bottom: 2em;
+  margin-bottom: 0.5em;
   margin-left: 1em;
   margin-right: 1em;
 }
@@ -504,6 +504,48 @@ a {
 #year-container .project-name {
   text-decoration: underline cornflowerblue;
   cursor: pointer;
+}
+
+.descriptive-controls {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.descriptive-controls .control-container {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  margin: 1em;
+  /* Specifying width here will make this element the width 
+ * without the margin added, seemingly even with box-sizing: border-box. */
+  max-width: 33%;
+  flex-basis: 0;
+  flex-grow: 1;
+  width: 10em;
+  margin-top: 0;
+}
+
+.descriptive-controls .control-container h3 {
+  text-align: center;
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  /*! font-weight: normal; */
+  /*! font-size: larger; */
+  /*! font-style: italic; */
+}
+
+.descriptive-controls ul {
+  margin: 0;
+  list-style-type: none;
+  text-align: center;
+  width: 100%;
+  padding: 0;
+}
+
+.descriptive-controls ul li {
+  border: 1px solid gray;
+  padding: 0.25em;
 }
 
 @media all and (max-height: 320px) {

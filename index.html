@@ -16,6 +16,7 @@
   <div class="view-nav">
     <a id="garden-view-button" class="view-button" data-viewname="garden">Garden</a> |
     <a id="year-view-button" class="view-button" data-viewname="year">Year View</a> |
+    <a id="descriptive-view-button" class="view-button" data-viewname="descriptive">Descriptive View</a> |
 <!--
     <a id="facts-button" class="view-button" data-viewname="facts">Facts</a> | 
     <a id="activity-button" class="view-button" data-viewname="activity">Activity</a> | 
@@ -103,10 +104,43 @@
       </div>
     </div>
   </div>
-
 </div>
 
- <div class="explanation">
+<div id="descriptive-container" class="view-root">
+  <div class="descriptive-controls">
+
+    <div class="control-container filters-container">
+      <h3>Filters</h3>
+      <ul class="filter-list">
+        <li>Featured</li>
+        <li>Shipped</li>
+      </ul>
+    </div>
+
+    <div class="control-container sort-container">
+      <h3>Sort</h3>
+      <ul class="sort-list">
+        <li>Shipped</li>
+        <li>Started</li>
+        <li>Last active</li>
+      </ul>
+    </div>
+
+    <div class="control-container group-container">
+      <h3>Group by</h3>
+      <ul class="sort-list">
+        <li>Purpose</li>
+        <li>Form</li>
+        <li>Environment</li>
+      </ul>
+    </div>
+
+  </div>
+  <div id="descriptive-root"></div>
+</div> 
+
+
+<div class="explanation">
     <p>This is a mapping of the things <span id="current-user-label"></span> has done on GitHub.</p>
   </div>
 
