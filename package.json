@@ -60,6 +60,7 @@
     "list-em-all": "^1.2.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.curry": "^4.1.1",
+    "lodash.groupby": "^4.6.0",
     "lodash.pluck": "^3.1.2",
     "lodash.throttle": "^4.1.1",
     "lodash.values": "^4.3.0",
