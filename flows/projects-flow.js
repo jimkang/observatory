@@ -16,6 +16,8 @@ var handleError = require('handle-error-web');
 var countDeedsInProjects = require('../count-deeds-in-projects');
 var switchViewRoot = require('../dom/switch-view-root');
 var decorateProject = require('../decorate-project');
+var uniq = require('lodash.uniq');
+var compact = require('lodash.compact');
 
 const expensiveRenderInterval = 5;
 const expensiveRenderThreshold = 5;
@@ -27,10 +29,16 @@ function ProjectsFlow({
   user,
   verbose,
   routeState,
-  filterCriteriaNames,
+  filterCriteriaNames, // '|'-separated string
   sortCriterionName,
   groupByCriterionName
 }) {
+  // These should be passed to the render function on a re-render.
+  var stickyRenderOpts = {
+    filterCriteriaNames,
+    sortCriterionName,
+    groupByCriterionName
+  };
   var collectedProjectsByName = {};
   var collectedProjects = [];
   var streamEndEventReceived = false;
@@ -53,12 +61,19 @@ function ProjectsFlow({
     deedsort: RenderDeedSortView({ user }),
     facts: RenderFactsView({ user }),
     year: RenderYearView({ onDeedClick: renderDetailsOnYearsView }),
-    descriptive: RenderDescriptiveView({ user, onCriteriaControlChange })
+    descriptive: RenderDescriptiveView({
+      user,
+      onCriteriaControlChange,
+      filterCriteriaNames,
+      sortCriterionName,
+      groupByCriterionName
+    })
   };
 
   return {
     start,
-    changeRenderer
+    changeRenderer,
+    updateOpts
   };
 
   function start() {
@@ -70,6 +85,15 @@ function ProjectsFlow({
       },
       onStreamEnd
     );
+  }
+
+  // Not every opt specifiable in the constructor is updatable.
+  function updateOpts(opts) {
+    for (var key in stickyRenderOpts) {
+      if (opts[key]) {
+        stickyRenderOpts[key] = opts[key];
+      }
+    }
   }
 
   function collectDeed(commit, source) {
@@ -147,10 +171,12 @@ function ProjectsFlow({
 
   function callRender({ expensiveRenderIsOK = false }) {
     if (render) {
-      render({
-        projectData: collectedProjects,
-        expensiveRenderIsOK
-      });
+      render(
+        Object.assign({}, stickyRenderOpts, {
+          projectData: collectedProjects,
+          expensiveRenderIsOK
+        })
+      );
       renderCount += 1;
     }
   }
@@ -183,6 +209,15 @@ function ProjectsFlow({
 
   function onCriteriaControlChange({ criterionSelected, criterionType }) {
     console.log('criterionSelected', criterionSelected, 'type', criterionType);
+    if (criterionType === 'group-by') {
+      routeState.addToRoute({ groupByCriterionName: criterionSelected });
+    } else if (criterionType === 'sort') {
+      routeState.addToRoute({ sortCriterionName: criterionSelected.name });
+    } else if (criterionType === 'filter') {
+      let names = compact(stickyRenderOpts.filterCriteriaNames.split('|'));
+      names.push(criterionSelected.name);
+      routeState.addToRoute({ filterCriteriaNames: uniq(names).join('|') });
+    }
   }
 }
 

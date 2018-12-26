@@ -63,6 +63,7 @@
     "lodash.groupby": "^4.6.0",
     "lodash.pluck": "^3.1.2",
     "lodash.throttle": "^4.1.1",
+    "lodash.uniq": "^4.5.0",
     "lodash.values": "^4.3.0",
     "ndjson": "^1.5.0",
     "object-path-exists": "^1.0.0",

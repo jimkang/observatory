@@ -4,6 +4,17 @@ var ProjectsFlow = require('./flows/projects-flow');
 var routeState;
 var projectsFlow;
 
+var routeDefaults = {
+  user: 'jimkang',
+  userEmail: 'jimkang@gmail.com',
+  verbose: false,
+  view: 'garden',
+  sortBy: 'lastActive',
+  filterCriteriaNames: '',
+  sortCriterionName: undefined,
+  groupByCriterionName: undefined
+};
+
 (function go() {
   routeState = RouteState({
     followRoute,
@@ -12,19 +23,17 @@ var projectsFlow;
   routeState.routeFromHash();
 })();
 
-function followRoute({ user = 'jimkang', userEmail, verbose, view, sortBy }) {
+function followRoute(routeOpts) {
+  var opts = Object.assign({ routeState }, routeDefaults, routeOpts);
   if (!projectsFlow) {
-    projectsFlow = ProjectsFlow({
-      user,
-      userEmail,
-      verbose,
-      sortBy
-    });
+    projectsFlow = ProjectsFlow(opts);
     projectsFlow.start();
   }
 
+  projectsFlow.updateOpts(opts);
+
   projectsFlow.changeRenderer({
-    view,
+    view: opts.view,
     changeView
   });
 }
