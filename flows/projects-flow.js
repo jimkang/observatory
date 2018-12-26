@@ -23,7 +23,14 @@ const expensiveRenderThreshold = 5;
 // ProjectsFlow is per-data-source. If you need to get from a new data source,
 // you need to create another projectSource.
 // changeRenderer changes the rendering while still using the same data source.
-function ProjectsFlow({ user, verbose }) {
+function ProjectsFlow({
+  user,
+  verbose,
+  routeState,
+  filterCriteriaNames,
+  sortCriterionName,
+  groupByCriterionName
+}) {
   var collectedProjectsByName = {};
   var collectedProjects = [];
   var streamEndEventReceived = false;
@@ -46,7 +53,7 @@ function ProjectsFlow({ user, verbose }) {
     deedsort: RenderDeedSortView({ user }),
     facts: RenderFactsView({ user }),
     year: RenderYearView({ onDeedClick: renderDetailsOnYearsView }),
-    descriptive: RenderDescriptiveView({ user })
+    descriptive: RenderDescriptiveView({ user, onCriteriaControlChange })
   };
 
   return {
@@ -172,6 +179,10 @@ function ProjectsFlow({ user, verbose }) {
       callRender({ expensiveRenderIsOK: true });
     }
     // Otherwise, the various event handlers will call callRender.
+  }
+
+  function onCriteriaControlChange({ criterionSelected, criterionType }) {
+    console.log('criterionSelected', criterionSelected, 'type', criterionType);
   }
 }
 

@@ -6,11 +6,11 @@ var groupBy = require('lodash.groupby');
 function renderArrangementControls({
   containerSelector,
   criteria,
-  onControlChange
+  onCriteriaControlChange
 }) {
   var container = d3.select(containerSelector);
   renderCriteria('filter', 'filter');
-  renderCriteria('sort', 'sort');
+  renderCriteria('sort', 'sortBy');
   renderCriteria('group-by', 'groupBy');
 
   function renderCriteria(criterionType, criterionTypeCamelCase) {
@@ -47,7 +47,7 @@ function renderArrangementControls({
       .enter()
       .append('li')
       .classed('criterion', true)
-      .on('click', onCriterionClick)
+      .on('click', curry(onCriterionClick)(criterionType))
       .merge(filterCriteriaForCategory)
       .text(accessor('name'));
 
@@ -56,8 +56,8 @@ function renderArrangementControls({
     }
   }
 
-  function onCriterionClick(criterion) {
-    onControlChange({ criterionSelected: criterion });
+  function onCriterionClick(criterionType, criterion) {
+    onCriteriaControlChange({ criterionSelected: criterion, criterionType });
   }
 }
 
