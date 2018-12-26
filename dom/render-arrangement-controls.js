@@ -11,19 +11,24 @@ function renderArrangementControls({
   var container = d3.select(containerSelector);
   renderCriteria('filter', 'filter');
   renderCriteria('sort', 'sortBy');
-  renderCriteria('group-by', 'groupBy');
+  renderCriteria('group-by', 'groupBy', true);
 
-  function renderCriteria(criterionType, criterionTypeCamelCase) {
+  function renderCriteria(
+    criterionType,
+    criterionTypeCamelCase,
+    renderCategoriesAsCriteria = false
+  ) {
     var criteriaForCategory = criteria.filter(
       curry(criterionWorksAs)(criterionTypeCamelCase)
     );
     var criteriaByCategory = groupBy(criteriaForCategory, 'category');
     var root = container.select('.' + criterionType + '-list');
-    var filterCriteriaCategoryRoots = root
+    var criteriaCategoryRoots = root
       .selectAll('.' + criterionType + '-category-root')
       .data(Object.keys(criteriaByCategory), accessor('identity'));
-    filterCriteriaCategoryRoots.exit().remove();
-    var newCategoryRoots = filterCriteriaCategoryRoots
+
+    criteriaCategoryRoots.exit().remove();
+    var newCategoryRoots = criteriaCategoryRoots
       .enter()
       .append('div')
       .classed('' + criterionType + '-category-root', true);
@@ -32,24 +37,28 @@ function renderArrangementControls({
       .append('ul')
       .classed(criterionType + '-criteria-root', true);
 
-    var currentCategoryRoots = newCategoryRoots.merge(
-      filterCriteriaCategoryRoots
-    );
+    if (renderCategoriesAsCriteria) {
+      newCategoryRoots.on('click', curry(onCriterionClick)(criterionType));
+    }
+    var currentCategoryRoots = newCategoryRoots.merge(criteriaCategoryRoots);
     currentCategoryRoots.select('.category-title').text(accessor('identity'));
-    var filterCriteriaRoots = currentCategoryRoots.selectAll(
-      '.' + criterionType + '-criteria-root'
-    );
-    var filterCriteriaForCategory = filterCriteriaRoots
-      .selectAll('.criterion')
-      .data(getCriteriaForCategory, makeCriterionId);
-    filterCriteriaForCategory.exit().remove();
-    filterCriteriaForCategory
-      .enter()
-      .append('li')
-      .classed('criterion', true)
-      .on('click', curry(onCriterionClick)(criterionType))
-      .merge(filterCriteriaForCategory)
-      .text(accessor('name'));
+
+    if (!renderCategoriesAsCriteria) {
+      var filterCriteriaRoots = currentCategoryRoots.selectAll(
+        '.' + criterionType + '-criteria-root'
+      );
+      var filterCriteriaForCategory = filterCriteriaRoots
+        .selectAll('.criterion')
+        .data(getCriteriaForCategory, makeCriterionId);
+      filterCriteriaForCategory.exit().remove();
+      filterCriteriaForCategory
+        .enter()
+        .append('li')
+        .classed('criterion', true)
+        .on('click', curry(onCriterionClick)(criterionType))
+        .merge(filterCriteriaForCategory)
+        .text(accessor('name'));
+    }
 
     function getCriteriaForCategory(category) {
       return criteriaByCategory[category];
