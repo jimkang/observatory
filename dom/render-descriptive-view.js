@@ -1,11 +1,12 @@
 var d3 = require('d3-selection');
 var accessor = require('accessor')();
 var EaseThrottle = require('../ease-throttle');
-var arrangeProjectDataByYear = require('../arrange-project-data-by-year');
+var arrangeProjectsBySortGroupFilter = require('../arrange-projects-by-sort-group-filter');
 var mergeYearKits = require('../merge-year-kits');
 var findWhere = require('lodash.findwhere');
 var renderArrangementControls = require('./render-arrangement-controls');
 var criteria = require('../criteria');
+var listParser = require('../route-list-parser');
 
 var descriptiveYearContainer = d3.select('#descriptive-container');
 var descriptiveYearsRoot = d3.select('#descriptive-root');
@@ -19,7 +20,12 @@ var displayNamesForSort = {
 function RenderDescriptiveView({ onCriteriaControlChange }) {
   return EaseThrottle({ fn: renderDescriptiveView });
 
-  function renderDescriptiveView({ projectData }) {
+  function renderDescriptiveView({
+    projectData,
+    filterCriteriaNames,
+    sortCriterionName,
+    groupByCriterionName
+  }) {
     renderArrangementControls({
       containerSelector: '#descriptive-container .descriptive-controls',
       criteria,
@@ -31,7 +37,17 @@ function RenderDescriptiveView({ onCriteriaControlChange }) {
       true
     );
     descriptiveYearContainer.classed('hidden', false);
-
+    var outerKits = arrangeProjectsBySortGroupFilter({
+      projectData,
+      sortCriterion: criteria[sortCriterionName],
+      groupByCriterion: criteria[groupByCriterionName],
+      filterCriteria: getCriteriaForNames(
+        criteria,
+        listParser.parse(filterCriteriaNames)
+      )
+    });
+    console.log('outerKits', outerKits);
+    /*
     var descriptiveYearKits = mergeYearKits({
       startDate: arrangeProjectDataByYear({ projectData, sortBy: 'startDate' }),
       shippedDate: arrangeProjectDataByYear({
@@ -123,6 +139,7 @@ function RenderDescriptiveView({ onCriteriaControlChange }) {
     function onProjectClick(project) {
       onDeedClick({ project, deed: project.deeds.sort(aIsLaterThanB)[0] });
     }
+    */
   }
 }
 
@@ -152,6 +169,14 @@ function addPlaceHolderMonthSortSectionsToMonthKit(monthKit) {
         projects: []
       });
     }
+  }
+}
+
+function getCriteriaForNames(criteria, names) {
+  return criteria.filter(criterionMatchesName);
+
+  function criterionMatchesName(criterion) {
+    return names.indexOf(criterion.name) !== -1;
   }
 }
 

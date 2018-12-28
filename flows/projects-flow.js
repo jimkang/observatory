@@ -17,7 +17,7 @@ var countDeedsInProjects = require('../count-deeds-in-projects');
 var switchViewRoot = require('../dom/switch-view-root');
 var decorateProject = require('../decorate-project');
 var uniq = require('lodash.uniq');
-var compact = require('lodash.compact');
+var listParser = require('../route-list-parser');
 
 const expensiveRenderInterval = 5;
 const expensiveRenderThreshold = 5;
@@ -214,9 +214,11 @@ function ProjectsFlow({
     } else if (criterionType === 'sort') {
       routeState.addToRoute({ sortCriterionName: criterionSelected.name });
     } else if (criterionType === 'filter') {
-      let names = compact(stickyRenderOpts.filterCriteriaNames.split('|'));
+      let names = listParser.parse(stickyRenderOpts.filterCriteriaNames);
       names.push(criterionSelected.name);
-      routeState.addToRoute({ filterCriteriaNames: uniq(names).join('|') });
+      routeState.addToRoute({
+        filterCriteriaNames: listParser.stringify(uniq(names))
+      });
     }
   }
 }
