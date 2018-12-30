@@ -75,6 +75,16 @@ module.exports = [
     roles: ['filter']
   },
   {
+    category: 'purpose',
+    name: 'information',
+    roles: ['filter']
+  },
+  {
+    category: 'purpose',
+    name: 'library',
+    roles: ['filter']
+  },
+  {
     category: 'environment',
     name: 'environment',
     roles: ['groupBy']
@@ -91,12 +101,27 @@ module.exports = [
   },
   {
     category: 'environment',
-    name: 'command line',
+    name: 'terminal',
     roles: ['filter']
   },
   {
     category: 'environment',
     name: 'bookmarklet',
+    roles: ['filter']
+  },
+  {
+    category: 'environment',
+    name: 'anywhere',
+    roles: ['filter']
+  },
+  {
+    category: 'environment',
+    name: 'ios',
+    roles: ['filter']
+  },
+  {
+    category: 'environment',
+    name: 'osx',
     roles: ['filter']
   },
   {
@@ -116,7 +141,7 @@ module.exports = [
   },
   {
     category: 'form',
-    name: 'program',
+    name: 'script',
     roles: ['filter']
   },
   {
@@ -126,12 +151,42 @@ module.exports = [
   },
   {
     category: 'form',
-    name: 'bookmarklet',
+    name: 'browser-extension',
     roles: ['filter']
   },
   {
     category: 'form',
     name: 'bot',
     roles: ['filter']
-  }
+  },
+  {
+    category: 'form',
+    name: 'data',
+    roles: ['filter']
+  },
+  {
+    category: 'form',
+    name: 'image',
+    roles: ['filter']
+  },
+  {
+    category: 'form',
+    name: 'job',
+    roles: ['filter']
+  },
+  {
+    category: 'form',
+    name: 'source',
+    roles: ['filter']
+  },
+  {
+    category: 'form',
+    name: 'document',
+    roles: ['filter']
+  },
+  {
+    category: 'form',
+    name: 'website',
+    roles: ['filter']
+  },
 ];
