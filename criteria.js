@@ -188,5 +188,5 @@ module.exports = [
     category: 'form',
     name: 'website',
     roles: ['filter']
-  },
+  }
 ];
