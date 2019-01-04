@@ -2,6 +2,7 @@ var d3 = require('d3-selection');
 var accessor = require('accessor')();
 var EaseThrottle = require('../ease-throttle');
 var filterProjects = require('../filter-projects');
+var sortProjects = require('../sort-projects');
 var mergeYearKits = require('../merge-year-kits');
 var findWhere = require('lodash.findwhere');
 var renderArrangementControls = require('./render-arrangement-controls');
@@ -37,16 +38,21 @@ function RenderDescriptiveView({ onCriteriaControlChange }) {
       true
     );
     descriptiveYearContainer.classed('hidden', false);
-    var outerKits = filterProjects({
+    var filtered = filterProjects({
       projectData,
-      //sortCriterion: criteria[sortCriterionName],
       //groupByCriterion: criteria[groupByCriterionName],
       filterCriteria: getCriteriaForNames(
         criteria,
         listParser.parse(filterCriteriaNames)
       )
     });
-    console.log('outerKits', outerKits);
+    console.log('filtered:', filtered);
+    var sorted = sortProjects({
+      projectData: filtered.slice(),
+      sortCriterion: criteria.find(c => c.name === sortCriterionName)
+    });
+    console.log('sorted:', sorted);
+
     /*
     var descriptiveYearKits = mergeYearKits({
       startDate: arrangeProjectDataByYear({ projectData, sortBy: 'startDate' }),
