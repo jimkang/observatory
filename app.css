@@ -159,7 +159,7 @@ header {
 }
 
 header {
-  margin-bottom: 2em;
+  margin-bottom: 0.5em;
   margin-left: 1em;
   margin-right: 1em;
 }
@@ -504,6 +504,86 @@ a {
 #year-container .project-name {
   text-decoration: underline cornflowerblue;
   cursor: pointer;
+}
+
+.arrangement-controls {
+  /*! display: flex; */
+  /*! flex-wrap: wrap; */
+}
+
+.arrangement-controls .control-container {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  margin: 1em;
+  /* Specifying width here will make this element the width 
+ * without the margin added, seemingly even with box-sizing: border-box. */
+  /*! max-width: 33%; */
+  flex-basis: 0;
+  flex-grow: 1;
+  /*! width: 10em; */
+  margin-top: 0;
+}
+
+.arrangement-controls .control-container h3 {
+  text-align: center;
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  /*! font-weight: normal; */
+  /*! font-size: larger; */
+  /*! font-style: italic; */
+}
+
+.arrangement-controls ul {
+  margin: 0;
+  list-style-type: none;
+  text-align: center;
+  width: 100%;
+  padding: 0;
+}
+
+.arrangement-controls ul li {
+  border: 1px solid gray;
+  padding: 0.25em;
+  cursor: pointer;
+}
+
+#year-container .arrangement-controls {
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1em;
+  justify-content: center;
+}
+
+.filters-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-category-root {
+  margin-bottom: 1em;
+}
+
+.filter-list {
+  max-height: 10em;
+  overflow-y: scroll;
+  border: 1px solid black;
+  /*! border-radius: 0.5em; */
+  padding: 1em;
+  /*! box-shadow: #666 inset 0 0 6px; */
+  display: flex;
+}
+
+.arrangement-controls .category-title {
+  text-align: center;
+  /*! padding-top: 0; */
+  margin-top: 0;
+}
+
+.arrangement-controls .criterion.selected {
+  font-style: bold;
+  background-color: rgb(122, 209, 81);
 }
 
 @media all and (max-height: 320px) {

@@ -36,6 +36,8 @@ function EaseThrottle({ fn }) {
     if (queuedOpts) {
       numberOfCalls += 1;
       fn(queuedOpts);
+      // Very important to clear the queued opts so that they're not used the next time the throttled function is used.
+      queuedOpts = undefined;
     }
   }
 }

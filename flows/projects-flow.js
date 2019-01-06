@@ -7,6 +7,7 @@ var RenderActivityView = require('../dom/render-activity-view');
 var RenderDeedSortView = require('../dom/render-deed-sort-view');
 var RenderFactsView = require('../dom/render-facts-view');
 var RenderYearView = require('../dom/render-year-view');
+var RenderDescriptiveView = require('../dom/render-descriptive-view');
 var values = require('lodash.values');
 var omit = require('lodash.omit');
 var addDeedToProject = require('add-deed-to-project');
@@ -15,6 +16,8 @@ var handleError = require('handle-error-web');
 var countDeedsInProjects = require('../count-deeds-in-projects');
 var switchViewRoot = require('../dom/switch-view-root');
 var decorateProject = require('../decorate-project');
+var uniq = require('lodash.uniq');
+var listParser = require('../route-list-parser');
 
 const expensiveRenderInterval = 5;
 const expensiveRenderThreshold = 5;
@@ -22,7 +25,20 @@ const expensiveRenderThreshold = 5;
 // ProjectsFlow is per-data-source. If you need to get from a new data source,
 // you need to create another projectSource.
 // changeRenderer changes the rendering while still using the same data source.
-function ProjectsFlow({ user, verbose }) {
+function ProjectsFlow({
+  user,
+  verbose,
+  routeState,
+  filterCriteriaNames, // '|'-separated string
+  sortCriterionName,
+  groupByCriterionName
+}) {
+  // These should be passed to the render function on a re-render.
+  var stickyRenderOpts = {
+    filterCriteriaNames,
+    sortCriterionName,
+    groupByCriterionName
+  };
   var collectedProjectsByName = {};
   var collectedProjects = [];
   var streamEndEventReceived = false;
@@ -44,12 +60,24 @@ function ProjectsFlow({ user, verbose }) {
     activity: RenderActivityView({ user }),
     deedsort: RenderDeedSortView({ user }),
     facts: RenderFactsView({ user }),
-    year: RenderYearView({ onDeedClick: renderDetailsOnYearsView })
+    year: RenderYearView({
+      onDeedClick: renderDetailsOnYearsView,
+      onCriteriaControlChange,
+      filterCriteriaNames
+    }),
+    descriptive: RenderDescriptiveView({
+      user,
+      onCriteriaControlChange,
+      filterCriteriaNames,
+      sortCriterionName,
+      groupByCriterionName
+    })
   };
 
   return {
     start,
-    changeRenderer
+    changeRenderer,
+    updateOpts
   };
 
   function start() {
@@ -61,6 +89,15 @@ function ProjectsFlow({ user, verbose }) {
       },
       onStreamEnd
     );
+  }
+
+  // Not every opt specifiable in the constructor is updatable.
+  function updateOpts(opts) {
+    for (var key in stickyRenderOpts) {
+      if (key in opts) {
+        stickyRenderOpts[key] = opts[key];
+      }
+    }
   }
 
   function collectDeed(commit, source) {
@@ -138,10 +175,12 @@ function ProjectsFlow({ user, verbose }) {
 
   function callRender({ expensiveRenderIsOK = false }) {
     if (render) {
-      render({
-        projectData: collectedProjects,
-        expensiveRenderIsOK
-      });
+      render(
+        Object.assign({}, stickyRenderOpts, {
+          projectData: collectedProjects,
+          expensiveRenderIsOK
+        })
+      );
       renderCount += 1;
     }
   }
@@ -170,6 +209,32 @@ function ProjectsFlow({ user, verbose }) {
       callRender({ expensiveRenderIsOK: true });
     }
     // Otherwise, the various event handlers will call callRender.
+  }
+
+  function onCriteriaControlChange({ criterion, criterionType, selected }) {
+    console.log(
+      'criterion',
+      criterion,
+      'type',
+      criterionType,
+      'selected',
+      selected
+    );
+    if (criterionType === 'group-by') {
+      routeState.addToRoute({ groupByCriterionName: criterion });
+    } else if (criterionType === 'sort') {
+      routeState.addToRoute({ sortCriterionName: criterion.name });
+    } else if (criterionType === 'filter') {
+      let names = listParser.parse(stickyRenderOpts.filterCriteriaNames);
+      if (selected) {
+        names.push(criterion.name);
+      } else {
+        names.splice(names.indexOf(criterion.name), 1);
+      }
+      routeState.addToRoute({
+        filterCriteriaNames: listParser.stringify(uniq(names))
+      });
+    }
   }
 }
 

@@ -1,8 +1,13 @@
 const dayInMS = 24 * 60 * 60 * 1000;
 
 function decorateProject(project, nowInEpochTime = Date.now()) {
+  project.releaseState = 'inProgress';
   if (project.shippedDate) {
     project.shippedDate = new Date(project.shippedDate);
+    project.releaseState = 'shipped';
+  }
+  if (project.canceled) {
+    project.releaseState = 'canceled';
   }
 
   if (project.deeds && project.deeds.length > 0) {

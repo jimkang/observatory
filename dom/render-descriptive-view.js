@@ -1,82 +1,86 @@
 var d3 = require('d3-selection');
-var accessor = require('accessor')();
+//var accessor = require('accessor')();
 var EaseThrottle = require('../ease-throttle');
-var arrangeProjectDataByYear = require('../arrange-project-data-by-year');
 var filterProjects = require('../filter-projects');
-var mergeYearKits = require('../merge-year-kits');
-var findWhere = require('lodash.findwhere');
-var criteria = require('../criteria');
-var getCriteriaForNames = require('../get-criteria-for-names');
-var listParser = require('../route-list-parser');
+var sortProjects = require('../sort-projects');
 var renderArrangementControls = require('./render-arrangement-controls');
+var criteria = require('../criteria');
+var listParser = require('../route-list-parser');
+var getCriteriaForNames = require('../get-criteria-for-names');
+var descriptiveYearContainer = d3.select('#descriptive-container');
+// var descriptiveYearsRoot = d3.select('#descriptive-root');
 
-var filterCriteria = criteria.filter(c => c.roles.indexOf('filter') !== -1);
+function RenderDescriptiveView({ onCriteriaControlChange }) {
+  return EaseThrottle({ fn: renderDescriptiveView });
 
-var yearContainer = d3.select('#year-container');
-var yearsRoot = d3.select('#years-root');
-
-var displayNamesForSort = {
-  startDate: 'Started',
-  shippedDate: 'Shipped',
-  lastActiveDate: 'Last Active'
-};
-
-function RenderYearView({ onDeedClick, onCriteriaControlChange }) {
-  return EaseThrottle({ fn: renderYearView });
-
-  function renderYearView({ projectData, filterCriteriaNames }) {
-    d3.selectAll('.view-root:not(#year-container)').classed('hidden', true);
-    yearContainer.classed('hidden', false);
-
+  function renderDescriptiveView({
+    projectData,
+    filterCriteriaNames,
+    sortCriterionName
+    //groupByCriterionName
+  }) {
     renderArrangementControls({
-      containerSelector: '#year-container .arrangement-controls',
-      criteria: filterCriteria,
-      selectedCriteriaNames: filterCriteriaNames,
+      containerSelector: '#descriptive-container .arrangement-controls',
+      criteria,
       onCriteriaControlChange
     });
 
+    d3.selectAll('.view-root:not(#descriptive-container)').classed(
+      'hidden',
+      true
+    );
+    descriptiveYearContainer.classed('hidden', false);
     var filtered = filterProjects({
       projectData,
+      //groupByCriterion: criteria[groupByCriterionName],
       filterCriteria: getCriteriaForNames(
         criteria,
         listParser.parse(filterCriteriaNames)
       )
     });
+    console.log('filtered:', filtered);
+    var sorted = sortProjects({
+      projectData: filtered.slice(),
+      sortCriterion: criteria.find(c => c.name === sortCriterionName)
+    });
+    console.log('sorted:', sorted);
 
-    var yearKits = mergeYearKits({
-      startDate: arrangeProjectDataByYear({
-        projectData: filtered,
-        sortBy: 'startDate'
-      }),
+    /*
+    var descriptiveYearKits = mergeYearKits({
+      startDate: arrangeProjectDataByYear({ projectData, sortBy: 'startDate' }),
       shippedDate: arrangeProjectDataByYear({
-        projectData: filtered,
+        projectData,
         sortBy: 'shippedDate'
       }),
       lastActiveDate: arrangeProjectDataByYear({
-        projectData: filtered,
+        projectData,
         sortBy: 'lastActiveDate'
       })
     });
-    yearKits.forEach(addPlaceHolderMonthSortSectionsToYearKit);
-    console.log('yearKits', yearKits);
+    descriptiveYearKits.forEach(addPlaceHolderMonthSortSectionsToYearKit);
+    console.log('descriptiveYearKits', descriptiveYearKits);
 
-    var years = yearsRoot.selectAll('.year').data(yearKits, accessor('year'));
-    years.exit().remove();
+    var descriptiveYears = descriptiveYearsRoot
+      .selectAll('.descriptiveYear')
+      .data(descriptiveYearKits, accessor('descriptiveYear'));
+    descriptiveYears.exit().remove();
 
-    var newYears = years
+    var newYears = descriptiveYears
       .enter()
       .append('div')
-      .classed('year', true);
-    newYears.append('div').classed('year-title', true);
+      .classed('descriptiveYear', true);
+    newYears.append('div').classed('descriptiveYear-title', true);
     newYears.append('div').classed('month-root', true);
 
-    var yearsToUpdate = newYears.merge(years);
+    var descriptiveYearsToUpdate = newYears.merge(descriptiveYears);
 
-    yearsToUpdate.select('.year-title').text(accessor('year'));
+    descriptiveYearsToUpdate
+      .select('.descriptiveYear-title')
+      .text(accessor('descriptiveYear'));
 
     // The select, then selectAll is here because we want to put months under month-root
-    // rather than directly under year.
-    var months = yearsToUpdate
+    // rather than directly under descriptiveYear.
+    var months = descriptiveYearsToUpdate
       .select('.month-root')
       .selectAll('.month')
       .data(accessor('monthKits'), accessor('month'));
@@ -133,34 +137,8 @@ function RenderYearView({ onDeedClick, onCriteriaControlChange }) {
     function onProjectClick(project) {
       onDeedClick({ project, deed: project.deeds.sort(aIsLaterThanB)[0] });
     }
+    */
   }
 }
 
-function getDisplayNameForSort(d) {
-  return displayNamesForSort[d.sort];
-}
-
-function aIsLaterThanB(a, b) {
-  return new Date(a.committedDate) > new Date(b.committedDate) ? -1 : 1;
-}
-
-function getClassesForMonthSortSection(d) {
-  return `month-sort-section ${d.sort}`;
-}
-
-function addPlaceHolderMonthSortSectionsToYearKit(yearKit) {
-  yearKit.monthKits.forEach(addPlaceHolderMonthSortSectionsToMonthKit);
-}
-
-function addPlaceHolderMonthSortSectionsToMonthKit(monthKit) {
-  for (var sort in displayNamesForSort) {
-    if (!findWhere(monthKit.projectsWithSort, { sort })) {
-      monthKit.projectsWithSort.push({
-        sort,
-        projects: []
-      });
-    }
-  }
-}
-
-module.exports = RenderYearView;
+module.exports = RenderDescriptiveView;
