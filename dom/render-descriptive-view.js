@@ -1,22 +1,14 @@
 var d3 = require('d3-selection');
-var accessor = require('accessor')();
+//var accessor = require('accessor')();
 var EaseThrottle = require('../ease-throttle');
 var filterProjects = require('../filter-projects');
 var sortProjects = require('../sort-projects');
-var mergeYearKits = require('../merge-year-kits');
-var findWhere = require('lodash.findwhere');
 var renderArrangementControls = require('./render-arrangement-controls');
 var criteria = require('../criteria');
 var listParser = require('../route-list-parser');
 
 var descriptiveYearContainer = d3.select('#descriptive-container');
-var descriptiveYearsRoot = d3.select('#descriptive-root');
-
-var displayNamesForSort = {
-  startDate: 'Started',
-  shippedDate: 'Shipped',
-  lastActiveDate: 'Last Active'
-};
+// var descriptiveYearsRoot = d3.select('#descriptive-root');
 
 function RenderDescriptiveView({ onCriteriaControlChange }) {
   return EaseThrottle({ fn: renderDescriptiveView });
@@ -25,7 +17,7 @@ function RenderDescriptiveView({ onCriteriaControlChange }) {
     projectData,
     filterCriteriaNames,
     sortCriterionName,
-    groupByCriterionName
+    //groupByCriterionName
   }) {
     renderArrangementControls({
       containerSelector: '#descriptive-container .descriptive-controls',
@@ -146,35 +138,6 @@ function RenderDescriptiveView({ onCriteriaControlChange }) {
       onDeedClick({ project, deed: project.deeds.sort(aIsLaterThanB)[0] });
     }
     */
-  }
-}
-
-function getDisplayNameForSort(d) {
-  return displayNamesForSort[d.sort];
-}
-
-function aIsLaterThanB(a, b) {
-  return new Date(a.committedDate) > new Date(b.committedDate) ? -1 : 1;
-}
-
-function getClassesForMonthSortSection(d) {
-  return `month-sort-section ${d.sort}`;
-}
-
-function addPlaceHolderMonthSortSectionsToYearKit(descriptiveYearKit) {
-  descriptiveYearKit.monthKits.forEach(
-    addPlaceHolderMonthSortSectionsToMonthKit
-  );
-}
-
-function addPlaceHolderMonthSortSectionsToMonthKit(monthKit) {
-  for (var sort in displayNamesForSort) {
-    if (!findWhere(monthKit.projectsWithSort, { sort })) {
-      monthKit.projectsWithSort.push({
-        sort,
-        projects: []
-      });
-    }
   }
 }
 
