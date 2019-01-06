@@ -4,6 +4,13 @@ var hierarchy = require('d3-hierarchy');
 var countDeedsInProjects = require('../count-deeds-in-projects');
 var GetEvenIndexForString = require('../get-even-index-for-string');
 var EaseThrottle = require('../ease-throttle');
+var filterProjects = require('../filter-projects');
+var criteria = require('../criteria');
+var getCriteriaForNames = require('../get-criteria-for-names');
+var listParser = require('../route-list-parser');
+var renderArrangementControls = require('./render-arrangement-controls');
+
+var filterCriteria = criteria.filter(c => c.roles.indexOf('filter') !== -1);
 
 const widthLimit = 800;
 var deedsKey = GetPropertySafely('deeds', []);
@@ -34,12 +41,31 @@ var gardenTargetsContext = gardenTargetsBoard
 
 var treemap;
 
-function RenderGarden({ onDeedClick }) {
+function RenderGarden({ onDeedClick, onCriteriaControlChange }) {
   return EaseThrottle({ fn: renderGarden });
 
-  function renderGarden({ projectData, expensiveRenderIsOK }) {
+  function renderGarden({
+    projectData,
+    expensiveRenderIsOK,
+    filterCriteriaNames
+  }) {
     var width = 0;
     var height = 0;
+
+    renderArrangementControls({
+      containerSelector: '#garden-container .arrangement-controls',
+      criteria: filterCriteria,
+      selectedCriteriaNames: filterCriteriaNames,
+      onCriteriaControlChange
+    });
+
+    var filtered = filterProjects({
+      projectData,
+      filterCriteria: getCriteriaForNames(
+        criteria,
+        listParser.parse(filterCriteriaNames)
+      )
+    });
 
     if (!treemap || expensiveRenderIsOK) {
       let neededArea =
@@ -74,7 +100,7 @@ function RenderGarden({ onDeedClick }) {
 
     var rootData = {
       name: 'root',
-      deeds: projectData
+      deeds: filtered
     };
 
     var root = hierarchy.hierarchy(rootData, deedsKey).sum(sumBySize);
