@@ -106,11 +106,6 @@ module.exports = [
   },
   {
     category: 'environment',
-    name: 'bookmarklet',
-    roles: ['filter']
-  },
-  {
-    category: 'environment',
     name: 'anywhere',
     roles: ['filter']
   },

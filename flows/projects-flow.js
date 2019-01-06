@@ -56,7 +56,10 @@ function ProjectsFlow({
 
   var renderers = {
     plain: RenderPlain({ user }),
-    garden: RenderGarden({ onDeedClick: renderDetailsOnGarden }),
+    garden: RenderGarden({
+      onDeedClick: renderDetailsOnGarden,
+      onCriteriaControlChange
+    }),
     activity: RenderActivityView({ user }),
     deedsort: RenderDeedSortView({ user }),
     facts: RenderFactsView({ user }),
