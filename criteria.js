@@ -4,11 +4,13 @@ module.exports = [
     name: 'shipped',
     roles: ['filter', 'groupBy']
   },
+/*
   {
     category: 'releaseState',
     name: 'canceled',
     roles: ['filter', 'groupBy']
   },
+*/
   {
     category: 'releaseState',
     name: 'inProgress',
@@ -19,11 +21,13 @@ module.exports = [
     name: 'featured',
     roles: ['filter']
   },
+/*
   {
     category: 'featuredStatus',
     name: 'notFeatured',
     roles: ['filter']
   },
+*/
   {
     category: 'importance',
     name: 'importance',
@@ -154,11 +158,13 @@ module.exports = [
     name: 'bot',
     roles: ['filter']
   },
+/*
   {
     category: 'form',
     name: 'data',
     roles: ['filter']
   },
+*/
   {
     category: 'form',
     name: 'image',
@@ -179,9 +185,11 @@ module.exports = [
     name: 'document',
     roles: ['filter']
   },
+/*
   {
     category: 'form',
     name: 'website',
     roles: ['filter']
   }
+*/
 ];
