@@ -4,3 +4,4 @@ projects.yaml
 config.js
 test-config.js
 *.swp
+config.mk

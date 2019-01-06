@@ -1,3 +1,7 @@
+include config.mk
+
+HOMEDIR = $(shell pwd)
+APPDIR = $(HTMLDIR)/observatory
 BROWSERIFY = ./node_modules/.bin/browserify
 UGLIFY = ./node_modules/uglify-es/bin/uglifyjs
 
@@ -15,11 +19,16 @@ run-on-80:
 build:
 	$(BROWSERIFY) app.js | $(UGLIFY) -c -m -o index.js
 
-pushall:
-	git push origin gh-pages
+pushall: sync
+	git push origin master
 
 prettier:
 	prettier --single-quote --write "**/*.js"
 
 test:
 	node tests/decorate-project-tests.js
+
+sync:
+	rsync -a $(HOMEDIR)/ $(USER)@$(SERVER):/$(APPDIR) --exclude node_modules/ \
+		--omit-dir-times --no-perms
+
