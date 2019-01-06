@@ -60,7 +60,11 @@ function ProjectsFlow({
     activity: RenderActivityView({ user }),
     deedsort: RenderDeedSortView({ user }),
     facts: RenderFactsView({ user }),
-    year: RenderYearView({ onDeedClick: renderDetailsOnYearsView }),
+    year: RenderYearView({
+      onDeedClick: renderDetailsOnYearsView,
+      onCriteriaControlChange,
+      filterCriteriaNames
+    }),
     descriptive: RenderDescriptiveView({
       user,
       onCriteriaControlChange,
@@ -90,7 +94,7 @@ function ProjectsFlow({
   // Not every opt specifiable in the constructor is updatable.
   function updateOpts(opts) {
     for (var key in stickyRenderOpts) {
-      if (opts[key]) {
+      if (key in opts) {
         stickyRenderOpts[key] = opts[key];
       }
     }
@@ -207,15 +211,26 @@ function ProjectsFlow({
     // Otherwise, the various event handlers will call callRender.
   }
 
-  function onCriteriaControlChange({ criterionSelected, criterionType }) {
-    console.log('criterionSelected', criterionSelected, 'type', criterionType);
+  function onCriteriaControlChange({ criterion, criterionType, selected }) {
+    console.log(
+      'criterion',
+      criterion,
+      'type',
+      criterionType,
+      'selected',
+      selected
+    );
     if (criterionType === 'group-by') {
-      routeState.addToRoute({ groupByCriterionName: criterionSelected });
+      routeState.addToRoute({ groupByCriterionName: criterion });
     } else if (criterionType === 'sort') {
-      routeState.addToRoute({ sortCriterionName: criterionSelected.name });
+      routeState.addToRoute({ sortCriterionName: criterion.name });
     } else if (criterionType === 'filter') {
       let names = listParser.parse(stickyRenderOpts.filterCriteriaNames);
-      names.push(criterionSelected.name);
+      if (selected) {
+        names.push(criterion.name);
+      } else {
+        names.splice(names.indexOf(criterion.name), 1);
+      }
       routeState.addToRoute({
         filterCriteriaNames: listParser.stringify(uniq(names))
       });

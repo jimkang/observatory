@@ -2,8 +2,15 @@ var d3 = require('d3-selection');
 var accessor = require('accessor')();
 var EaseThrottle = require('../ease-throttle');
 var arrangeProjectDataByYear = require('../arrange-project-data-by-year');
+var filterProjects = require('../filter-projects');
 var mergeYearKits = require('../merge-year-kits');
 var findWhere = require('lodash.findwhere');
+var criteria = require('../criteria');
+var getCriteriaForNames = require('../get-criteria-for-names');
+var listParser = require('../route-list-parser');
+var renderArrangementControls = require('./render-arrangement-controls');
+
+var filterCriteria = criteria.filter(c => c.roles.indexOf('filter') !== -1);
 
 var yearContainer = d3.select('#year-container');
 var yearsRoot = d3.select('#years-root');
@@ -14,21 +21,39 @@ var displayNamesForSort = {
   lastActiveDate: 'Last Active'
 };
 
-function RenderYearView({ onDeedClick }) {
+function RenderYearView({ onDeedClick, onCriteriaControlChange }) {
   return EaseThrottle({ fn: renderYearView });
 
-  function renderYearView({ projectData }) {
+  function renderYearView({ projectData, filterCriteriaNames }) {
     d3.selectAll('.view-root:not(#year-container)').classed('hidden', true);
     yearContainer.classed('hidden', false);
 
+    renderArrangementControls({
+      containerSelector: '#year-container .arrangement-controls',
+      criteria: filterCriteria,
+      selectedCriteriaNames: filterCriteriaNames,
+      onCriteriaControlChange
+    });
+
+    var filtered = filterProjects({
+      projectData,
+      filterCriteria: getCriteriaForNames(
+        criteria,
+        listParser.parse(filterCriteriaNames)
+      )
+    });
+
     var yearKits = mergeYearKits({
-      startDate: arrangeProjectDataByYear({ projectData, sortBy: 'startDate' }),
+      startDate: arrangeProjectDataByYear({
+        projectData: filtered,
+        sortBy: 'startDate'
+      }),
       shippedDate: arrangeProjectDataByYear({
-        projectData,
+        projectData: filtered,
         sortBy: 'shippedDate'
       }),
       lastActiveDate: arrangeProjectDataByYear({
-        projectData,
+        projectData: filtered,
         sortBy: 'lastActiveDate'
       })
     });

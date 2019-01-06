@@ -2,13 +2,17 @@ var d3 = require('d3-selection');
 var curry = require('lodash.curry');
 var accessor = require('accessor')();
 var groupBy = require('lodash.groupby');
+var listParser = require('../route-list-parser');
 
 function renderArrangementControls({
   containerSelector,
   criteria,
+  selectedCriteriaNames,
   onCriteriaControlChange
 }) {
+  var selectedCriteriaNameArray = listParser.parse(selectedCriteriaNames);
   var container = d3.select(containerSelector);
+
   renderCriteria('filter', 'filter');
   renderCriteria('sort', 'sortBy');
   renderCriteria('group-by', 'groupBy', true);
@@ -55,6 +59,7 @@ function renderArrangementControls({
         .enter()
         .append('li')
         .classed('criterion', true)
+        .classed('selected', isInSelectedCriteria)
         .on('click', curry(onCriterionClick)(criterionType))
         .merge(filterCriteriaForCategory)
         .text(accessor('name'));
@@ -66,7 +71,18 @@ function renderArrangementControls({
   }
 
   function onCriterionClick(criterionType, criterion) {
-    onCriteriaControlChange({ criterionSelected: criterion, criterionType });
+    if (criterionType === 'filter') {
+      // Toggle `selected` class.
+      var sel = d3.select(this);
+      var selected = sel.classed('selected');
+      selected = !selected;
+      sel.classed('selected', selected);
+    }
+    onCriteriaControlChange({ criterion, criterionType, selected });
+  }
+
+  function isInSelectedCriteria(criterion) {
+    return selectedCriteriaNameArray.indexOf(criterion.name) !== -1;
   }
 }
 

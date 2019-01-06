@@ -6,7 +6,7 @@ var sortProjects = require('../sort-projects');
 var renderArrangementControls = require('./render-arrangement-controls');
 var criteria = require('../criteria');
 var listParser = require('../route-list-parser');
-
+var getCriteriaForNames = require('../get-criteria-for-names');
 var descriptiveYearContainer = d3.select('#descriptive-container');
 // var descriptiveYearsRoot = d3.select('#descriptive-root');
 
@@ -16,11 +16,11 @@ function RenderDescriptiveView({ onCriteriaControlChange }) {
   function renderDescriptiveView({
     projectData,
     filterCriteriaNames,
-    sortCriterionName,
+    sortCriterionName
     //groupByCriterionName
   }) {
     renderArrangementControls({
-      containerSelector: '#descriptive-container .descriptive-controls',
+      containerSelector: '#descriptive-container .arrangement-controls',
       criteria,
       onCriteriaControlChange
     });
@@ -138,14 +138,6 @@ function RenderDescriptiveView({ onCriteriaControlChange }) {
       onDeedClick({ project, deed: project.deeds.sort(aIsLaterThanB)[0] });
     }
     */
-  }
-}
-
-function getCriteriaForNames(criteria, names) {
-  return criteria.filter(criterionMatchesName);
-
-  function criterionMatchesName(criterion) {
-    return names.indexOf(criterion.name) !== -1;
   }
 }
 
