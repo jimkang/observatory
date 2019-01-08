@@ -29,6 +29,12 @@ function RenderDescriptiveView({ onCriteriaControlChange }) {
       'hidden',
       true
     );
+    // Hide the controls if there aren't many projects.
+    d3.select('#descriptive-container .arrangement-controls').classed(
+      'hidden',
+      projectData.length < 10
+    );
+
     descriptiveYearContainer.classed('hidden', false);
     var filtered = filterProjects({
       projectData,

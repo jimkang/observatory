@@ -4,7 +4,7 @@ module.exports = [
     name: 'shipped',
     roles: ['filter', 'groupBy']
   },
-/*
+  /*
   {
     category: 'releaseState',
     name: 'canceled',
@@ -21,7 +21,7 @@ module.exports = [
     name: 'featured',
     roles: ['filter']
   },
-/*
+  /*
   {
     category: 'featuredStatus',
     name: 'notFeatured',
@@ -158,7 +158,7 @@ module.exports = [
     name: 'bot',
     roles: ['filter']
   },
-/*
+  /*
   {
     category: 'form',
     name: 'data',
@@ -184,8 +184,8 @@ module.exports = [
     category: 'form',
     name: 'document',
     roles: ['filter']
-  },
-/*
+  }
+  /*
   {
     category: 'form',
     name: 'website',

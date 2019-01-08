@@ -4,6 +4,9 @@ var accessor = require('accessor')();
 var groupBy = require('lodash.groupby');
 var listParser = require('../route-list-parser');
 
+// WARNING: This works fine here, but won't as a general solution.
+var snakeCaseRegex = /([a-z]+)([A-Z])([a-z]+)/;
+
 function renderArrangementControls({
   containerSelector,
   criteria,
@@ -45,7 +48,7 @@ function renderArrangementControls({
       newCategoryRoots.on('click', curry(onCriterionClick)(criterionType));
     }
     var currentCategoryRoots = newCategoryRoots.merge(criteriaCategoryRoots);
-    currentCategoryRoots.select('.category-title').text(accessor('identity'));
+    currentCategoryRoots.select('.category-title').text(snakeToSentenceCase);
 
     if (!renderCategoriesAsCriteria) {
       var filterCriteriaRoots = currentCategoryRoots.selectAll(
@@ -62,7 +65,7 @@ function renderArrangementControls({
         .classed('selected', isInSelectedCriteria)
         .on('click', curry(onCriterionClick)(criterionType))
         .merge(filterCriteriaForCategory)
-        .text(accessor('name'));
+        .text(getDisplayName);
     }
 
     function getCriteriaForCategory(category) {
@@ -84,6 +87,25 @@ function renderArrangementControls({
   function isInSelectedCriteria(criterion) {
     return selectedCriteriaNameArray.indexOf(criterion.name) !== -1;
   }
+}
+
+function snakeToSentenceCase(s) {
+  var matches = s.match(snakeCaseRegex);
+  if (matches && matches.length > 3) {
+    return (
+      capitalizeFirst(matches[1]) + ' ' + matches[2].toLowerCase() + matches[3]
+    );
+  } else {
+    return capitalizeFirst(s);
+  }
+}
+
+function capitalizeFirst(s) {
+  return s.slice(0, 1).toUpperCase() + s.slice(1);
+}
+
+function getDisplayName(criterion) {
+  return snakeToSentenceCase(criterion.name);
 }
 
 function criterionWorksAs(role, criterion) {

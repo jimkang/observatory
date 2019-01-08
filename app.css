@@ -514,7 +514,7 @@ a {
 .arrangement-controls .control-container {
   display: flex;
   flex-direction: column;
-  align-items: start;
+  align-items: center;
   margin: 1em;
   /* Specifying width here will make this element the width 
  * without the margin added, seemingly even with box-sizing: border-box. */
@@ -563,6 +563,7 @@ a {
 
 .filter-category-root {
   margin-bottom: 1em;
+  padding: 0.5em;
 }
 
 .filter-list {
@@ -573,6 +574,7 @@ a {
   padding: 1em;
   /*! box-shadow: #666 inset 0 0 6px; */
   display: flex;
+  flex-wrap: wrap;
 }
 
 .arrangement-controls .category-title {

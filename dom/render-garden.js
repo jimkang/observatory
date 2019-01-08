@@ -59,6 +59,12 @@ function RenderGarden({ onDeedClick, onCriteriaControlChange }) {
       onCriteriaControlChange
     });
 
+    // Hide the controls if there aren't many projects.
+    d3.select('#garden-container .arrangement-controls').classed(
+      'hidden',
+      projectData.length < 10
+    );
+
     var filtered = filterProjects({
       projectData,
       filterCriteria: getCriteriaForNames(
@@ -103,12 +109,16 @@ function RenderGarden({ onDeedClick, onCriteriaControlChange }) {
       deeds: filtered
     };
 
-    var root = hierarchy.hierarchy(rootData, deedsKey).sum(sumBySize);
-
-    treemap(root);
-
     gardenContext.clearRect(0, 0, width, height);
     gardenTargetsContext.clearRect(0, 0, width, height);
+
+    if (rootData.deeds.length < 1) {
+      // This won't work.
+      return;
+    }
+
+    var root = hierarchy.hierarchy(rootData, deedsKey).sum(sumBySize);
+    treemap(root);
 
     renderProjectRegions(root);
     renderDeedCells(root);
