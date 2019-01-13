@@ -564,6 +564,7 @@ a {
 .filter-category-root {
   margin-bottom: 1em;
   padding: 0.5em;
+  flex-grow: 1;
 }
 
 .filter-list {
@@ -586,6 +587,12 @@ a {
 .arrangement-controls .criterion.selected {
   font-style: bold;
   background-color: rgb(122, 209, 81);
+}
+
+.instruction {
+  font-style: italic;
+  margin-bottom: 1em;
+  text-align: center;
 }
 
 @media all and (max-height: 320px) {
