@@ -1,181 +1,194 @@
 <html>
-<head>
-  <title>Observatory</title>
-  <link rel="stylesheet" href="app.css"></link>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
-</head>
-<body>
+  <head>
+    <title>Observatory</title>
+    <link rel="stylesheet" href="app.css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <pre id="status-message" class="hidden"></pre>
 
-<pre id="status-message" class="hidden"></pre>
-
-<header>
-  <div class="title">
-    Observatory: <span id="current-user-label-possessive"></span> projects on GitHub
-  </div>
-  <div class="view-nav">
-    <a id="garden-view-button" class="view-button" data-viewname="garden">Garden</a> |
-    <a id="year-view-button" class="view-button" data-viewname="year">Year View</a> |
-<!--
+    <header>
+      <div class="title">
+        Observatory: <span id="current-user-label-possessive"></span> projects
+        on GitHub
+      </div>
+      <div class="view-nav">
+        <a id="garden-view-button" class="view-button" data-viewname="garden"
+          >Garden</a
+        >
+        |
+        <a id="year-view-button" class="view-button" data-viewname="year"
+          >Year View</a
+        >
+        |
+        <!--
     <a id="descriptive-view-button" class="view-button" data-viewname="descriptive">Descriptive View</a> |
     <a id="facts-button" class="view-button" data-viewname="facts">Facts</a> | 
     <a id="activity-button" class="view-button" data-viewname="activity">Activity</a> | 
     <a id="deedsort-button" class="view-button" data-viewname="deedsort">Sorted by deed quantity</a> | 
 -->
-    <a id="list-view-button" class="view-button" data-viewname="plain">Simple List</a>
-  </div>
-</header>
-
-<div id="plain-container" class="view-root">
-  <ul id="basic-project-list">
-  </ul>
-</div>
-
-<div id="garden-container" class="view-root">
-  <div class="arrangement-controls hidden">
-    <div class="control-container filters-container">
-      <h3>Filters</h3>
-      <div class="filter-list">
+        <a id="list-view-button" class="view-button" data-viewname="plain"
+          >Simple List</a
+        >
       </div>
+    </header>
+
+    <div id="plain-container" class="view-root">
+      <ul id="basic-project-list"></ul>
     </div>
-  </div>
 
-  <div class="instruction">Each colored area represents a project. Each "square" in the area represents a deed done as part of the project. Click on a square to see details about the deed and project.</div>
+    <div id="garden-container" class="view-root">
+      <div class="arrangement-controls hidden">
+        <div class="control-container filters-container">
+          <h3>Filters</h3>
+          <div class="filter-list"></div>
+        </div>
+      </div>
 
-  <div class="zoom-protect-container">
-    <div id="garden-details-layer" class="details-layer destroyed">
-      <div class="details-box">
-        <div class="details-top-part">
-          <button class="close-button">x</button>
-          <div class="project-details">
-            <a class="name-link" target="_blank"></a>
-            <div>Started: <span class="started date"></span></div>
-            <div>Last active: <span class="last-active date"></span></div>
-            <div class="description"></div>
+      <div class="instruction">
+        Each colored area represents a project. Each "square" in the area
+        represents a deed done as part of the project. Click on a square to see
+        details about the deed and project.
+      </div>
+
+      <div class="zoom-protect-container">
+        <div id="garden-details-layer" class="details-layer destroyed">
+          <div class="details-box">
+            <div class="details-top-part">
+              <button class="close-button">x</button>
+              <div class="project-details">
+                <a class="name-link" target="_blank"></a>
+                <div>Started: <span class="started date"></span></div>
+                <div>Last active: <span class="last-active date"></span></div>
+                <div class="description"></div>
+              </div>
+            </div>
+            <div class="deed-details">
+              <a class="date-link" target="_blank"></a>
+              <div class="name"></div>
+            </div>
           </div>
         </div>
-        <div class="deed-details">
-          <a class="date-link" target="_blank"></a>
-          <div class="name"></div>
+      </div>
+
+      <div class="canvases-container">
+        <canvas id="garden-board" width="800" height="0"></canvas>
+        <svg id="garden-board-labels">
+          <g class="field-label-layer" transform="translate(4, 15)"></g>
+        </svg>
+        <canvas id="garden-targets-board" width="800" height="0"></canvas>
+      </div>
+    </div>
+
+    <div id="activity-container" class="view-root">
+      <div>Activity</div>
+
+      <svg id="label-board" width="960" height="640">
+        <g class="fixed-y-labels">
+          <g class="date-labels"></g>
+          <g class="year-labels"></g>
+        </g>
+        <g class="fixed-x-labels"></g>
+      </svg>
+      <!-- <canvas id="rulers-canvas" width="960" height="640"></canvas> -->
+      <canvas id="activities-canvas" width="960" height="640"></canvas>
+      <canvas id="activities-targets-canvas" width="960" height="640"></canvas>
+    </div>
+
+    <div id="deedsort-container" class="view-root">
+      <div>Sorted by deed quantity</div>
+      <svg id="deedsort-board" width="1000" height="1000">
+        <g class="deed-groups"></g>
+      </svg>
+    </div>
+
+    <div id="year-container" class="view-root">
+      <div class="arrangement-controls hidden">
+        <div class="control-container filters-container">
+          <h3>Filters</h3>
+          <div class="filter-list"></div>
+        </div>
+      </div>
+
+      <div class="instruction">Click on a project to see details about it.</div>
+
+      <div id="years-root"></div>
+
+      <div id="years-details-layer" class="details-layer destroyed">
+        <div class="details-box">
+          <div class="details-top-part">
+            <button class="close-button">x</button>
+            <div class="project-details">
+              <a class="name-link" target="_blank"></a>
+              <div>Started: <span class="started date"></span></div>
+              <div>Last active: <span class="last-active date"></span></div>
+              <div class="description"></div>
+            </div>
+          </div>
+          <div class="deed-details">
+            <a class="date-link" target="_blank"></a>
+            <div class="name"></div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="canvases-container">
-    <canvas id="garden-board" width="800" height="0"></canvas>
-    <svg id="garden-board-labels">
-      <g class="field-label-layer" transform="translate(4, 15)"></g>
-    </svg>
-    <canvas id="garden-targets-board" width="800" height="0"></canvas>
-  </div>
+    <div id="descriptive-container" class="view-root">
+      <div class="arrangement-controls hidden">
+        <div class="control-container filters-container">
+          <h3>Filters</h3>
+          <div class="filter-list"></div>
+        </div>
 
-</div>
+        <div class="control-container sort-container">
+          <h3>Sort</h3>
+          <ul class="sort-list"></ul>
+        </div>
 
-<div id="activity-container" class="view-root">
-  <div>Activity</div>
-
-  <svg id="label-board" width="960" height="640">
-    <g class="fixed-y-labels">
-      <g class="date-labels"></g>
-      <g class="year-labels"></g>
-    </g>
-    <g class="fixed-x-labels"></g>
-  </svg>
-  <!-- <canvas id="rulers-canvas" width="960" height="640"></canvas> -->
-  <canvas id="activities-canvas" width="960" height="640"></canvas>
-  <canvas id="activities-targets-canvas" width="960" height="640"></canvas>
-</div>
-
-<div id="deedsort-container" class="view-root">
-  <div>Sorted by deed quantity</div>
-  <svg id="deedsort-board" width="1000" height="1000">
-    <g class="deed-groups"></g>
-  </svg>
-</div>
-
-<div id="year-container" class="view-root">
-
-  <div class="arrangement-controls hidden">
-    <div class="control-container filters-container">
-      <h3>Filters</h3>
-      <div class="filter-list">
-      </div>
-    </div>
-  </div>
-
-  <div class="instruction">Click on a project to see details about it.</div>
-
-  <div id="years-root"></div>
-
-  <div id="years-details-layer" class="details-layer destroyed">
-    <div class="details-box">
-      <div class="details-top-part">
-        <button class="close-button">x</button>
-        <div class="project-details">
-          <a class="name-link" target="_blank"></a>
-          <div>Started: <span class="started date"></span></div>
-          <div>Last active: <span class="last-active date"></span></div>
-          <div class="description"></div>
+        <div class="control-container group-container">
+          <h3>Group by</h3>
+          <ul class="group-by-list"></ul>
         </div>
       </div>
-      <div class="deed-details">
-        <a class="date-link" target="_blank"></a>
-        <div class="name"></div>
-      </div>
-    </div>
-  </div>
-</div>
 
-<div id="descriptive-container" class="view-root">
-  <div class="arrangement-controls hidden">
+      <div class="instruction">Click on a project to see details about it.</div>
 
-    <div class="control-container filters-container">
-      <h3>Filters</h3>
-      <div class="filter-list">
-      </div>
+      <div id="descriptive-root"></div>
     </div>
 
-    <div class="control-container sort-container">
-      <h3>Sort</h3>
-      <ul class="sort-list">
-      </ul>
+    <div class="explanation">
+      <p>
+        This is a mapping of the things
+        <span id="current-user-label"></span> has done on GitHub.
+      </p>
     </div>
 
-    <div class="control-container group-container">
-      <h3>Group by</h3>
-      <ul class="group-by-list">
-      </ul>
+    <section class="github-info">
+      <div class="title">Want to see your own projects?</div>
+
+      <a href="mailto:jimkang@gmail.com">Email me if you're interested!</a>
+    </section>
+
+    <div class="explanation">
+      <p>
+        Note that most of these views represent commits as being equal size,
+        when in fact, the amount of significance and work varies greatly from
+        commit to commit. Also, your GitHub activity is often not a good
+        representation of your body of work as a whole. Certainly,
+        <a href="https://blog.jcoglan.com/2013/11/15/why-github-is-not-your-cv/"
+          >it is not a resume</a
+        >.
+      </p>
+      <p>
+        I happen to put a lot of of my non-commercial work on GitHub, so this
+        does help me out, personally. If you have another source of "project
+        work" data that you'd like to see mapped out by Observatory,
+        <a href="mailto:jimkang+observatory@gmail.com">let me know</a>, and I'll
+        see what I can do!
+      </p>
     </div>
 
-  </div>
-
-  <div class="instruction">Click on a project to see details about it.</div>
-
-  <div id="descriptive-root"></div>
-</div> 
-
-
-<div class="explanation">
-    <p>This is a mapping of the things <span id="current-user-label"></span> has done on GitHub.</p>
-  </div>
-
-<section class="github-info">
-  <div class="title">Want to see your own projects?</div>
-
-  <a href="mailto:jimkang@gmail.com">Email me if you're interested!</a>
-</section>
-
- <div class="explanation">
-    <p>
-      Note that most of these views represent commits as being equal size, when in fact, the amount of significance and work varies greatly from commit to commit. Also, your GitHub activity is often not a good representation of your body of work as a whole. Certainly, <a href="https://blog.jcoglan.com/2013/11/15/why-github-is-not-your-cv/">it is not a resume</a>. 
-    </p>
-    <p>
-      I happen to put a lot of of my non-commercial work on GitHub, so this does help me out, personally. If you have another source of "project work" data that you'd like to see mapped out by Observatory, <a href="mailto:jimkang+observatory@gmail.com">let me know</a>, and I'll see what I can do!
-    </p>
-  </div>
-
-<script src="index.js"></script>
-
-</body>
+    <script src="index.js"></script>
+  </body>
 </html>
