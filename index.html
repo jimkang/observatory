@@ -58,23 +58,7 @@
       </div>
 
       <div class="zoom-protect-container">
-        <div id="garden-details-layer" class="details-layer destroyed">
-          <div class="details-box">
-            <div class="details-top-part">
-              <button class="close-button">x</button>
-              <div class="project-details">
-                <a class="name-link" target="_blank"></a>
-                <div>Started: <span class="started date"></span></div>
-                <div>Last active: <span class="last-active date"></span></div>
-                <div class="description"></div>
-              </div>
-            </div>
-            <div class="deed-details">
-              <a class="date-link" target="_blank"></a>
-              <div class="name"></div>
-            </div>
-          </div>
-        </div>
+        <div id="garden-details-layer" class="details-layer destroyed"></div>
       </div>
 
       <div class="canvases-container">
@@ -120,23 +104,7 @@
 
       <div id="years-root"></div>
 
-      <div id="years-details-layer" class="details-layer destroyed">
-        <div class="details-box">
-          <div class="details-top-part">
-            <button class="close-button">x</button>
-            <div class="project-details">
-              <a class="name-link" target="_blank"></a>
-              <div>Started: <span class="started date"></span></div>
-              <div>Last active: <span class="last-active date"></span></div>
-              <div class="description"></div>
-            </div>
-          </div>
-          <div class="deed-details">
-            <a class="date-link" target="_blank"></a>
-            <div class="name"></div>
-          </div>
-        </div>
-      </div>
+      <div id="years-details-layer" class="details-layer destroyed"></div>
     </div>
 
     <div id="descriptive-container" class="view-root">
@@ -193,6 +161,25 @@
         see what I can do!
       </p>
     </div>
+
+    <template id="details-box-template">
+      <div class="details-box">
+        <div class="details-top-part">
+          <button class="close-button">x</button>
+          <div class="project-details">
+            <a class="name-link" target="_blank"></a>
+            <ul class="link-list"></ul>
+            <div>Started: <span class="started date"></span></div>
+            <div>Last active: <span class="last-active date"></span></div>
+            <div class="description"></div>
+          </div>
+        </div>
+        <div class="deed-details">
+          <a class="date-link" target="_blank"></a>
+          <div class="name"></div>
+        </div>
+      </div>
+    </template>
 
     <script src="index.js"></script>
   </body>
