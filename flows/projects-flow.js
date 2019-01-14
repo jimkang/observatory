@@ -18,6 +18,7 @@ var switchViewRoot = require('../dom/switch-view-root');
 var decorateProject = require('../decorate-project');
 var uniq = require('lodash.uniq');
 var listParser = require('../route-list-parser');
+var renderLoadProgress = require('../dom/render-load-progress');
 
 const expensiveRenderInterval = 5;
 const expensiveRenderThreshold = 5;
@@ -42,6 +43,7 @@ function ProjectsFlow({
   var collectedProjectsByName = {};
   var collectedProjects = [];
   var streamEndEventReceived = false;
+  var deedCount = 0;
   var renderCount = 0;
   var render;
   var ignoreSourceEvents = false;
@@ -130,7 +132,14 @@ function ProjectsFlow({
         deeds: [deed]
       };
     }
+    deedCount += 1;
     decorateProject(collectedProjectsByName[deed.projectName]);
+
+    renderLoadProgress({
+      deedCount,
+      projectCount: Object.keys(collectedProjectsByName).length,
+      active: true
+    });
     callRender({ expensiveRenderIsOK: shouldDoExpensiveRender() });
   }
 
@@ -164,6 +173,7 @@ function ProjectsFlow({
 
   function onStreamEnd(error) {
     streamEndEventReceived = true;
+    var finalDeedCount = 0;
     if (error) {
       handleError(error);
     } else {
@@ -171,9 +181,23 @@ function ProjectsFlow({
       // console.log('projects', collectedProjects);
       // console.log('deeds', collectedDeeds);
       console.log('project count', collectedProjects);
-      console.log('deed count', countDeedsInProjects(collectedProjects));
+      finalDeedCount = countDeedsInProjects(collectedProjects);
+      console.log('deed count', finalDeedCount);
+      if (deedCount !== finalDeedCount) {
+        console.log(
+          'manual count and end count of deeds mismatch:',
+          deedCount,
+          finalDeedCount
+        );
+      }
       callRender({ expensiveRenderIsOK: true });
     }
+
+    renderLoadProgress({
+      deedCount,
+      projectCount: collectedProjects.length,
+      active: false
+    });
   }
 
   function callRender({ expensiveRenderIsOK = false }) {
@@ -215,14 +239,14 @@ function ProjectsFlow({
   }
 
   function onCriteriaControlChange({ criterion, criterionType, selected }) {
-    console.log(
-      'criterion',
-      criterion,
-      'type',
-      criterionType,
-      'selected',
-      selected
-    );
+    // console.log(
+    //   'criterion',
+    //   criterion,
+    //   'type',
+    //   criterionType,
+    //   'selected',
+    //   selected
+    // );
     if (criterionType === 'group-by') {
       routeState.addToRoute({ groupByCriterionName: criterion });
     } else if (criterionType === 'sort') {
