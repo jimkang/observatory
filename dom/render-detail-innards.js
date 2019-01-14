@@ -19,7 +19,11 @@ function renderDeedDetailInnards({ parent, deed, project, user }) {
   if (project.lastActiveDate) {
     projectLastActiveDate.text(dateStringToDisplayForm(project.lastActiveDate));
   }
-  renderLinks(project.links ? project.links : []);
+  var links = project.links || [];
+  if (project.metalinks) {
+    links = links.concat(project.metalinks);
+  }
+  renderLinks(links);
   projectDescription.text(project.description);
 
   deedDetails.classed('hidden', !deed);
