@@ -64,9 +64,9 @@ function RenderYearView({ onDeedClick, onCriteriaControlChange }) {
       })
     });
     yearKits.forEach(addPlaceHolderMonthSortSectionsToYearKit);
-    console.log('yearKits', yearKits);
+    //console.log('yearKits', yearKits);
 
-    var years = yearsRoot.selectAll('.year').data(yearKits, accessor('year'));
+    var years = yearsRoot.selectAll('.year').data(yearKits);
     years.exit().remove();
 
     var newYears = years
