@@ -114,16 +114,16 @@ function multiFormat(date) {
   return (time.timeSecond(date) < date
     ? formatMillisecond
     : time.timeMinute(date) < date
-      ? formatSecond
-      : time.timeHour(date) < date
-        ? formatMinute
-        : time.timeDay(date) < date
-          ? formatHour
-          : time.timeMonth(date) < date
-            ? time.timeWeek(date) < date
-              ? formatDay
-              : formatWeek
-            : formatMonth)(date);
+    ? formatSecond
+    : time.timeHour(date) < date
+    ? formatMinute
+    : time.timeDay(date) < date
+    ? formatHour
+    : time.timeMonth(date) < date
+    ? time.timeWeek(date) < date
+      ? formatDay
+      : formatWeek
+    : formatMonth)(date);
 }
 
 module.exports = renderTimeRuler;
