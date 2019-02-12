@@ -39,6 +39,7 @@ var gardenTargetsContext = gardenTargetsBoard
   .node()
   .getContext('2d', { alpha: false });
 
+var arrangementControls = d3.select('#garden-container .arrangement-controls');
 var treemap;
 
 function RenderGarden({ onDeedClick, onCriteriaControlChange }) {
@@ -58,12 +59,6 @@ function RenderGarden({ onDeedClick, onCriteriaControlChange }) {
       selectedCriteriaNames: filterCriteriaNames,
       onCriteriaControlChange
     });
-
-    // Hide the controls if there aren't many projects.
-    d3.select('#garden-container .arrangement-controls').classed(
-      'hidden',
-      projectData.length < 10
-    );
 
     var filtered = filterProjects({
       projectData,
@@ -112,9 +107,14 @@ function RenderGarden({ onDeedClick, onCriteriaControlChange }) {
     gardenContext.clearRect(0, 0, width, height);
     gardenTargetsContext.clearRect(0, 0, width, height);
 
-    if (rootData.deeds.length < 1) {
+    var notEnoughDeeds = rootData.deeds.length < 1;
+
+    if (notEnoughDeeds) {
       // This won't work.
+      arrangementControls.classed('hidden', true);
       return;
+    } else {
+      setTimeout(showArrangementControls, 500);
     }
 
     var root = hierarchy.hierarchy(rootData, deedsKey).sum(sumBySize);
@@ -336,6 +336,10 @@ function leftPad(numberString, desiredLength) {
 
 function getFontSize(region) {
   return region.labelDisplayDetails.fontSize;
+}
+
+function showArrangementControls() {
+  arrangementControls.classed('hidden', false);
 }
 
 module.exports = RenderGarden;
