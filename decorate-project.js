@@ -6,8 +6,8 @@ function decorateProject(project, nowInEpochTime = Date.now()) {
     project.shippedDate = new Date(project.shippedDate);
     project.releaseState = 'shipped';
   }
-  if (project.canceled) {
-    project.releaseState = 'canceled';
+  if (project.workStopped) {
+    project.releaseState = 'workStopped';
   }
 
   if (project.deeds && project.deeds.length > 0) {
