@@ -5,12 +5,9 @@ var countDeedsInProjects = require('../count-deeds-in-projects');
 var GetEvenIndexForString = require('../get-even-index-for-string');
 var EaseThrottle = require('../ease-throttle');
 var filterProjects = require('../filter-projects');
-var criteria = require('../criteria');
 var getCriteriaForNames = require('../get-criteria-for-names');
 var listParser = require('../route-list-parser');
 var renderArrangementControls = require('./render-arrangement-controls');
-
-var filterCriteria = criteria.filter(c => c.roles.indexOf('filter') !== -1);
 
 const widthLimit = 800;
 var deedsKey = GetPropertySafely('deeds', []);
@@ -55,17 +52,13 @@ function RenderGarden({ onDeedClick, onCriteriaControlChange }) {
 
     renderArrangementControls({
       containerSelector: '#garden-container .arrangement-controls',
-      criteria: filterCriteria,
       selectedCriteriaNames: filterCriteriaNames,
       onCriteriaControlChange
     });
 
     var filtered = filterProjects({
       projectData,
-      filterCriteria: getCriteriaForNames(
-        criteria,
-        listParser.parse(filterCriteriaNames)
-      )
+      filterCriteria: getCriteriaForNames(listParser.parse(filterCriteriaNames))
     });
 
     if (!treemap || expensiveRenderIsOK) {

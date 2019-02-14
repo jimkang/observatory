@@ -1,4 +1,6 @@
-function getCriteriaForNames(criteria, names) {
+var defaultCriteria = require('./criteria');
+
+function getCriteriaForNames(names, criteria = defaultCriteria) {
   return criteria.filter(criterionMatchesName);
 
   function criterionMatchesName(criterion) {

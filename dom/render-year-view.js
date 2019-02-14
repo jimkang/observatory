@@ -5,12 +5,9 @@ var arrangeProjectDataByYear = require('../arrange-project-data-by-year');
 var filterProjects = require('../filter-projects');
 var mergeYearKits = require('../merge-year-kits');
 var findWhere = require('lodash.findwhere');
-var criteria = require('../criteria');
 var getCriteriaForNames = require('../get-criteria-for-names');
 var listParser = require('../route-list-parser');
 var renderArrangementControls = require('./render-arrangement-controls');
-
-var filterCriteria = criteria.filter(c => c.roles.indexOf('filter') !== -1);
 
 var yearContainer = d3.select('#year-container');
 var yearsRoot = d3.select('#years-root');
@@ -36,17 +33,13 @@ function RenderYearView({ onDeedClick, onCriteriaControlChange }) {
 
     renderArrangementControls({
       containerSelector: '#year-container .arrangement-controls',
-      criteria: filterCriteria,
       selectedCriteriaNames: filterCriteriaNames,
       onCriteriaControlChange
     });
 
     var filtered = filterProjects({
       projectData,
-      filterCriteria: getCriteriaForNames(
-        criteria,
-        listParser.parse(filterCriteriaNames)
-      )
+      filterCriteria: getCriteriaForNames(listParser.parse(filterCriteriaNames))
     });
 
     var yearKits = mergeYearKits({

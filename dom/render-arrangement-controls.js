@@ -3,13 +3,17 @@ var curry = require('lodash.curry');
 var accessor = require('accessor')();
 var groupBy = require('lodash.groupby');
 var listParser = require('../route-list-parser');
+var criteria = require('../criteria');
+var defaultFilterCriteria = criteria.filter(
+  c => c.roles.indexOf('filter') !== -1
+);
 
 // WARNING: This works fine here, but won't as a general solution.
 var snakeCaseRegex = /([a-z]+)([A-Z])([a-z]+)/;
 
 function renderArrangementControls({
   containerSelector,
-  criteria,
+  criteria = defaultFilterCriteria,
   selectedCriteriaNames,
   onCriteriaControlChange
 }) {
