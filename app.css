@@ -590,6 +590,10 @@ a {
   background-color: rgb(122, 209, 81);
 }
 
+#plain-container {
+  max-width: 30em;
+}
+
 .instruction {
   font-style: italic;
   margin-bottom: 1em;

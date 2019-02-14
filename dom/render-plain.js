@@ -4,6 +4,10 @@ var GetPropertySafely = require('get-property-safely');
 var EaseThrottle = require('../ease-throttle');
 var renderDetailInnards = require('./render-detail-innards');
 var comparators = require('../comparators');
+var renderArrangementControls = require('./render-arrangement-controls');
+var filterProjects = require('../filter-projects');
+var listParser = require('../route-list-parser');
+var getCriteriaForNames = require('../get-criteria-for-names');
 
 const projectDetailsSkeleton = `<div class="project-details">
       <a class="name-link" target="_blank"></a>
@@ -21,13 +25,31 @@ var basicProjectListRoot = d3.select('#basic-project-list');
 
 var deedsKey = GetPropertySafely('deeds', []);
 
-function RenderPlain({ user }) {
+function RenderPlain({ user, onCriteriaControlChange }) {
   return EaseThrottle({ fn: renderPlain });
 
-  function renderPlain({ projectData }) {
-    projectData.sort(comparators.compareLastUpdatedDesc);
-    var projects = basicProjectListRoot.selectAll('.project').data(projectData);
-    // projects.exit().remove();
+  function renderPlain({ projectData, filterCriteriaNames }) {
+    // Hide the controls if there aren't many projects.
+    d3.select('#plain-container .arrangement-controls').classed(
+      'hidden',
+      projectData.length < 10
+    );
+    renderArrangementControls({
+      containerSelector: '#plain-container .arrangement-controls',
+      selectedCriteriaNames: filterCriteriaNames,
+      onCriteriaControlChange
+    });
+
+    var filtered = filterProjects({
+      projectData,
+      filterCriteria: getCriteriaForNames(listParser.parse(filterCriteriaNames))
+    });
+
+    filtered.sort(comparators.compareLastUpdatedDesc);
+    var projects = basicProjectListRoot
+      .selectAll('.project')
+      .data(filtered, accessor());
+    projects.exit().remove();
     var newProjects = projects
       .enter()
       .append('li')

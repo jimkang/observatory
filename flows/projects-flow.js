@@ -57,7 +57,7 @@ function ProjectsFlow({
   });
 
   var renderers = {
-    plain: RenderPlain({ user }),
+    plain: RenderPlain({ user, onCriteriaControlChange }),
     garden: RenderGarden({
       onDeedClick: renderDetailsOnGarden,
       onCriteriaControlChange
@@ -67,8 +67,7 @@ function ProjectsFlow({
     facts: RenderFactsView({ user }),
     year: RenderYearView({
       onDeedClick: renderDetailsOnYearsView,
-      onCriteriaControlChange,
-      filterCriteriaNames
+      onCriteriaControlChange
     }),
     descriptive: RenderDescriptiveView({
       user,
