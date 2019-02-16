@@ -11,7 +11,7 @@ var getCriteriaForNames = require('../get-criteria-for-names');
 
 const projectDetailsSkeleton = `<div class="project-details">
       <a class="name-link" target="_blank"></a>
-      <div>Last updated: <span class="date"></span></div>
+      <div>Last updated: <span class="date last-active"></span></div>
       <div class="description"></div>
       <div class="show-deeds">Deeds</div>
     </div>
