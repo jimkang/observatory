@@ -8,6 +8,7 @@ var filterProjects = require('../filter-projects');
 var getCriteriaForNames = require('../get-criteria-for-names');
 var listParser = require('../route-list-parser');
 var renderArrangementControls = require('./render-arrangement-controls');
+var renderArrangementMetaControls = require('./render-arrangement-meta-controls');
 
 const widthLimit = 800;
 var deedsKey = GetPropertySafely('deeds', []);
@@ -50,6 +51,11 @@ function RenderGarden({ onDeedClick, onCriteriaControlChange }) {
     var width = 0;
     var height = 0;
 
+    renderArrangementMetaControls({
+      outerContainerSelector:
+        '#garden-container .arrangement-controls-container',
+      hide: false
+    });
     renderArrangementControls({
       containerSelector: '#garden-container .arrangement-controls',
       selectedCriteriaNames: filterCriteriaNames,
@@ -115,9 +121,19 @@ function RenderGarden({ onDeedClick, onCriteriaControlChange }) {
     if (notEnoughDeeds) {
       // This won't work.
       arrangementControls.classed('hidden', true);
+      renderArrangementMetaControls({
+        outerContainerSelector:
+          '#garden-container .arrangement-controls-container',
+        hide: true
+      });
       return;
     } else {
-      setTimeout(showArrangementControls, 500);
+      //setTimeout(showArrangementControls, 500);
+      renderArrangementMetaControls({
+        outerContainerSelector:
+          '#garden-container .arrangement-controls-container',
+        hide: false
+      });
     }
 
     var root = hierarchy.hierarchy(rootData, deedsKey).sum(sumBySize);
@@ -339,10 +355,6 @@ function leftPad(numberString, desiredLength) {
 
 function getFontSize(region) {
   return region.labelDisplayDetails.fontSize;
-}
-
-function showArrangementControls() {
-  arrangementControls.classed('hidden', false);
 }
 
 function stall(resolve) {
