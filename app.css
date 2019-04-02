@@ -569,12 +569,7 @@ a {
 }
 
 .filter-list {
-  max-height: 10em;
-  overflow-y: scroll;
-  border: 1px solid black;
-  /*! border-radius: 0.5em; */
   padding: 1em;
-  /*! box-shadow: #666 inset 0 0 6px; */
   display: flex;
   flex-wrap: wrap;
 }

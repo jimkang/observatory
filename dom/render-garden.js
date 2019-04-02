@@ -42,7 +42,7 @@ var treemap;
 function RenderGarden({ onDeedClick, onCriteriaControlChange }) {
   return EaseThrottle({ fn: renderGarden });
 
-  function renderGarden({
+  async function renderGarden({
     projectData,
     expensiveRenderIsOK,
     filterCriteriaNames
@@ -71,8 +71,18 @@ function RenderGarden({ onDeedClick, onCriteriaControlChange }) {
       }
       height = ~~(neededArea / width);
 
+      // Wait for arrangementControls to get sized in DOM.
+      await new Promise(stall);
+
+      const containerHeight =
+        arrangementControls.node().getBoundingClientRect().height +
+        document
+          .querySelector('#garden-container .instruction')
+          .getBoundingClientRect().height +
+        height;
+
       gardenContainer.style('width', width);
-      gardenContainer.style('height', height);
+      gardenContainer.style('height', containerHeight);
       canvasesContainer.style('width', width);
       canvasesContainer.style('height', height);
       gardenBoard.attr('width', width);
@@ -333,6 +343,10 @@ function getFontSize(region) {
 
 function showArrangementControls() {
   arrangementControls.classed('hidden', false);
+}
+
+function stall(resolve) {
+  setTimeout(resolve, 250);
 }
 
 module.exports = RenderGarden;
