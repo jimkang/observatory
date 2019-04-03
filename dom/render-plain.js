@@ -5,6 +5,7 @@ var EaseThrottle = require('../ease-throttle');
 var renderDetailInnards = require('./render-detail-innards');
 var comparators = require('../comparators');
 var renderArrangementControls = require('./render-arrangement-controls');
+var renderArrangementMetaControls = require('./render-arrangement-meta-controls');
 var filterProjects = require('../filter-projects');
 var listParser = require('../route-list-parser');
 var getCriteriaForNames = require('../get-criteria-for-names');
@@ -29,11 +30,9 @@ function RenderPlain({ user, onCriteriaControlChange }) {
   return EaseThrottle({ fn: renderPlain });
 
   function renderPlain({ projectData, filterCriteriaNames }) {
-    // Hide the controls if there aren't many projects.
-    d3.select('#plain-container .arrangement-controls').classed(
-      'hidden',
-      projectData.length < 10
-    );
+    renderArrangementMetaControls({
+      outerContainerSelector: '#plain-container .arrangement-controls-container'
+    });
     renderArrangementControls({
       containerSelector: '#plain-container .arrangement-controls',
       selectedCriteriaNames: filterCriteriaNames,

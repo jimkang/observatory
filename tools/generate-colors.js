@@ -1,4 +1,4 @@
-/* global process */
+/* global process, __dirname */
 
 var interpolate = require('d3-interpolate');
 var range = require('d3-array').range;

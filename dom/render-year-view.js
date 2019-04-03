@@ -8,6 +8,7 @@ var findWhere = require('lodash.findwhere');
 var getCriteriaForNames = require('../get-criteria-for-names');
 var listParser = require('../route-list-parser');
 var renderArrangementControls = require('./render-arrangement-controls');
+var renderArrangementMetaControls = require('./render-arrangement-meta-controls');
 
 var yearContainer = d3.select('#year-container');
 var yearsRoot = d3.select('#years-root');
@@ -25,12 +26,9 @@ function RenderYearView({ onDeedClick, onCriteriaControlChange }) {
     d3.selectAll('.view-root:not(#year-container)').classed('hidden', true);
     yearContainer.classed('hidden', false);
 
-    // Hide the controls if there aren't many projects.
-    d3.select('#year-container .arrangement-controls').classed(
-      'hidden',
-      projectData.length < 10
-    );
-
+    renderArrangementMetaControls({
+      outerContainerSelector: '#year-container .arrangement-controls-container'
+    });
     renderArrangementControls({
       containerSelector: '#year-container .arrangement-controls',
       selectedCriteriaNames: filterCriteriaNames,
