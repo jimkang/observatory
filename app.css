@@ -572,6 +572,7 @@ a {
   padding: 1em;
   display: flex;
   flex-wrap: wrap;
+  padding-bottom: 0;
 }
 
 .arrangement-controls .category-title {
@@ -604,6 +605,27 @@ a {
 
 #progress-message.active {
   background-color: #fbf878;
+}
+
+.hide-arrangement-controls-button,.show-arrangement-controls-button {
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 1.2em;
+}
+
+.hide-arrangement-controls-button {
+  margin-top: 0;
+  margin-bottom: 0.5em;
+}
+
+.show-arrangement-controls-button {
+  margin-bottom: 1em;
+}
+
+.arrangement-controls-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 @media all and (max-height: 320px) {

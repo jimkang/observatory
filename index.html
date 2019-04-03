@@ -41,22 +41,23 @@
 
     <div id="plain-container" class="view-root">
       <div class="arrangement-controls-container">
+        <a class="show-arrangement-controls-button">Filters</a>
         <div class="arrangement-controls hidden">
           <div class="control-container filters-container">
-            <h3>Filters</h3>
             <div class="filter-list"></div>
+            <a class="hide-arrangement-controls-button">Hide filters</a>
           </div>
         </div>
       </div>
+      <ul id="basic-project-list"></ul>
     </div>
     <div id="garden-container" class="view-root">
       <div class="arrangement-controls-container">
-				<a class="show-arrangement-controls-button">Show filters</a>
+        <a class="show-arrangement-controls-button">Filters</a>
         <div class="arrangement-controls hidden">
           <div class="control-container filters-container">
-            <h3>Filters</h3>
             <div class="filter-list"></div>
-						<a class="hide-arrangement-controls-button">Hide filters</a>
+            <a class="hide-arrangement-controls-button">Hide filters</a>
           </div>
         </div>
       </div>
@@ -80,34 +81,13 @@
       </div>
     </div>
 
-    <div id="activity-container" class="view-root">
-      <div>Activity</div>
-
-      <svg id="label-board" width="960" height="640">
-        <g class="fixed-y-labels">
-          <g class="date-labels"></g>
-          <g class="year-labels"></g>
-        </g>
-        <g class="fixed-x-labels"></g>
-      </svg>
-      <!-- <canvas id="rulers-canvas" width="960" height="640"></canvas> -->
-      <canvas id="activities-canvas" width="960" height="640"></canvas>
-      <canvas id="activities-targets-canvas" width="960" height="640"></canvas>
-    </div>
-
-    <div id="deedsort-container" class="view-root">
-      <div>Sorted by deed quantity</div>
-      <svg id="deedsort-board" width="1000" height="1000">
-        <g class="deed-groups"></g>
-      </svg>
-    </div>
-
     <div id="year-container" class="view-root">
       <div class="arrangement-controls-container">
+        <a class="show-arrangement-controls-button">Filters</a>
         <div class="arrangement-controls hidden">
           <div class="control-container filters-container">
-            <h3>Filters</h3>
             <div class="filter-list"></div>
+            <a class="hide-arrangement-controls-button">Hide filters</a>
           </div>
         </div>
       </div>
@@ -117,29 +97,6 @@
       <div id="years-root"></div>
 
       <div id="years-details-layer" class="details-layer destroyed"></div>
-    </div>
-
-    <div id="descriptive-container" class="view-root">
-      <div class="arrangement-controls hidden">
-        <div class="control-container filters-container">
-          <h3>Filters</h3>
-          <div class="filter-list"></div>
-        </div>
-
-        <div class="control-container sort-container">
-          <h3>Sort</h3>
-          <ul class="sort-list"></ul>
-        </div>
-
-        <div class="control-container group-container">
-          <h3>Group by</h3>
-          <ul class="group-by-list"></ul>
-        </div>
-      </div>
-
-      <div class="instruction">Click on a project to see details about it.</div>
-
-      <div id="descriptive-root"></div>
     </div>
 
     <div class="explanation">
