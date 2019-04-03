@@ -51,11 +51,6 @@ function RenderGarden({ onDeedClick, onCriteriaControlChange }) {
     var width = 0;
     var height = 0;
 
-    renderArrangementMetaControls({
-      outerContainerSelector:
-        '#garden-container .arrangement-controls-container',
-      hide: false
-    });
     renderArrangementControls({
       containerSelector: '#garden-container .arrangement-controls',
       selectedCriteriaNames: filterCriteriaNames,
@@ -119,20 +114,13 @@ function RenderGarden({ onDeedClick, onCriteriaControlChange }) {
     var notEnoughDeeds = rootData.deeds.length < 1;
 
     if (notEnoughDeeds) {
-      // This won't work.
-      arrangementControls.classed('hidden', true);
-      renderArrangementMetaControls({
-        outerContainerSelector:
-          '#garden-container .arrangement-controls-container',
-        hide: true
-      });
+      // This won't work. No point in rendering.
       return;
     } else {
-      //setTimeout(showArrangementControls, 500);
+      // Render arrangment controls.
       renderArrangementMetaControls({
         outerContainerSelector:
-          '#garden-container .arrangement-controls-container',
-        hide: false
+          '#garden-container .arrangement-controls-container'
       });
     }
 

@@ -1,10 +1,6 @@
 var d3 = require('d3-selection');
-var callNextTick = require('call-next-tick');
 
-function renderArrangementMetaControls({
-  outerContainerSelector,
-  hide = false
-}) {
+function renderArrangementMetaControls({ outerContainerSelector }) {
   var outerContainer = d3.select(outerContainerSelector);
   var arrangementControls = outerContainer.select('.arrangement-controls');
   var showButton = outerContainer.select('.show-arrangement-controls-button');
@@ -12,25 +8,17 @@ function renderArrangementMetaControls({
     '.hide-arrangement-controls-button'
   );
 
-  arrangementControls.classed('hidden', hide);
-
   showButton.on('click.show', onClickShow);
-  showButton.classed('hidden', !hide);
-
   hideButton.on('click.hide', onClickHide);
 
   function onClickShow() {
-    callNextTick(renderArrangementMetaControls, {
-      outerContainerSelector,
-      hide: false
-    });
+    arrangementControls.classed('hidden', false);
+    showButton.classed('hidden', true);
   }
 
   function onClickHide() {
-    callNextTick(renderArrangementMetaControls, {
-      outerContainerSelector,
-      hide: true
-    });
+    arrangementControls.classed('hidden', true);
+    showButton.classed('hidden', false);
   }
 }
 

@@ -26,15 +26,8 @@ function RenderYearView({ onDeedClick, onCriteriaControlChange }) {
     d3.selectAll('.view-root:not(#year-container)').classed('hidden', true);
     yearContainer.classed('hidden', false);
 
-    // Hide the controls if there aren't many projects.
-    d3.select('#year-container .arrangement-controls').classed(
-      'hidden',
-      projectData.length < 10
-    );
-
     renderArrangementMetaControls({
-      outerContainerSelector: '#year-container .arrangement-controls-container',
-      hide: false
+      outerContainerSelector: '#year-container .arrangement-controls-container'
     });
     renderArrangementControls({
       containerSelector: '#year-container .arrangement-controls',

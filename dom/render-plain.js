@@ -30,15 +30,8 @@ function RenderPlain({ user, onCriteriaControlChange }) {
   return EaseThrottle({ fn: renderPlain });
 
   function renderPlain({ projectData, filterCriteriaNames }) {
-    // Hide the controls if there aren't many projects.
-    d3.select('#plain-container .arrangement-controls').classed(
-      'hidden',
-      projectData.length < 10
-    );
     renderArrangementMetaControls({
-      outerContainerSelector:
-        '#plain-container .arrangement-controls-container',
-      hide: false
+      outerContainerSelector: '#plain-container .arrangement-controls-container'
     });
     renderArrangementControls({
       containerSelector: '#plain-container .arrangement-controls',
