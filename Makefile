@@ -2,7 +2,8 @@ include config.mk
 
 HOMEDIR = $(shell pwd)
 APPDIR = $(HTMLDIR)/observatory
-BROWSERIFY = ./node_modules/.bin/browserify -t [ babelify --presets [ @babel/preset-env ] ]
+BROWSERIFY = ./node_modules/.bin/browserify \
+	-t [ babelify --presets [ @babel/preset-env ] --plugins [ @babel/plugin-transform-runtime ] ]
 UGLIFY = ./node_modules/uglify-es/bin/uglifyjs
 
 run:

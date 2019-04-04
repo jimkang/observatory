@@ -19,6 +19,7 @@
   "homepage": "https://github.com/jimkang/observatory",
   "devDependencies": {
     "@babel/core": "^7.4.0",
+    "@babel/plugin-transform-runtime": "^7.4.3",
     "@babel/preset-env": "^7.4.2",
     "assert-no-error": "^1.0.0",
     "babelify": "^10.0.0",
@@ -36,6 +37,7 @@
     "uglify-es": "^3.0.27"
   },
   "dependencies": {
+    "@babel/runtime": "^7.4.3",
     "accessor": "^2.0.0",
     "add-deed-to-project": "^1.0.0",
     "basic-browser-request": "^9.0.1",
