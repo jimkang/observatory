@@ -29,19 +29,20 @@ function decorateProject(project, nowInEpochTime = Date.now()) {
     // console.log(project.activities);
 
     // A "tended" date is a date in which a project was updated after
-    // shipping.
+    // shipping. (After meaning in a month following the shipping month.)
     // A "grown" date is only for projects that haven't shipped.
     // The updates for projects that haven't shipped are considered
     // "growth".
+    var flooredLastActive = floorToBeginningOfMonth(project.lastActiveDate);
     if (project.shippedDate) {
-      if (
-        floorToBeginningOfDay(project.lastActiveDate) >
-        floorToBeginningOfDay(project.shippedDate)
-      ) {
+      if (flooredLastActive > floorToBeginningOfMonth(project.shippedDate)) {
         project.lastTendedDate = project.lastActiveDate;
       }
     } else {
-      if (project.lastActiveDate) {
+      if (
+        project.lastActiveDate &&
+        flooredLastActive > floorToBeginningOfMonth(project.startDate)
+      ) {
         project.lastGrownDate = project.lastActiveDate;
       }
     }
@@ -70,8 +71,10 @@ function getDifferenceInDays(later, earlier) {
   return Math.round((later.getTime() - earlier.getTime()) / dayInMS);
 }
 
-function floorToBeginningOfDay(date) {
-  return new Date(date.toLocaleDateString());
+function floorToBeginningOfMonth(date) {
+  if (date) {
+    return new Date(date.getFullYear() + '-' + (date.getMonth() + 1));
+  }
 }
 
 module.exports = decorateProject;

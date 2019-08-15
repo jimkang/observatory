@@ -16,7 +16,9 @@ var yearsRoot = d3.select('#years-root');
 var displayNamesForSort = {
   startDate: 'Started',
   shippedDate: 'Shipped',
-  lastActiveDate: 'Last Active'
+  //lastActiveDate: 'Last Active'
+  lastGrownDate: 'Grown*',
+  lastTendedDate: 'Tended*'
 };
 
 function RenderYearView({ onDeedClick, onCriteriaControlChange }) {
@@ -49,9 +51,13 @@ function RenderYearView({ onDeedClick, onCriteriaControlChange }) {
         projectData: filtered,
         sortBy: 'shippedDate'
       }),
-      lastActiveDate: arrangeProjectDataByYear({
+      lastGrownDate: arrangeProjectDataByYear({
         projectData: filtered,
-        sortBy: 'lastActiveDate'
+        sortBy: 'lastGrownDate'
+      }),
+      lastTendedDate: arrangeProjectDataByYear({
+        projectData: filtered,
+        sortBy: 'lastTendedDate'
       })
     });
     yearKits.forEach(addPlaceHolderMonthSortSectionsToYearKit);
@@ -181,10 +187,6 @@ function updateMonthsStats(monthsToUpdate) {
   updatableStats.select('.stat-value').text(accessor('value'));
 }
 
-// TODO: Here, and also in the project lists, lastActive should
-// be broken into "maintained" (shipped projects that were not shipped
-// that month that were updated) and "continued" (unshipped projects
-// that were not started that month).
 function getStats(monthDatum) {
   var startedDatum = findWhere(monthDatum.projectsWithSort, {
     sort: 'startDate'
@@ -192,14 +194,18 @@ function getStats(monthDatum) {
   var shippedDatum = findWhere(monthDatum.projectsWithSort, {
     sort: 'shippedDate'
   });
-  var lastActiveDatum = findWhere(monthDatum.projectsWithSort, {
-    sort: 'lastActiveDate'
+  var lastGrownDatum = findWhere(monthDatum.projectsWithSort, {
+    sort: 'lastGrownDate'
+  });
+  var lastTendedDatum = findWhere(monthDatum.projectsWithSort, {
+    sort: 'lastTendedDate'
   });
 
   return [
     { label: 'Projects started', value: startedDatum.projects.length },
     { label: 'Projects shipped', value: shippedDatum.projects.length },
-    { label: 'Projects updated', value: lastActiveDatum.projects.length }
+    { label: 'Projects grown', value: lastGrownDatum.projects.length },
+    { label: 'Projects tended', value: lastTendedDatum.projects.length }
   ];
 }
 
