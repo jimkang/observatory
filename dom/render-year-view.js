@@ -84,10 +84,13 @@ function RenderYearView({ onDeedClick, onCriteriaControlChange }) {
       .append('div')
       .classed('month', true);
     newMonths.append('div').classed('month-title', true);
+    newMonths.append('ul').classed('month-stats-root', true);
     newMonths.append('div').classed('month-sort-section-root', true);
 
     var monthsToUpdate = newMonths.merge(months);
     monthsToUpdate.select('.month-title').text(accessor('name'));
+
+    updateMonthsStats(monthsToUpdate);
 
     var monthSortSections = monthsToUpdate
       .select('.month-sort-section-root')
@@ -158,6 +161,46 @@ function addPlaceHolderMonthSortSectionsToMonthKit(monthKit) {
       });
     }
   }
+}
+
+function updateMonthsStats(monthsToUpdate) {
+  var statsRoots = monthsToUpdate.selectAll('.month-stats-root');
+  var stats = statsRoots.selectAll('.month-stat').data(getStats, accessor());
+
+  stats.exit().remove();
+
+  var newStats = stats
+    .enter()
+    .append('li')
+    .classed('month-stat', true);
+  newStats.append('span').classed('stat-label', true);
+  newStats.append('span').classed('stat-value', true);
+
+  var updatableStats = newStats.merge(stats);
+  updatableStats.select('.stat-label').text(accessor('label'));
+  updatableStats.select('.stat-value').text(accessor('value'));
+}
+
+// TODO: Here, and also in the project lists, lastActive should
+// be broken into "maintained" (shipped projects that were not shipped
+// that month that were updated) and "continued" (unshipped projects
+// that were not started that month).
+function getStats(monthDatum) {
+  var startedDatum = findWhere(monthDatum.projectsWithSort, {
+    sort: 'startDate'
+  });
+  var shippedDatum = findWhere(monthDatum.projectsWithSort, {
+    sort: 'shippedDate'
+  });
+  var lastActiveDatum = findWhere(monthDatum.projectsWithSort, {
+    sort: 'lastActiveDate'
+  });
+
+  return [
+    { label: 'Projects started', value: startedDatum.projects.length },
+    { label: 'Projects shipped', value: shippedDatum.projects.length },
+    { label: 'Projects updated', value: lastActiveDatum.projects.length }
+  ];
 }
 
 module.exports = RenderYearView;
