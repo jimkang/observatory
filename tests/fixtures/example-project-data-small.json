@@ -442,5 +442,41 @@
         "projectName": "boxadder"
       }
     ]
+  },
+  {
+    "name": "jimkang.github.io",
+    "id": "MDEwOlJlcG9zaXRvcnkxMzk0Mjc5OQ==",
+    "pushedAt": "2018-02-01T04:37:08Z",
+    "description": "Blog kinda thing.",
+    "lastCheckedDate": "2018-02-06T05:00:04.876Z",
+    "available": true,
+    "shippedDate": "2014-03-15T00:00:00Z",
+    "isExternal": true,
+    "deeds": [
+      {
+        "abbreviatedOid": "063adcf",
+        "message": "Build 4e70a51c5a1ce5720bfe212c5b60e3b46a207789.",
+        "committedDate": "2014-03-15T23:55:43Z",
+        "repoName": "jimkang.github.io",
+        "id": "063adcf",
+        "projectName": "jimkang.github.io"
+      },
+      {
+        "abbreviatedOid": "095d817",
+        "message": "Build 2e51d6edaa1845564c3a60d58bf0ff23cd318be1.",
+        "committedDate": "2014-06-26T23:46:29Z",
+        "repoName": "jimkang.github.io",
+        "id": "095d817",
+        "projectName": "jimkang.github.io"
+      },
+      {
+        "abbreviatedOid": "0a919a1",
+        "message": "Started project-centric home page.",
+        "committedDate": "2016-02-27T03:17:15Z",
+        "repoName": "jimkang.github.io",
+        "id": "0a919a1",
+        "projectName": "jimkang.github.io"
+      }
+    ]
   }
 ]
