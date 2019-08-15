@@ -93,9 +93,7 @@ function RenderPlain({ user, onCriteriaControlChange }) {
   }
 
   function getDeedLinkFromDeed(deed) {
-    return `https://github.com/${user}/${deed.projectName}/commit/${
-      deed.abbreviatedOid
-    }`;
+    return `https://github.com/${user}/${deed.projectName}/commit/${deed.abbreviatedOid}`;
   }
 }
 
