@@ -489,8 +489,9 @@ a {
 }
 
 .month-sort-name {
-  font-weight: bold;
   margin-bottom: 0.5em;
+  background-color: #fbf878;
+  font-size: 1.1em;
 }
 
 .month-title {

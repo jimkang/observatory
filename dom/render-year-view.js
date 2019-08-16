@@ -16,7 +16,6 @@ var yearsRoot = d3.select('#years-root');
 var displayNamesForSort = {
   startDate: 'Started',
   shippedDate: 'Shipped',
-  //lastActiveDate: 'Last Active'
   lastGrownDate: 'Grown*',
   lastTendedDate: 'Tended*'
 };
@@ -90,13 +89,10 @@ function RenderYearView({ onDeedClick, onCriteriaControlChange }) {
       .append('div')
       .classed('month', true);
     newMonths.append('div').classed('month-title', true);
-    newMonths.append('ul').classed('month-stats-root', true);
     newMonths.append('div').classed('month-sort-section-root', true);
 
     var monthsToUpdate = newMonths.merge(months);
     monthsToUpdate.select('.month-title').text(accessor('name'));
-
-    updateMonthsStats(monthsToUpdate);
 
     var monthSortSections = monthsToUpdate
       .select('.month-sort-section-root')
@@ -143,7 +139,7 @@ function RenderYearView({ onDeedClick, onCriteriaControlChange }) {
 }
 
 function getDisplayNameForSort(d) {
-  return displayNamesForSort[d.sort];
+  return `${displayNamesForSort[d.sort]} (${d.projects.length})`;
 }
 
 function aIsLaterThanB(a, b) {
@@ -167,46 +163,6 @@ function addPlaceHolderMonthSortSectionsToMonthKit(monthKit) {
       });
     }
   }
-}
-
-function updateMonthsStats(monthsToUpdate) {
-  var statsRoots = monthsToUpdate.selectAll('.month-stats-root');
-  var stats = statsRoots.selectAll('.month-stat').data(getStats, accessor());
-
-  stats.exit().remove();
-
-  var newStats = stats
-    .enter()
-    .append('li')
-    .classed('month-stat', true);
-  newStats.append('span').classed('stat-label', true);
-  newStats.append('span').classed('stat-value', true);
-
-  var updatableStats = newStats.merge(stats);
-  updatableStats.select('.stat-label').text(accessor('label'));
-  updatableStats.select('.stat-value').text(accessor('value'));
-}
-
-function getStats(monthDatum) {
-  var startedDatum = findWhere(monthDatum.projectsWithSort, {
-    sort: 'startDate'
-  });
-  var shippedDatum = findWhere(monthDatum.projectsWithSort, {
-    sort: 'shippedDate'
-  });
-  var lastGrownDatum = findWhere(monthDatum.projectsWithSort, {
-    sort: 'lastGrownDate'
-  });
-  var lastTendedDatum = findWhere(monthDatum.projectsWithSort, {
-    sort: 'lastTendedDate'
-  });
-
-  return [
-    { label: 'Projects started', value: startedDatum.projects.length },
-    { label: 'Projects shipped', value: shippedDatum.projects.length },
-    { label: 'Projects grown', value: lastGrownDatum.projects.length },
-    { label: 'Projects tended', value: lastTendedDatum.projects.length }
-  ];
 }
 
 module.exports = RenderYearView;
