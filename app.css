@@ -480,12 +480,16 @@ a {
   order: 1;
 }
 
-.month-sort-section.shippedDate {
+.month-sort-section.lastGrownDate {
   order: 2;
 }
 
-.month-sort-section.lastActiveDate {
+.month-sort-section.shippedDate {
   order: 3;
+}
+
+.month-sort-section.lastTendedDate {
+  order: 4;
 }
 
 .month-sort-name {
