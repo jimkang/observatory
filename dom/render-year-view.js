@@ -17,7 +17,7 @@ var displayNamesForSort = {
   startDate: 'Started',
   shippedDate: 'Shipped',
   lastGrownDate: 'Grown*',
-  lastTendedDate: 'Tended*'
+  lastTendedDate: 'Tended**'
 };
 
 function RenderYearView({ onDeedClick, onCriteriaControlChange }) {
