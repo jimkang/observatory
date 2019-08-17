@@ -16,7 +16,8 @@ var yearsRoot = d3.select('#years-root');
 var displayNamesForSort = {
   startDate: 'Started',
   shippedDate: 'Shipped',
-  lastActiveDate: 'Last Active'
+  lastGrownDate: 'Grown*',
+  lastTendedDate: 'Tended**'
 };
 
 function RenderYearView({ onDeedClick, onCriteriaControlChange }) {
@@ -49,9 +50,13 @@ function RenderYearView({ onDeedClick, onCriteriaControlChange }) {
         projectData: filtered,
         sortBy: 'shippedDate'
       }),
-      lastActiveDate: arrangeProjectDataByYear({
+      lastGrownDate: arrangeProjectDataByYear({
         projectData: filtered,
-        sortBy: 'lastActiveDate'
+        sortBy: 'lastGrownDate'
+      }),
+      lastTendedDate: arrangeProjectDataByYear({
+        projectData: filtered,
+        sortBy: 'lastTendedDate'
       })
     });
     yearKits.forEach(addPlaceHolderMonthSortSectionsToYearKit);
@@ -134,7 +139,7 @@ function RenderYearView({ onDeedClick, onCriteriaControlChange }) {
 }
 
 function getDisplayNameForSort(d) {
-  return displayNamesForSort[d.sort];
+  return `${displayNamesForSort[d.sort]} (${d.projects.length})`;
 }
 
 function aIsLaterThanB(a, b) {

@@ -11,6 +11,8 @@ var testCases = [
       shouldHaveStartDate: true,
       shouldHaveShippedDate: false,
       shouldHaveLastActiveDate: true,
+      shouldHaveLastGrownDate: true,
+      shouldHaveLastTendedDate: false,
       ageInDays: 143, // TODO: Get real value
       activitySpanInDays: 53,
       // dormancy length?
@@ -26,6 +28,8 @@ var testCases = [
       shouldHaveStartDate: false,
       shouldHaveShippedDate: false,
       shouldHaveLastActiveDate: false,
+      shouldHaveLastGrownDate: false,
+      shouldHaveLastTendedDate: false,
       ageInDays: undefined,
       // dormancy length?
       isExternal: true,
@@ -39,6 +43,8 @@ var testCases = [
       numberOfActivities: 3,
       shouldHaveStartDate: true,
       shouldHaveShippedDate: true,
+      shouldHaveLastGrownDate: false,
+      shouldHaveLastTendedDate: false,
       ageInDays: 26,
       activitySpanInDays: 21,
       isExternal: true,
@@ -52,10 +58,27 @@ var testCases = [
       numberOfActivities: 45,
       shouldHaveStartDate: true,
       shouldHaveShippedDate: true,
+      shouldHaveLastGrownDate: false,
+      shouldHaveLastTendedDate: false,
       ageInDays: 1827,
       activitySpanInDays: 34,
       isExternal: true,
       available: false
+    }
+  },
+  {
+    name: 'Tended',
+    project: projectData[4],
+    expected: {
+      numberOfActivities: 3,
+      shouldHaveStartDate: true,
+      shouldHaveShippedDate: true,
+      shouldHaveLastGrownDate: false,
+      shouldHaveLastTendedDate: true,
+      ageInDays: 1424,
+      activitySpanInDays: 713,
+      isExternal: true,
+      available: true
     }
   }
 ];
@@ -86,6 +109,18 @@ function runTest(testCase) {
       t.ok(
         activityGroup.lastActiveDate instanceof Date,
         'Group has a lastActiveDate.'
+      );
+    }
+    if (testCase.expected.shouldHaveLastTendedDate) {
+      t.ok(
+        activityGroup.lastTendedDate instanceof Date,
+        'Group has a lastTendedDate.'
+      );
+    }
+    if (testCase.expected.shouldHaveLastGrownDate) {
+      t.ok(
+        activityGroup.lastGrownDate instanceof Date,
+        'Group has a lastGrownDate.'
       );
     }
     t.equal(

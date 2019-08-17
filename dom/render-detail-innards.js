@@ -51,9 +51,7 @@ function getProjectLink(user, project) {
 }
 
 function getDeedLink(user, project, deed) {
-  return `https://github.com/${user}/${project.name}/commit/${
-    deed.abbreviatedOid
-  }`;
+  return `https://github.com/${user}/${project.name}/commit/${deed.abbreviatedOid}`;
 }
 
 function dateStringToDisplayForm(dateString) {

@@ -273,9 +273,7 @@ function getRegionHeight(d) {
 }
 
 function getLabelTransform(d) {
-  return `translate(${d.labelDisplayDetails.center.x} ${
-    d.labelDisplayDetails.center.y
-  })
+  return `translate(${d.labelDisplayDetails.center.x} ${d.labelDisplayDetails.center.y})
     rotate(${d.labelDisplayDetails.rotation})`;
 }
 
