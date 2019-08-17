@@ -6,7 +6,7 @@ html {
 }
 
 body {
-  font-family: futura, "helvetica neue";
+  font-family: museo-sans, sans-serif;
   font-size: 24px;
   margin-bottom: 4em;
   display: flex;
@@ -154,7 +154,6 @@ header {
   /* height: 2.4em; */
   margin-top: 1em;
   cursor: pointer;
-  font-family: futura;
   text-transform: uppercase;
 }
 
@@ -165,8 +164,8 @@ header {
 }
 
 .explanation {
-  font-family: Garamond, Georgia;
-  font-size: 0.8em;
+  margin-left: 2em;
+  margin-right: 2em;
 }
 
 a {
@@ -278,7 +277,6 @@ a {
   /*! border-radius: 1em; */
   border-width: 1px;
   border-color: #333;
-  font-family: futura;
   margin-bottom: 1.5em;
   min-width: 44px;
   font-family: sans-serif;
