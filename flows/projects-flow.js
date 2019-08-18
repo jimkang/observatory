@@ -17,6 +17,8 @@ var listParser = require('../route-list-parser');
 var renderLoadProgress = require('../dom/render-load-progress');
 var renderArrangementControls = require('../dom/render-arrangement-controls');
 var renderArrangementMetaControls = require('../dom/render-arrangement-meta-controls');
+var filterProjects = require('../filter-projects');
+var getCriteriaForNames = require('../get-criteria-for-names');
 
 const expensiveRenderInterval = 5;
 const expensiveRenderThreshold = 5;
@@ -30,13 +32,15 @@ function ProjectsFlow({
   routeState,
   filterCriteriaNames, // '|'-separated string
   sortCriterionName,
-  groupByCriterionName
+  groupByCriterionName,
+  filterMode
 }) {
   // These should be passed to the render function on a re-render.
   var stickyRenderOpts = {
     filterCriteriaNames,
     sortCriterionName,
-    groupByCriterionName
+    groupByCriterionName,
+    filterMode
   };
   var collectedProjectsByName = {};
   var collectedProjects = [];
@@ -193,12 +197,21 @@ function ProjectsFlow({
       renderArrangementControls({
         containerSelector: '.arrangement-controls',
         selectedCriteriaNames: stickyRenderOpts.filterCriteriaNames,
-        onCriteriaControlChange
+        filterMode: stickyRenderOpts.filterMode,
+        onCriteriaControlChange,
+        onCriteriaFilterModeChange
       });
 
+      var filtered = filterProjects({
+        projectData: collectedProjects,
+        filterCriteria: getCriteriaForNames(
+          listParser.parse(stickyRenderOpts.filterCriteriaNames)
+        ),
+        filterMode: stickyRenderOpts.filterMode
+      });
       render(
         Object.assign({}, stickyRenderOpts, {
-          projectData: collectedProjects,
+          projectData: filtered,
           expensiveRenderIsOK
         })
       );
@@ -230,6 +243,10 @@ function ProjectsFlow({
       callRender({ expensiveRenderIsOK: true });
     }
     // Otherwise, the various event handlers will call callRender.
+  }
+
+  function onCriteriaFilterModeChange({ filterMode }) {
+    routeState.addToRoute({ filterMode });
   }
 
   function onCriteriaControlChange({ criterion, criterionType, selected }) {

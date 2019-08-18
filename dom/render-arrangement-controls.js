@@ -15,10 +15,14 @@ function renderArrangementControls({
   containerSelector,
   criteria = defaultFilterCriteria,
   selectedCriteriaNames,
-  onCriteriaControlChange
+  onCriteriaControlChange,
+  onCriteriaFilterModeChange
 }) {
   var selectedCriteriaNameArray = listParser.parse(selectedCriteriaNames);
   var container = d3.select(containerSelector);
+
+  var someFilterOption = container.select('#filter-some-option');
+  var everyFilterOption = container.select('#filter-every-option');
 
   renderCriteria('filter', 'filter');
   renderCriteria('sort', 'sortBy');
@@ -29,6 +33,9 @@ function renderArrangementControls({
     criterionTypeCamelCase,
     renderCategoriesAsCriteria = false
   ) {
+    someFilterOption.on('click', onSomeFilterClick);
+    everyFilterOption.on('click', onEveryFilterClick);
+
     var criteriaForCategory = criteria.filter(
       curry(criterionWorksAs)(criterionTypeCamelCase)
     );
@@ -74,6 +81,14 @@ function renderArrangementControls({
 
     function getCriteriaForCategory(category) {
       return criteriaByCategory[category];
+    }
+
+    function onSomeFilterClick() {
+      onCriteriaFilterModeChange({ filterMode: 'some' });
+    }
+
+    function onEveryFilterClick() {
+      onCriteriaFilterModeChange({ filterMode: 'every' });
     }
   }
 

@@ -43,6 +43,23 @@
     <div class="arrangement-controls-container">
       <a class="show-arrangement-controls-button">Filters</a>
       <div class="arrangement-controls hidden">
+        <div class="mode-controls">
+          Show projects that match:
+          <input
+            id="filter-some-option"
+            type="radio"
+            name="filter-mode"
+            value="some"
+          />
+          <label for="filter-some-option"><strong>Any</strong> criteria</label>
+          <input
+            id="filter-every-option"
+            type="radio"
+            name="filter-mode"
+            value="every"
+          />
+          <label for="filter-every-option"><strong>All</strong> criteria</label>
+        </div>
         <div class="control-container filters-container">
           <div class="filter-list"></div>
           <a class="hide-arrangement-controls-button">Hide filters</a>

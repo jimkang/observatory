@@ -4,9 +4,6 @@ var hierarchy = require('d3-hierarchy');
 var countDeedsInProjects = require('../count-deeds-in-projects');
 var GetEvenIndexForString = require('../get-even-index-for-string');
 var EaseThrottle = require('../ease-throttle');
-var filterProjects = require('../filter-projects');
-var getCriteriaForNames = require('../get-criteria-for-names');
-var listParser = require('../route-list-parser');
 
 const widthLimit = 800;
 var deedsKey = GetPropertySafely('deeds', []);
@@ -41,18 +38,9 @@ var treemap;
 function RenderGarden({ onDeedClick }) {
   return EaseThrottle({ fn: renderGarden });
 
-  async function renderGarden({
-    projectData,
-    expensiveRenderIsOK,
-    filterCriteriaNames
-  }) {
+  async function renderGarden({ projectData, expensiveRenderIsOK }) {
     var width = 0;
     var height = 0;
-
-    var filtered = filterProjects({
-      projectData,
-      filterCriteria: getCriteriaForNames(listParser.parse(filterCriteriaNames))
-    });
 
     if (!treemap || expensiveRenderIsOK) {
       let neededArea =
@@ -97,7 +85,7 @@ function RenderGarden({ onDeedClick }) {
 
     var rootData = {
       name: 'root',
-      deeds: filtered
+      deeds: projectData
     };
 
     gardenContext.clearRect(0, 0, width, height);

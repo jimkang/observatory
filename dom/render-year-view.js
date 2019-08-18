@@ -2,11 +2,8 @@ var d3 = require('d3-selection');
 var accessor = require('accessor')();
 var EaseThrottle = require('../ease-throttle');
 var arrangeProjectDataByYear = require('../arrange-project-data-by-year');
-var filterProjects = require('../filter-projects');
 var mergeYearKits = require('../merge-year-kits');
 var findWhere = require('lodash.findwhere');
-var getCriteriaForNames = require('../get-criteria-for-names');
-var listParser = require('../route-list-parser');
 
 var yearContainer = d3.select('#year-container');
 var yearsRoot = d3.select('#years-root');
@@ -21,30 +18,25 @@ var displayNamesForSort = {
 function RenderYearView({ onDeedClick }) {
   return EaseThrottle({ fn: renderYearView });
 
-  function renderYearView({ projectData, filterCriteriaNames }) {
+  function renderYearView({ projectData }) {
     d3.selectAll('.view-root:not(#year-container)').classed('hidden', true);
     yearContainer.classed('hidden', false);
 
-    var filtered = filterProjects({
-      projectData,
-      filterCriteria: getCriteriaForNames(listParser.parse(filterCriteriaNames))
-    });
-
     var yearKits = mergeYearKits({
       startDate: arrangeProjectDataByYear({
-        projectData: filtered,
+        projectData,
         sortBy: 'startDate'
       }),
       shippedDate: arrangeProjectDataByYear({
-        projectData: filtered,
+        projectData,
         sortBy: 'shippedDate'
       }),
       lastGrownDate: arrangeProjectDataByYear({
-        projectData: filtered,
+        projectData,
         sortBy: 'lastGrownDate'
       }),
       lastTendedDate: arrangeProjectDataByYear({
-        projectData: filtered,
+        projectData,
         sortBy: 'lastTendedDate'
       })
     });
