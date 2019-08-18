@@ -7,8 +7,6 @@ var EaseThrottle = require('../ease-throttle');
 var filterProjects = require('../filter-projects');
 var getCriteriaForNames = require('../get-criteria-for-names');
 var listParser = require('../route-list-parser');
-var renderArrangementControls = require('./render-arrangement-controls');
-var renderArrangementMetaControls = require('./render-arrangement-meta-controls');
 
 const widthLimit = 800;
 var deedsKey = GetPropertySafely('deeds', []);
@@ -37,10 +35,10 @@ var gardenTargetsContext = gardenTargetsBoard
   .node()
   .getContext('2d', { alpha: false });
 
-var arrangementControls = d3.select('#garden-container .arrangement-controls');
+var arrangementControls = d3.select('.arrangement-controls');
 var treemap;
 
-function RenderGarden({ onDeedClick, onCriteriaControlChange }) {
+function RenderGarden({ onDeedClick }) {
   return EaseThrottle({ fn: renderGarden });
 
   async function renderGarden({
@@ -50,12 +48,6 @@ function RenderGarden({ onDeedClick, onCriteriaControlChange }) {
   }) {
     var width = 0;
     var height = 0;
-
-    renderArrangementControls({
-      containerSelector: '#garden-container .arrangement-controls',
-      selectedCriteriaNames: filterCriteriaNames,
-      onCriteriaControlChange
-    });
 
     var filtered = filterProjects({
       projectData,
@@ -110,19 +102,6 @@ function RenderGarden({ onDeedClick, onCriteriaControlChange }) {
 
     gardenContext.clearRect(0, 0, width, height);
     gardenTargetsContext.clearRect(0, 0, width, height);
-
-    var notEnoughDeeds = rootData.deeds.length < 1;
-
-    if (notEnoughDeeds) {
-      // This won't work. No point in rendering.
-      return;
-    } else {
-      // Render arrangment controls.
-      renderArrangementMetaControls({
-        outerContainerSelector:
-          '#garden-container .arrangement-controls-container'
-      });
-    }
 
     var root = hierarchy.hierarchy(rootData, deedsKey).sum(sumBySize);
     treemap(root);

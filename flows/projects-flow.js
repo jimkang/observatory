@@ -15,6 +15,8 @@ var decorateProject = require('../decorate-project');
 var uniq = require('lodash.uniq');
 var listParser = require('../route-list-parser');
 var renderLoadProgress = require('../dom/render-load-progress');
+var renderArrangementControls = require('../dom/render-arrangement-controls');
+var renderArrangementMetaControls = require('../dom/render-arrangement-meta-controls');
 
 const expensiveRenderInterval = 5;
 const expensiveRenderThreshold = 5;
@@ -53,14 +55,12 @@ function ProjectsFlow({
   });
 
   var renderers = {
-    plain: RenderPlain({ user, onCriteriaControlChange }),
+    plain: RenderPlain({ user }),
     garden: RenderGarden({
-      onDeedClick: renderDetailsOnGarden,
-      onCriteriaControlChange
+      onDeedClick: renderDetailsOnGarden
     }),
     year: RenderYearView({
-      onDeedClick: renderDetailsOnYearsView,
-      onCriteriaControlChange
+      onDeedClick: renderDetailsOnYearsView
     })
   };
 
@@ -187,6 +187,15 @@ function ProjectsFlow({
 
   function callRender({ expensiveRenderIsOK = false }) {
     if (render) {
+      renderArrangementMetaControls({
+        outerContainerSelector: '.arrangement-controls-container'
+      });
+      renderArrangementControls({
+        containerSelector: '.arrangement-controls',
+        selectedCriteriaNames: stickyRenderOpts.filterCriteriaNames,
+        onCriteriaControlChange
+      });
+
       render(
         Object.assign({}, stickyRenderOpts, {
           projectData: collectedProjects,

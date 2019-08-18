@@ -7,8 +7,6 @@ var mergeYearKits = require('../merge-year-kits');
 var findWhere = require('lodash.findwhere');
 var getCriteriaForNames = require('../get-criteria-for-names');
 var listParser = require('../route-list-parser');
-var renderArrangementControls = require('./render-arrangement-controls');
-var renderArrangementMetaControls = require('./render-arrangement-meta-controls');
 
 var yearContainer = d3.select('#year-container');
 var yearsRoot = d3.select('#years-root');
@@ -20,21 +18,12 @@ var displayNamesForSort = {
   lastTendedDate: 'Tended**'
 };
 
-function RenderYearView({ onDeedClick, onCriteriaControlChange }) {
+function RenderYearView({ onDeedClick }) {
   return EaseThrottle({ fn: renderYearView });
 
   function renderYearView({ projectData, filterCriteriaNames }) {
     d3.selectAll('.view-root:not(#year-container)').classed('hidden', true);
     yearContainer.classed('hidden', false);
-
-    renderArrangementMetaControls({
-      outerContainerSelector: '#year-container .arrangement-controls-container'
-    });
-    renderArrangementControls({
-      containerSelector: '#year-container .arrangement-controls',
-      selectedCriteriaNames: filterCriteriaNames,
-      onCriteriaControlChange
-    });
 
     var filtered = filterProjects({
       projectData,

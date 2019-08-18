@@ -4,8 +4,6 @@ var GetPropertySafely = require('get-property-safely');
 var EaseThrottle = require('../ease-throttle');
 var renderDetailInnards = require('./render-detail-innards');
 var comparators = require('../comparators');
-var renderArrangementControls = require('./render-arrangement-controls');
-var renderArrangementMetaControls = require('./render-arrangement-meta-controls');
 var filterProjects = require('../filter-projects');
 var listParser = require('../route-list-parser');
 var getCriteriaForNames = require('../get-criteria-for-names');
@@ -26,19 +24,10 @@ var basicProjectListRoot = d3.select('#basic-project-list');
 
 var deedsKey = GetPropertySafely('deeds', []);
 
-function RenderPlain({ user, onCriteriaControlChange }) {
+function RenderPlain({ user }) {
   return EaseThrottle({ fn: renderPlain });
 
   function renderPlain({ projectData, filterCriteriaNames }) {
-    renderArrangementMetaControls({
-      outerContainerSelector: '#plain-container .arrangement-controls-container'
-    });
-    renderArrangementControls({
-      containerSelector: '#plain-container .arrangement-controls',
-      selectedCriteriaNames: filterCriteriaNames,
-      onCriteriaControlChange
-    });
-
     var filtered = filterProjects({
       projectData,
       filterCriteria: getCriteriaForNames(listParser.parse(filterCriteriaNames))
