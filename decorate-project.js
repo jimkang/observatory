@@ -1,6 +1,6 @@
 const dayInMS = 24 * 60 * 60 * 1000;
 
-function decorateProject(project, nowInEpochTime = Date.now()) {
+function decorateProject(project, nowInEpochTime = Date.now(), runSort = true) {
   project.releaseState = 'inProgress';
   if (project.shippedDate) {
     project.shippedDate = new Date(project.shippedDate);
@@ -12,7 +12,9 @@ function decorateProject(project, nowInEpochTime = Date.now()) {
 
   if (project.deeds && project.deeds.length > 0) {
     var activities = project.deeds.map(makeActivity);
-    activities.sort(aIsEarlierThanB);
+    if (runSort) {
+      activities.sort(aIsEarlierThanB);
+    }
     activities[0].isStart = true;
     activities[activities.length - 1].isLastActive = true;
 

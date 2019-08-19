@@ -125,7 +125,14 @@ function ProjectsFlow({
       };
     }
     deedCount += 1;
-    decorateProject(collectedProjectsByName[deed.projectName]);
+    // Avoid sorting all the deeds every time a deed is added.
+    // addDeedToProject already puts the deed in the right
+    // place.
+    decorateProject(
+      collectedProjectsByName[deed.projectName],
+      Date.now(),
+      false
+    );
 
     renderLoadProgress({
       deedCount,
