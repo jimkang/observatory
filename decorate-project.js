@@ -60,7 +60,7 @@ function makeActivity(deed) {
 }
 
 function aIsEarlierThanB(a, b) {
-  if (new Date(a.committedDate) < new Date(b.committedDate)) {
+  if (a.committedDate < b.committedDate) {
     return -1;
   } else {
     return 1;
