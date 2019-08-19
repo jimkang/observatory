@@ -1,7 +1,6 @@
 var d3 = require('d3-selection');
 var accessor = require('accessor')();
 var GetPropertySafely = require('get-property-safely');
-var EaseThrottle = require('../ease-throttle');
 var renderDetailInnards = require('./render-detail-innards');
 var comparators = require('../comparators');
 
@@ -22,7 +21,7 @@ var basicProjectListRoot = d3.select('#basic-project-list');
 var deedsKey = GetPropertySafely('deeds', []);
 
 function RenderPlain({ user }) {
-  return EaseThrottle({ fn: renderPlain });
+  return renderPlain;
 
   function renderPlain({ projectData }) {
     projectData.sort(comparators.compareLastUpdatedDesc);

@@ -18,12 +18,8 @@ var renderLoadProgress = require('../dom/render-load-progress');
 var filterProjects = require('../filter-projects');
 var getCriteriaForNames = require('../get-criteria-for-names');
 var EaseThrottle = require('../ease-throttle');
-var renderArrangementControls = EaseThrottle({
-  fn: require('../dom/render-arrangement-controls')
-});
-var renderArrangementMetaControls = EaseThrottle({
-  fn: require('../dom/render-arrangement-meta-controls')
-});
+var renderArrangementControls = require('../dom/render-arrangement-controls');
+var renderArrangementMetaControls = require('../dom/render-arrangement-meta-controls');
 
 const expensiveRenderInterval = 5;
 const expensiveRenderThreshold = 5;
@@ -72,6 +68,8 @@ function ProjectsFlow({
       onDeedClick: renderDetailsOnYearsView
     })
   };
+
+  var throttledCallRender = EaseThrottle({ fn: callRender });
 
   return {
     start,
@@ -134,7 +132,7 @@ function ProjectsFlow({
       projectCount: Object.keys(collectedProjectsByName).length,
       active: true
     });
-    callRender({ expensiveRenderIsOK: shouldDoExpensiveRender() });
+    throttledCallRender({ expensiveRenderIsOK: shouldDoExpensiveRender() });
   }
 
   function collectProject(project, source) {
@@ -162,7 +160,7 @@ function ProjectsFlow({
     decorateProject(project);
     collectedProjectsByName[project.name] = project;
     collectedProjects = values(collectedProjectsByName);
-    callRender({ expensiveRenderIsOK: shouldDoExpensiveRender() });
+    throttledCallRender({ expensiveRenderIsOK: shouldDoExpensiveRender() });
   }
 
   function onStreamEnd(error) {
@@ -184,7 +182,7 @@ function ProjectsFlow({
           finalDeedCount
         );
       }
-      callRender({ expensiveRenderIsOK: true });
+      throttledCallRender({ expensiveRenderIsOK: true });
     }
 
     renderLoadProgress({
@@ -245,9 +243,9 @@ function ProjectsFlow({
     renderCount = 0;
 
     if (streamEndEventReceived) {
-      callRender({ expensiveRenderIsOK: true });
+      throttledCallRender({ expensiveRenderIsOK: true });
     }
-    // Otherwise, the various event handlers will call callRender.
+    // Otherwise, the various event handlers will call throttledCallRender.
   }
 
   function onCriteriaFilterModeChange({ filterMode }) {

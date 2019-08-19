@@ -1,6 +1,5 @@
 var d3 = require('d3-selection');
 var accessor = require('accessor')();
-var EaseThrottle = require('../ease-throttle');
 var arrangeProjectDataByYear = require('../arrange-project-data-by-year');
 var mergeYearKits = require('../merge-year-kits');
 var findWhere = require('lodash.findwhere');
@@ -16,7 +15,7 @@ var displayNamesForSort = {
 };
 
 function RenderYearView({ onDeedClick }) {
-  return EaseThrottle({ fn: renderYearView });
+  return renderYearView;
 
   function renderYearView({ projectData }) {
     d3.selectAll('.view-root:not(#year-container)').classed('hidden', true);

@@ -3,7 +3,6 @@ var GetPropertySafely = require('get-property-safely');
 var hierarchy = require('d3-hierarchy');
 var countDeedsInProjects = require('../count-deeds-in-projects');
 var GetEvenIndexForString = require('../get-even-index-for-string');
-var EaseThrottle = require('../ease-throttle');
 
 const widthLimit = 800;
 var deedsKey = GetPropertySafely('deeds', []);
@@ -36,7 +35,7 @@ var arrangementControls = d3.select('.arrangement-controls');
 var treemap;
 
 function RenderGarden({ onDeedClick }) {
-  return EaseThrottle({ fn: renderGarden });
+  return renderGarden;
 
   async function renderGarden({ projectData, expensiveRenderIsOK }) {
     var width = 0;
