@@ -15,10 +15,15 @@ var decorateProject = require('../decorate-project');
 var uniq = require('lodash.uniq');
 var listParser = require('../route-list-parser');
 var renderLoadProgress = require('../dom/render-load-progress');
-var renderArrangementControls = require('../dom/render-arrangement-controls');
-var renderArrangementMetaControls = require('../dom/render-arrangement-meta-controls');
 var filterProjects = require('../filter-projects');
 var getCriteriaForNames = require('../get-criteria-for-names');
+var EaseThrottle = require('../ease-throttle');
+var renderArrangementControls = EaseThrottle({
+  fn: require('../dom/render-arrangement-controls')
+});
+var renderArrangementMetaControls = EaseThrottle({
+  fn: require('../dom/render-arrangement-meta-controls')
+});
 
 const expensiveRenderInterval = 5;
 const expensiveRenderThreshold = 5;
