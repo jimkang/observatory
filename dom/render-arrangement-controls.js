@@ -84,10 +84,12 @@ function renderArrangementControls({
 
     function onSomeFilterClick() {
       onCriteriaFilterModeChange({ filterMode: 'some' });
+      everyFilterOption.node().removeAttribute('checked');
     }
 
     function onEveryFilterClick() {
       onCriteriaFilterModeChange({ filterMode: 'every' });
+      someFilterOption.node().removeAttribute('checked');
     }
   }
 
