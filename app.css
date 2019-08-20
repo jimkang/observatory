@@ -210,7 +210,6 @@ a {
   z-index: inherit;
   background-color: white;
   width: 40%;
-  min-width: 400px;
   margin-left: 28%;
   margin-top: 100px;
   pointer-events: auto;
@@ -681,6 +680,12 @@ hr {
     .details-box {
       width: 280px;
       padding: 20px;
+    }
+  }
+
+  @media all and (min-width: 569px) {
+    .details-box {
+      min-width: 400px;
     }
   }
 }
