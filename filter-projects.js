@@ -1,4 +1,4 @@
-function filterProjects({ projectData, filterCriteria }) {
+function filterProjects({ projectData, filterCriteria, filterMode = 'some' }) {
   // Filter
   var filtered = projectData;
   if (filterCriteria && filterCriteria.length > 0) {
@@ -7,7 +7,7 @@ function filterProjects({ projectData, filterCriteria }) {
   return filtered;
 
   function meetsFilterCriteria(project) {
-    return filterCriteria.some(projectMeetsCriterion);
+    return filterCriteria[filterMode](projectMeetsCriterion);
 
     function projectMeetsCriterion(criterion) {
       var projectPropertyValue = project[criterion.category];

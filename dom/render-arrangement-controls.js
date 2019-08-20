@@ -4,9 +4,8 @@ var accessor = require('accessor')();
 var groupBy = require('lodash.groupby');
 var listParser = require('../route-list-parser');
 var criteria = require('../criteria');
-var defaultFilterCriteria = criteria.filter(
-  c => c.roles.indexOf('filter') !== -1
-);
+
+var defaultFilterCriteria = criteria.filter(criterionIncludesFilterRole);
 
 // WARNING: This works fine here, but won't as a general solution.
 var snakeCaseRegex = /([a-z]+)([A-Z])([a-z]+)/;
@@ -15,10 +14,23 @@ function renderArrangementControls({
   containerSelector,
   criteria = defaultFilterCriteria,
   selectedCriteriaNames,
-  onCriteriaControlChange
+  filterMode,
+  onCriteriaControlChange,
+  onCriteriaFilterModeChange
 }) {
   var selectedCriteriaNameArray = listParser.parse(selectedCriteriaNames);
   var container = d3.select(containerSelector);
+
+  var someFilterOption = document.getElementById('filter-some-option');
+  var everyFilterOption = document.getElementById('filter-every-option');
+
+  if (filterMode === 'some') {
+    someFilterOption.setAttribute('checked', 'checked');
+    everyFilterOption.removeAttribute('checked');
+  } else {
+    everyFilterOption.setAttribute('checked', 'checked');
+    someFilterOption.removeAttribute('checked');
+  }
 
   renderCriteria('filter', 'filter');
   renderCriteria('sort', 'sortBy');
@@ -29,6 +41,9 @@ function renderArrangementControls({
     criterionTypeCamelCase,
     renderCategoriesAsCriteria = false
   ) {
+    d3.select(someFilterOption).on('click', onSomeFilterClick);
+    d3.select(everyFilterOption).on('click', onEveryFilterClick);
+
     var criteriaForCategory = criteria.filter(
       curry(criterionWorksAs)(criterionTypeCamelCase)
     );
@@ -75,6 +90,16 @@ function renderArrangementControls({
     function getCriteriaForCategory(category) {
       return criteriaByCategory[category];
     }
+
+    function onSomeFilterClick() {
+      onCriteriaFilterModeChange({ filterMode: 'some' });
+      everyFilterOption.removeAttribute('checked');
+    }
+
+    function onEveryFilterClick() {
+      onCriteriaFilterModeChange({ filterMode: 'every' });
+      someFilterOption.removeAttribute('checked');
+    }
   }
 
   function onCriterionClick(criterionType, criterion) {
@@ -118,6 +143,10 @@ function criterionWorksAs(role, criterion) {
 
 function makeCriterionId(c) {
   return c.category + '|' + c.name;
+}
+
+function criterionIncludesFilterRole(c) {
+  return c.roles.indexOf('filter') !== -1;
 }
 
 module.exports = renderArrangementControls;

@@ -1,14 +1,8 @@
 var d3 = require('d3-selection');
 var accessor = require('accessor')();
 var GetPropertySafely = require('get-property-safely');
-var EaseThrottle = require('../ease-throttle');
 var renderDetailInnards = require('./render-detail-innards');
 var comparators = require('../comparators');
-var renderArrangementControls = require('./render-arrangement-controls');
-var renderArrangementMetaControls = require('./render-arrangement-meta-controls');
-var filterProjects = require('../filter-projects');
-var listParser = require('../route-list-parser');
-var getCriteriaForNames = require('../get-criteria-for-names');
 
 const projectDetailsSkeleton = `<div class="project-details">
       <a class="name-link" target="_blank"></a>
@@ -26,28 +20,14 @@ var basicProjectListRoot = d3.select('#basic-project-list');
 
 var deedsKey = GetPropertySafely('deeds', []);
 
-function RenderPlain({ user, onCriteriaControlChange }) {
-  return EaseThrottle({ fn: renderPlain });
+function RenderPlain({ user }) {
+  return renderPlain;
 
-  function renderPlain({ projectData, filterCriteriaNames }) {
-    renderArrangementMetaControls({
-      outerContainerSelector: '#plain-container .arrangement-controls-container'
-    });
-    renderArrangementControls({
-      containerSelector: '#plain-container .arrangement-controls',
-      selectedCriteriaNames: filterCriteriaNames,
-      onCriteriaControlChange
-    });
-
-    var filtered = filterProjects({
-      projectData,
-      filterCriteria: getCriteriaForNames(listParser.parse(filterCriteriaNames))
-    });
-
-    filtered.sort(comparators.compareLastUpdatedDesc);
+  function renderPlain({ projectData }) {
+    projectData.sort(comparators.compareLastUpdatedDesc);
     var projects = basicProjectListRoot
       .selectAll('.project')
-      .data(filtered, accessor());
+      .data(projectData, accessor());
     projects.exit().remove();
     var newProjects = projects
       .enter()

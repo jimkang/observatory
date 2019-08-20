@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="app.css" />
-    <link rel="stylesheet" href="https://use.typekit.net/dhg1sys.css">
+    <link rel="stylesheet" href="https://use.typekit.net/dhg1sys.css" />
   </head>
   <body>
     <pre id="status-message" class="hidden"></pre>
@@ -40,29 +40,37 @@
       </div>
     </header>
 
-    <div id="plain-container" class="view-root hidden">
-      <div class="arrangement-controls-container">
-        <a class="show-arrangement-controls-button">Filters</a>
-        <div class="arrangement-controls hidden">
-          <div class="control-container filters-container">
-            <div class="filter-list"></div>
-            <a class="hide-arrangement-controls-button">Hide filters</a>
-          </div>
+    <div class="arrangement-controls-container">
+      <a class="show-arrangement-controls-button">Filters</a>
+      <div class="arrangement-controls hidden">
+        <div class="mode-controls">
+          Show projects that match:
+          <input
+            id="filter-some-option"
+            type="radio"
+            name="filter-mode"
+            value="some"
+          />
+          <label for="filter-some-option"><strong>Any</strong> criteria</label>
+          <input
+            id="filter-every-option"
+            type="radio"
+            name="filter-mode"
+            value="every"
+          />
+          <label for="filter-every-option"><strong>All</strong> criteria</label>
+        </div>
+        <div class="control-container filters-container">
+          <div class="filter-list"></div>
+          <a class="hide-arrangement-controls-button">Hide filters</a>
         </div>
       </div>
+    </div>
+
+    <div id="plain-container" class="view-root hidden">
       <ul id="basic-project-list"></ul>
     </div>
     <div id="garden-container" class="view-root hidden">
-      <div class="arrangement-controls-container">
-        <a class="show-arrangement-controls-button">Filters</a>
-        <div class="arrangement-controls hidden">
-          <div class="control-container filters-container">
-            <div class="filter-list"></div>
-            <a class="hide-arrangement-controls-button">Hide filters</a>
-          </div>
-        </div>
-      </div>
-
       <div class="instruction">
         Each colored area represents a project. Each "square" in the area
         represents a deed done as part of the project. Click on a square to see
@@ -83,16 +91,6 @@
     </div>
 
     <div id="year-container" class="view-root hidden">
-      <div class="arrangement-controls-container">
-        <a class="show-arrangement-controls-button">Filters</a>
-        <div class="arrangement-controls hidden">
-          <div class="control-container filters-container">
-            <div class="filter-list"></div>
-            <a class="hide-arrangement-controls-button">Hide filters</a>
-          </div>
-        </div>
-      </div>
-
       <div class="instruction">Click on a project to see details about it.</div>
 
       <div id="years-root"></div>

@@ -1,5 +1,9 @@
 function countDeedsInProjects(projects) {
-  return projects.map(countDeedsInProject).reduce(addToTotal);
+  if (projects.length > 0) {
+    return projects.map(countDeedsInProject).reduce(addToTotal);
+  } else {
+    return 0;
+  }
 }
 
 function countDeedsInProject(p) {
