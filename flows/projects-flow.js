@@ -34,14 +34,18 @@ function ProjectsFlow({
   filterCriteriaNames, // '|'-separated string
   sortCriterionName,
   groupByCriterionName,
-  filterMode
+  filterMode,
+  showControls
 }) {
   // These should be passed to the render function on a re-render.
+  // When the route changes, app will call updateOpts to update
+  // these.
   var stickyRenderOpts = {
     filterCriteriaNames,
     sortCriterionName,
     groupByCriterionName,
-    filterMode
+    filterMode,
+    showControls
   };
   var collectedProjectsByName = {};
   var collectedProjects = [];
@@ -209,8 +213,13 @@ function ProjectsFlow({
 
   function callRender({ expensiveRenderIsOK = false }) {
     if (render) {
+      // Important to use stickyRenderOpts if you want up-to-date
+      // opts that are synced to the route state.
       renderArrangementMetaControls({
-        outerContainerSelector: '.arrangement-controls-container'
+        outerContainerSelector: '.arrangement-controls-container',
+        showControls: stickyRenderOpts.showControls === 'yes',
+        onShowControls,
+        onHideControls
       });
       renderArrangementControls({
         containerSelector: '.arrangement-controls',
@@ -291,6 +300,14 @@ function ProjectsFlow({
         filterCriteriaNames: listParser.stringify(uniq(names))
       });
     }
+  }
+
+  function onShowControls() {
+    routeState.addToRoute({ showControls: 'yes' });
+  }
+
+  function onHideControls() {
+    routeState.addToRoute({ showControls: 'no' });
   }
 }
 

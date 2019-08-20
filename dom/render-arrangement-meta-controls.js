@@ -1,6 +1,11 @@
 var d3 = require('d3-selection');
 
-function renderArrangementMetaControls({ outerContainerSelector }) {
+function renderArrangementMetaControls({
+  outerContainerSelector,
+  showControls,
+  onShowControls,
+  onHideControls
+}) {
   var outerContainer = d3.select(outerContainerSelector);
   var arrangementControls = outerContainer.select('.arrangement-controls');
   var showButton = outerContainer.select('.show-arrangement-controls-button');
@@ -8,15 +13,13 @@ function renderArrangementMetaControls({ outerContainerSelector }) {
     '.hide-arrangement-controls-button'
   );
 
-  showButton.on('click.show', onClickShow);
-  hideButton.on('click.hide', onClickHide);
+  showButton.on('click.show', onShowControls);
+  hideButton.on('click.hide', onHideControls);
 
-  function onClickShow() {
+  if (showControls) {
     arrangementControls.classed('hidden', false);
     showButton.classed('hidden', true);
-  }
-
-  function onClickHide() {
+  } else {
     arrangementControls.classed('hidden', true);
     showButton.classed('hidden', false);
   }
