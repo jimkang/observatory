@@ -125,13 +125,16 @@ function ProjectsFlow({
       };
     }
     deedCount += 1;
-    // Avoid sorting all the deeds every time a deed is added.
-    // addDeedToProject already puts the deed in the right
-    // place.
+
     decorateProject(
       collectedProjectsByName[deed.projectName],
       Date.now(),
-      false
+      // Only run the sort when decorating project
+      // once in a while because it's expensive.
+      // (It will be run in onStreamEnd as well,
+      // to ensure the final projects have all of
+      // their deeds sorted.)
+      deedCount % 50 === 0
     );
 
     renderLoadProgress({
@@ -189,6 +192,11 @@ function ProjectsFlow({
           finalDeedCount
         );
       }
+
+      // Now that we have all of the deeds, make sure aggregated
+      // stats are right.
+      collectedProjects.forEach(decorateProject);
+
       throttledCallRender({ expensiveRenderIsOK: true });
     }
 
