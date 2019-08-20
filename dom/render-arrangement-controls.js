@@ -14,14 +14,23 @@ function renderArrangementControls({
   containerSelector,
   criteria = defaultFilterCriteria,
   selectedCriteriaNames,
+  filterMode,
   onCriteriaControlChange,
   onCriteriaFilterModeChange
 }) {
   var selectedCriteriaNameArray = listParser.parse(selectedCriteriaNames);
   var container = d3.select(containerSelector);
 
-  var someFilterOption = container.select('#filter-some-option');
-  var everyFilterOption = container.select('#filter-every-option');
+  var someFilterOption = document.getElementById('filter-some-option');
+  var everyFilterOption = document.getElementById('filter-every-option');
+
+  if (filterMode === 'some') {
+    someFilterOption.setAttribute('checked', 'checked');
+    everyFilterOption.removeAttribute('checked');
+  } else {
+    everyFilterOption.setAttribute('checked', 'checked');
+    someFilterOption.removeAttribute('checked');
+  }
 
   renderCriteria('filter', 'filter');
   renderCriteria('sort', 'sortBy');
@@ -32,8 +41,8 @@ function renderArrangementControls({
     criterionTypeCamelCase,
     renderCategoriesAsCriteria = false
   ) {
-    someFilterOption.on('click', onSomeFilterClick);
-    everyFilterOption.on('click', onEveryFilterClick);
+    d3.select(someFilterOption).on('click', onSomeFilterClick);
+    d3.select(everyFilterOption).on('click', onEveryFilterClick);
 
     var criteriaForCategory = criteria.filter(
       curry(criterionWorksAs)(criterionTypeCamelCase)
@@ -84,12 +93,12 @@ function renderArrangementControls({
 
     function onSomeFilterClick() {
       onCriteriaFilterModeChange({ filterMode: 'some' });
-      everyFilterOption.node().removeAttribute('checked');
+      everyFilterOption.removeAttribute('checked');
     }
 
     function onEveryFilterClick() {
       onCriteriaFilterModeChange({ filterMode: 'every' });
-      someFilterOption.node().removeAttribute('checked');
+      someFilterOption.removeAttribute('checked');
     }
   }
 
