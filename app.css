@@ -21,15 +21,6 @@ body {
   width: 50%;
 }
 
-input {
-  border-radius: 0.2em;
-  height: 1.2em;
-  padding: 0.25em;
-  font-size: 1em;
-  text-align: left;
-  flex-grow: 1;
-}
-
 div[contenteditable] {
   border: 2px dashed #777;
   border-radius: 0.2em;
@@ -643,6 +634,11 @@ hr {
   width: 70%;
   margin-top: 2em;
   margin-bottom: 2em;
+}
+
+.mode-controls {
+  text-align: center;
+  margin-bottom: 1em;
 }
 
 @media all and (max-height: 320px) {
