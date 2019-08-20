@@ -4,9 +4,8 @@ var accessor = require('accessor')();
 var groupBy = require('lodash.groupby');
 var listParser = require('../route-list-parser');
 var criteria = require('../criteria');
-var defaultFilterCriteria = criteria.filter(
-  c => c.roles.indexOf('filter') !== -1
-);
+
+var defaultFilterCriteria = criteria.filter(criterionIncludesFilterRole);
 
 // WARNING: This works fine here, but won't as a general solution.
 var snakeCaseRegex = /([a-z]+)([A-Z])([a-z]+)/;
@@ -133,6 +132,10 @@ function criterionWorksAs(role, criterion) {
 
 function makeCriterionId(c) {
   return c.category + '|' + c.name;
+}
+
+function criterionIncludesFilterRole(c) {
+  return c.roles.indexOf('filter') !== -1;
 }
 
 module.exports = renderArrangementControls;
