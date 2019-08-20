@@ -273,22 +273,17 @@ function ProjectsFlow({
   }
 
   function onCriteriaFilterModeChange({ filterMode }) {
-    routeState.addToRoute({ filterMode });
+    routeState.addToRoute({ filterMode, showControls: false });
   }
 
   function onCriteriaControlChange({ criterion, criterionType, selected }) {
-    // console.log(
-    //   'criterion',
-    //   criterion,
-    //   'type',
-    //   criterionType,
-    //   'selected',
-    //   selected
-    // );
+    var routeUpdates = {
+      showControls: false
+    };
     if (criterionType === 'group-by') {
-      routeState.addToRoute({ groupByCriterionName: criterion });
+      routeUpdates.groupByCriterionName = criterion;
     } else if (criterionType === 'sort') {
-      routeState.addToRoute({ sortCriterionName: criterion.name });
+      routeUpdates.sortCriterionName = criterion.name;
     } else if (criterionType === 'filter') {
       let names = listParser.parse(stickyRenderOpts.filterCriteriaNames);
       if (selected) {
@@ -296,10 +291,9 @@ function ProjectsFlow({
       } else {
         names.splice(names.indexOf(criterion.name), 1);
       }
-      routeState.addToRoute({
-        filterCriteriaNames: listParser.stringify(uniq(names))
-      });
+      routeUpdates.filterCriteriaNames = listParser.stringify(uniq(names));
     }
+    routeState.addToRoute(routeUpdates);
   }
 
   function onShowControls() {

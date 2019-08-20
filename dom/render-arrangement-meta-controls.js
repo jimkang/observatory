@@ -1,4 +1,7 @@
 var d3 = require('d3-selection');
+require('d3-transition');
+
+const controlFadeDuration = 1000;
 
 function renderArrangementMetaControls({
   outerContainerSelector,
@@ -20,8 +23,19 @@ function renderArrangementMetaControls({
     arrangementControls.classed('hidden', false);
     showButton.classed('hidden', true);
   } else {
-    arrangementControls.classed('hidden', true);
     showButton.classed('hidden', false);
+    arrangementControls
+      .transition()
+      .duration(controlFadeDuration)
+      .style('opacity', 0)
+      .style('height', 0)
+      .on('end', hideControls);
+  }
+
+  function hideControls() {
+    arrangementControls.classed('hidden', true);
+    // Get it ready to show later.
+    arrangementControls.node().removeAttribute('style');
   }
 }
 
