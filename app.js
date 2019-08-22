@@ -8,9 +8,9 @@ var routeDefaults = {
   user: 'jimkang',
   userEmail: 'jimkang@gmail.com',
   verbose: false,
-  view: 'garden',
-  sortBy: 'lastActive',
-  filterCriteriaNames: '',
+  view: 'polyptych',
+  sortBy: 'shippedDate',
+  filterCriteriaNames: 'featured',
   sortCriterionName: undefined,
   groupByCriterionName: undefined
 };
