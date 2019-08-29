@@ -641,6 +641,12 @@ hr {
   margin-bottom: 1em;
 }
 
+.project-window {
+  width: 80%;
+  max-width: 20em;
+  height: 20em;
+}
+
 @media all and (max-height: 320px) {
   .details-box {
     max-height: 240px;
@@ -649,6 +655,10 @@ hr {
     padding: 1em;
     border-radius: 0.4em;
     overflow: scroll;
+  }
+
+  .project-window {
+    height: 10em;
   }
 }
 

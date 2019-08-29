@@ -12,8 +12,7 @@ var routeDefaults = {
 
 var visibleRouteDefaults = {
   view: 'polyptych',
-  filterCriteriaNames: 'featured',
-  sortBy: 'shippedDate'
+  filterCriteriaNames: 'featured'
   //sortCriterionName: undefined,
   //groupByCriterionName: undefined
 };
