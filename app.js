@@ -7,7 +7,8 @@ var projectsFlow;
 var routeDefaults = {
   user: 'jimkang',
   userEmail: 'jimkang@gmail.com',
-  verbose: false
+  verbose: false,
+  commitSourceURL: 'https://smidgeo.com/observatory-cache/jimkang-cache.json'
 };
 
 var visibleRouteDefaults = {

@@ -36,7 +36,8 @@ function ProjectsFlow({
   sortCriterionName,
   groupByCriterionName,
   filterMode,
-  showControls
+  showControls,
+  commitSourceURL
 }) {
   // These should be passed to the render function on a re-render.
   // When the route changes, app will call updateOpts to update
@@ -88,7 +89,8 @@ function ProjectsFlow({
       {
         request,
         onRepo: collectProject,
-        onCommit: collectDeed
+        onCommit: collectDeed,
+        commitSourceURL
       },
       onStreamEnd
     );
