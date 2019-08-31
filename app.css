@@ -642,9 +642,14 @@ hr {
 }
 
 .project-window {
-  width: 80%;
-  max-width: 20em;
-  height: 20em;
+  box-shadow: #333 4px 4px;
+  border: solid 1px #666;
+}
+
+.tych {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 @media all and (max-height: 320px) {
