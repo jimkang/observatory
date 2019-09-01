@@ -513,7 +513,6 @@ a {
   /* Specifying width here will make this element the width 
  * without the margin added, seemingly even with box-sizing: border-box. */
   /*! max-width: 33%; */
-  flex-basis: 0;
   flex-grow: 1;
   /*! width: 10em; */
   margin-top: 0;
