@@ -1,7 +1,11 @@
 var d3 = require('d3-selection');
 var accessor = require('accessor')();
-var { compareDescWithSortKey } = require('../comparators');
+var {
+  compareDescWithSortKey,
+  compareByDeedCountAsc
+} = require('../comparators');
 var curry = require('lodash.curry');
+var pick = require('probable').pick;
 
 var polyptychContainer = d3.select('#polyptych-container');
 var polyptychRoot = d3.select('#polyptych-root');
@@ -11,6 +15,9 @@ function RenderPolyptych() {
   return renderPolyptych;
 
   function renderPolyptych({ projectData }) {
+    var projectSizeBucketBoundaries = getProjectSizeBucketBoundaries(
+      projectData
+    );
     projectData.sort(compareDescShipped);
 
     d3.selectAll('.view-root:not(#polyptych-container)').classed(
@@ -32,11 +39,26 @@ function RenderPolyptych() {
     newTychs.append('div').classed('description', true);
 
     var currentTychs = newTychs.merge(tychs);
+    currentTychs.attr('class', getClassStringForTych);
     currentTychs.select('.title').text(accessor('name'));
     var projectWindows = currentTychs.select('.project-window');
     projectWindows.classed('hidden', doesNotHaveProfileImage);
     projectWindows.attr('src', accessor('profileImage'));
     currentTychs.select('.description').text(accessor('description'));
+
+    function getClassStringForTych(project) {
+      var sizeClass = 'small-tych';
+      if (
+        project.deeds &&
+        project.deeds.length > projectSizeBucketBoundaries[0]
+      ) {
+        sizeClass = pick(['wide-tych', 'tall-tych']);
+        if (project.deeds.length > projectSizeBucketBoundaries[1]) {
+          sizeClass = 'big-tych';
+        }
+      }
+      return 'tych centered-col ' + sizeClass;
+    }
   }
 }
 
@@ -51,6 +73,25 @@ function getMainLink(project) {
 
 function doesNotHaveProfileImage(project) {
   return !project.profileImage;
+}
+
+function getProjectSizeBucketBoundaries(projects) {
+  if (projects.length < 1) {
+    return [0, 0];
+  }
+
+  projects.sort(compareByDeedCountAsc);
+  return [
+    getDeedCount(projects[~~(projects.length / 3)]),
+    getDeedCount(projects[~~((2 * projects.length) / 3)])
+  ];
+}
+
+function getDeedCount(project) {
+  if (project && project.deeds) {
+    return project.deeds.length;
+  }
+  return 0;
 }
 
 module.exports = RenderPolyptych;

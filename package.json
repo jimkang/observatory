@@ -69,7 +69,7 @@
     "lodash.values": "^4.3.0",
     "ndjson": "^1.5.0",
     "object-path-exists": "^1.0.0",
-    "probable": "^2.1.1",
+    "probable": "^2.1.4",
     "qs": "^6.3.0",
     "route-state": "^1.1.2",
     "seedrandom": "^2.4.3",

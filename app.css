@@ -558,11 +558,42 @@ hr {
   max-width: 100%;
 }
 
-.tych {
-  border: solid 1px #333;
-  width: 80%;
+#polyptych-container {
+  width: 100%;
 }
 
+#polyptych-root {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-auto-rows: 15em;
+  grid-auto-flow: dense;
+  justify-content: stretch;
+}
+
+.tych {
+  border: solid 1px #333;
+}
+
+.small-tych {
+  grid-column-end: span 1;
+  grid-row-end: span 1;
+}
+
+.wide-tych {
+  grid-column-end: span 2;
+  grid-row-end: span 1;
+}
+
+.tall-tych {
+  grid-column-end: span 1;
+  grid-row-end: span 2;
+}
+
+.big-tych {
+  grid-column-end: span 2;
+  grid-row-end: span 2;
+}
+  
 @media all and (max-height: 320px) {
   .details-box {
     max-height: 240px;

@@ -46,10 +46,23 @@ function compareDescWithSortKey(sortBy, objectA, objectB) {
   }
 }
 
+// A little biased in favor of projectB.
+function compareByDeedCountAsc(projectA, projectB) {
+  if (
+    projectA.deeds &&
+    projectB.deeds &&
+    projectA.deeds.length < projectB.deeds.length
+  ) {
+    return -1;
+  }
+  return 1;
+}
+
 module.exports = {
   compareLastUpdatedDesc,
   compareActivityGroupStartDateDesc,
   compareActivityGroupStartDateAsc,
   compareDesc,
-  compareDescWithSortKey
+  compareDescWithSortKey,
+  compareByDeedCountAsc
 };
