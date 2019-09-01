@@ -24,7 +24,8 @@ function RenderPolyptych() {
     var newTychs = tychs
       .enter()
       .append('div')
-      .classed('tych', true);
+      .classed('tych', true)
+      .classed('centered-col', true);
 
     newTychs.append('div').classed('title', true);
     newTychs.append('img').classed('project-window', true);

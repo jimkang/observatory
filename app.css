@@ -1,7 +1,10 @@
-html {
+.centered-col {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+html {
   width: 100%;
 }
 
@@ -9,27 +12,7 @@ body {
   font-family: museo-sans, sans-serif;
   font-size: 24px;
   margin-bottom: 4em;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   width: 100%;
-}
-
-.project-editor {
-  display: flex;
-  flex-direction: column;
-  width: 50%;
-}
-
-div[contenteditable] {
-  border: 2px dashed #777;
-  border-radius: 0.2em;
-  padding: 0.2em;
-  margin-top: 0.2em;
-  margin-bottom: 0.2em;
-  font-size: 0.9em;
-  font-family: "Helvetica Neue", sans-serif;
-  flex-grow: 1;
 }
 
 .form-pair {
@@ -63,11 +46,8 @@ div[contenteditable] {
 }
 
 .zoom-protect-container {
-  display: flex;
   width: 100%;
-  flex-direction: column;
   position: relative;
-  align-items: center;
 }
 
 .gutter {
@@ -118,9 +98,6 @@ header {
 .github-info {
   margin-top: 2em;
   margin-bottom: 2em;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .github-info input {
@@ -164,11 +141,8 @@ a {
 }
 
 .canvases-container {
-  display: flex;
   width: 100%;
-  flex-direction: column;
   position: relative;
-  align-items: center;
 }
 
 #garden-board {
@@ -389,56 +363,10 @@ a {
   font-size: 0.5em;
 }
 
-@media all and (max-height: 568px) {
-  body {
-    font-size: 18px;
-  }
-
-  header {
-    margin-bottom: 0;
-  }
-
-  #basic-project-list {
-    padding-left: 3em;
-    padding-right: 2em;
-  }
-
-  #list-container {
-    max-width: 100%;
-  }
-
-  .name-link {
-    font-size: 1.2em;
-  }
-
-  .details-box {
-    height: 568px;
-    padding: 0;
-  }
-}
-
-#years-root {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.year {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .year-title {
   font-size: 2em;
   font-weight: 500;
   margin-bottom: 0.5em;
-}
-
-.month {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .month-root {
@@ -506,9 +434,6 @@ a {
 }
 
 .arrangement-controls .control-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   margin: 1em;
   /* Specifying width here will make this element the width 
  * without the margin added, seemingly even with box-sizing: border-box. */
@@ -540,13 +465,6 @@ a {
   padding: 0.25em;
   cursor: pointer;
   text-decoration: underline;
-}
-
-#year-container .arrangement-controls {
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1em;
-  justify-content: center;
 }
 
 .filters-container {
@@ -619,12 +537,6 @@ a {
   margin-bottom: 1em;
 }
 
-.arrangement-controls-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 hr {
   border: none;
   border-top: 3px double #333;
@@ -643,12 +555,12 @@ hr {
 .project-window {
   box-shadow: #333 4px 4px;
   border: solid 1px #666;
+  max-width: 100%;
 }
 
 .tych {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  border: solid 1px #333;
+  width: 80%;
 }
 
 @media all and (max-height: 320px) {
@@ -667,7 +579,30 @@ hr {
 }
 
 @media all and (max-height: 568px) {
+  body {
+    font-size: 18px;
+  }
+
+  header {
+    margin-bottom: 0;
+  }
+
+  #basic-project-list {
+    padding-left: 3em;
+    padding-right: 2em;
+  }
+
+  #list-container {
+    max-width: 100%;
+  }
+
+  .name-link {
+    font-size: 1.2em;
+  }
+
   .details-box {
+    height: 568px;
+    padding: 0;
     max-height: 568px;
     overflow: scroll;
   }

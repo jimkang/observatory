@@ -48,7 +48,8 @@ function RenderYearView({ onDeedClick }) {
     var newYears = years
       .enter()
       .append('div')
-      .classed('year', true);
+      .classed('year', true)
+      .classed('centered-col', true);
     newYears.append('div').classed('year-title', true);
     newYears.append('div').classed('month-root', true);
 
@@ -67,7 +68,8 @@ function RenderYearView({ onDeedClick }) {
     var newMonths = months
       .enter()
       .append('div')
-      .classed('month', true);
+      .classed('month', true)
+      .classed('centered-col', true);
     newMonths.append('div').classed('month-title', true);
     newMonths.append('div').classed('month-sort-section-root', true);
 
