@@ -52,7 +52,11 @@ function RenderPolyptych() {
         project.deeds &&
         project.deeds.length > projectSizeBucketBoundaries[0]
       ) {
-        sizeClass = pick(['wide-tych', 'tall-tych']);
+        if (project.profileImage) {
+          sizeClass = 'tall-tych';
+        } else {
+          sizeClass = pick(['wide-tych', 'tall-tych']);
+        }
         if (project.deeds.length > projectSizeBucketBoundaries[1]) {
           sizeClass = 'big-tych';
         }

@@ -534,6 +534,8 @@ hr {
   box-shadow: #333 4px 4px;
   border: solid 1px #666;
   max-width: 100%;
+  /* Chrome needs this explicitly to fit it in a grid item. */
+  max-height: 70%;
   margin-bottom: 1em;
 }
 
@@ -543,7 +545,7 @@ hr {
 
 #polyptych-root {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 25% 25% 25% 25%;
   grid-auto-rows: 15em;
   grid-auto-flow: dense;
   justify-content: stretch;
@@ -552,6 +554,7 @@ hr {
 .tych {
   border: solid 1px #333;
   padding: 1em;
+  overflow: auto;
 }
 
 .small-tych {
