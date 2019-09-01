@@ -77,6 +77,7 @@ header {
 
 .title {
   font-size: 2em;
+  margin-bottom: 0.5em;
 }
 
 .view-nav {
@@ -107,10 +108,6 @@ header {
   /* padding is not accepted by Firefox here. */
 }
 
-.github-info label {
-  /* text-align: right; */
-}
-
 .github-info button {
   background-color: white;
   padding: 0.5em;
@@ -119,7 +116,6 @@ header {
   border-color: #333;
   font-size: 1.2em;
   font-weight: bold;
-  /* height: 2.4em; */
   margin-top: 1em;
   cursor: pointer;
   text-transform: uppercase;
@@ -209,7 +205,6 @@ a {
 }
 
 .deed-details {
-  /*border: 1px dotted;*/
   background-color: #444;
   color: white;
   padding: 0.75em;
@@ -238,7 +233,6 @@ a {
   cursor: pointer;
   background-color: white;
   padding: 0.5em;
-  /*! border-radius: 1em; */
   border-width: 1px;
   border-color: #333;
   margin-bottom: 1.5em;
@@ -291,7 +285,6 @@ a {
 
 #basic-project-list {
   padding-left: 4em;
-  /*padding-right: 2em;*/
 }
 
 #list-container {
@@ -427,18 +420,11 @@ a {
   cursor: pointer;
 }
 
-.arrangement-controls {
-  /*! display: flex; */
-  /*! flex-wrap: wrap; */
-}
-
 .arrangement-controls .control-container {
   margin: 1em;
   /* Specifying width here will make this element the width 
  * without the margin added, seemingly even with box-sizing: border-box. */
-  /*! max-width: 33%; */
   flex-grow: 1;
-  /*! width: 10em; */
   margin-top: 0;
 }
 
@@ -447,15 +433,11 @@ a {
   width: 100%;
   margin-top: 0;
   margin-bottom: 0.5em;
-  /*! font-weight: normal; */
-  /*! font-size: larger; */
-  /*! font-style: italic; */
 }
 
 .arrangement-controls ul {
   margin: 0;
   list-style-type: none;
-  /*! text-align: center; */
   width: 100%;
   padding: 0;
 }
@@ -488,8 +470,6 @@ a {
 }
 
 .arrangement-controls .category-title {
-  /*! text-align: center; */
-  /*! padding-top: 0; */
   margin-top: 0;
   font-size: 1em;
   padding-left: 0.2em;
@@ -513,7 +493,6 @@ a {
 #progress-message {
   text-align: center;
   padding: 0.25em;
-  /*! width: 100%; */
   border-radius: 0.25em;
 }
 
@@ -555,6 +534,7 @@ hr {
   box-shadow: #333 4px 4px;
   border: solid 1px #666;
   max-width: 100%;
+  margin-bottom: 1em;
 }
 
 #polyptych-container {
@@ -571,6 +551,7 @@ hr {
 
 .tych {
   border: solid 1px #333;
+  padding: 1em;
 }
 
 .small-tych {
