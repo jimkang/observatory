@@ -26,7 +26,7 @@ function RenderPolyptych() {
     );
     polyptychContainer.classed('hidden', false);
 
-    var tychs = polyptychRoot.selectAll('.tych').data(projectData);
+    var tychs = polyptychRoot.selectAll('.tych').data(projectData, accessor());
     tychs.exit().remove();
     var newTychs = tychs
       .enter()
@@ -47,15 +47,16 @@ function RenderPolyptych() {
     projectWindows.attr('src', accessor('profileImage'));
     currentTychs.select('.description').text(accessor('description'));
 
-    var linksRoots = currentTychs.select('.links-root');
-    var links = linksRoots.data(accessor('links'), accessor('0'));
-    links.exit().remove();
-    var newLinks = links.enter().append('li');
-    newLinks.append('a');
-    newLinks
-      .merge(links)
+    var linksRoots = currentTychs.selectAll('.links-root');
+    var linkItems = linksRoots.data(accessor('links'), accessor('0'));
+    linkItems.exit().remove();
+    var newLinkItems = linkItems.enter().append('li');
+    newLinkItems.append('a');
+    newLinkItems
+      .merge(linkItems)
       .select('a')
       .attr('href', accessor('0'))
+      .attr('target', '_blank')
       .text(accessor('1'));
 
     function getClassStringForTych(project) {
