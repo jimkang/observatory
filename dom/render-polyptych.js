@@ -119,6 +119,11 @@ function getDeedCount(project) {
 }
 
 function focusOnTych(project) {
+  // Don't do anything when links within the tych are clicked.
+  if (d3.event.target.tagName === 'A') {
+    return;
+  }
+
   var currentlySelectedTych = d3.select('.selected-tych');
   if (!currentlySelectedTych.empty()) {
     let currentlySelectedProject = currentlySelectedTych.datum();
