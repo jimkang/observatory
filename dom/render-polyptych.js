@@ -37,6 +37,7 @@ function RenderPolyptych() {
     newTychs.append('div').classed('title', true);
     newTychs.append('img').classed('project-window', true);
     newTychs.append('div').classed('description', true);
+    newTychs.append('ul').classed('links-root', true);
 
     var currentTychs = newTychs.merge(tychs);
     currentTychs.attr('class', getClassStringForTych);
@@ -45,6 +46,17 @@ function RenderPolyptych() {
     projectWindows.classed('hidden', doesNotHaveProfileImage);
     projectWindows.attr('src', accessor('profileImage'));
     currentTychs.select('.description').text(accessor('description'));
+
+    var linksRoots = currentTychs.select('.links-root');
+    var links = linksRoots.data(accessor('links'), accessor('0'));
+    links.exit().remove();
+    var newLinks = links.enter().append('li');
+    newLinks.append('a');
+    newLinks
+      .merge(links)
+      .select('a')
+      .attr('href', accessor('0'))
+      .text(accessor('1'));
 
     function getClassStringForTych(project) {
       var sizeClass = 'small-tych';

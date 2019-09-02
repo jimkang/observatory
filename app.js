@@ -1,5 +1,6 @@
 var RouteState = require('route-state');
 var ProjectsFlow = require('./flows/projects-flow');
+var handleError = require('handle-error-web');
 
 var routeState;
 var projectsFlow;
@@ -19,6 +20,7 @@ var visibleRouteDefaults = {
 };
 
 (function go() {
+  window.onerror = reportTopLevelError;
   routeState = RouteState({
     followRoute,
     windowObject: window
@@ -67,4 +69,8 @@ function defaultsCovered({ dictToCover, dictToCheck }) {
     }
   }
   return true;
+}
+
+function reportTopLevelError(msg, url, lineNo, columnNo, error) {
+  handleError(error);
 }
