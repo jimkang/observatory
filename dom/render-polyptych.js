@@ -40,14 +40,28 @@ function RenderPolyptych() {
       .classed('centered-col', true)
       .on('click', focusOnTych);
 
-    newTychs.append('div').classed('title', true);
-    newTychs.append('img').classed('project-window', true);
+    newTychs
+      .append('div')
+      .classed('title', true)
+      .append('a')
+      .classed('title-link', true)
+      .attr('target', '_blank');
+    newTychs
+      .append('a')
+      .classed('project-window-link', true)
+      .attr('target', '_blank')
+      .append('img')
+      .classed('project-window', true);
     newTychs.append('div').classed('description', true);
     newTychs.append('ul').classed('links-root', true);
 
     var currentTychs = newTychs.merge(tychs);
     currentTychs.attr('class', getClassStringForTych);
-    currentTychs.select('.title').text(accessor('name'));
+    currentTychs
+      .select('.title-link')
+      .text(accessor('name'))
+      .attr('href', getMainLinkHref);
+    currentTychs.select('.project-window-link').attr('href', getMainLinkHref);
     var projectWindows = currentTychs.select('.project-window');
     projectWindows.classed('hidden', doesNotHaveProfileImage);
     projectWindows.attr('src', accessor('profileImage'));
@@ -86,13 +100,12 @@ function RenderPolyptych() {
   }
 }
 
-function getMainLink(project) {
-  if (project.links && project.links.length > 0) {
-    return project.links[0][0];
+function getMainLinkHref(project) {
+  var links = getLinks(project);
+  if (links.length > 0) {
+    return links[0][0];
   }
-  if (project.metalinks && project.metalinks.length > 0) {
-    return project.metalinks[0][0];
-  }
+  return '';
 }
 
 function doesNotHaveProfileImage(project) {
@@ -140,18 +153,23 @@ function focusOnTych(project) {
 }
 
 function getLinks(project) {
-  if (project.links && Array.isArray(project.links)) {
-    if (project.links.length < 1) {
-      return project.links;
+  return getLinkArraySafely(project.links).concat(
+    getLinkArraySafely(project.sources)
+  );
+}
+
+function getLinkArraySafely(linkArray) {
+  if (linkArray && Array.isArray(linkArray)) {
+    if (linkArray.length < 1) {
+      return [];
     }
     // If the project does have links, each link
     // should be an array. Starting with just
     // checking the first one.
-    if (Array.isArray(project.links[0])) {
-      return project.links;
+    if (Array.isArray(linkArray[0])) {
+      return linkArray;
     }
   }
-  //console.log('Project without proper links:', project);
   return [];
 }
 
