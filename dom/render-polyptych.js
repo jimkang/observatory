@@ -6,6 +6,11 @@ var {
 } = require('../comparators');
 var curry = require('lodash.curry');
 var pick = require('probable').pick;
+var Crown = require('csscrown');
+
+var crown = Crown({
+  crownClass: 'selected-tych'
+});
 
 var polyptychContainer = d3.select('#polyptych-container');
 var polyptychRoot = d3.select('#polyptych-root');
@@ -32,7 +37,8 @@ function RenderPolyptych() {
       .enter()
       .append('div')
       .classed('tych', true)
-      .classed('centered-col', true);
+      .classed('centered-col', true)
+      .on('click', focusOnTych);
 
     newTychs.append('div').classed('title', true);
     newTychs.append('img').classed('project-window', true);
@@ -109,6 +115,22 @@ function getDeedCount(project) {
     return project.deeds.length;
   }
   return 0;
+}
+
+function focusOnTych(project) {
+  var currentlySelectedTych = d3.select('.selected-tych');
+  if (!currentlySelectedTych.empty()) {
+    let currentlySelectedProject = currentlySelectedTych.datum();
+    if (currentlySelectedProject.id === project.id) {
+      this.classList.remove('selected-tych');
+      this.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+  }
+
+  // Give the selected-tych class to this element.
+  crown(this);
+  this.scrollIntoView({ behavior: 'smooth' });
 }
 
 module.exports = RenderPolyptych;
