@@ -54,7 +54,8 @@ function RenderPolyptych() {
     currentTychs.select('.description').text(accessor('description'));
 
     var linksRoots = currentTychs.selectAll('.links-root');
-    var linkItems = linksRoots.data(accessor('links'), accessor('0'));
+
+    var linkItems = linksRoots.selectAll('li').data(getLinks, accessor('0'));
     linkItems.exit().remove();
     var newLinkItems = linkItems.enter().append('li');
     newLinkItems.append('a');
@@ -131,6 +132,22 @@ function focusOnTych(project) {
   // Give the selected-tych class to this element.
   crown(this);
   this.scrollIntoView({ behavior: 'smooth' });
+}
+
+function getLinks(project) {
+  if (project.links && Array.isArray(project.links)) {
+    if (project.links.length < 1) {
+      return project.links;
+    }
+    // If the project does have links, each link
+    // should be an array. Starting with just
+    // checking the first one.
+    if (Array.isArray(project.links[0])) {
+      return project.links;
+    }
+  }
+  //console.log('Project without proper links:', project);
+  return [];
 }
 
 module.exports = RenderPolyptych;
