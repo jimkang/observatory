@@ -1,7 +1,7 @@
 var d3 = require('d3-selection');
 var accessor = require('accessor');
 var {
-  compareDescWithSortKey,
+  compareDescShippedAndFeaturedStatus,
   compareByDeedCountAsc
 } = require('../comparators');
 var curry = require('lodash.curry');
@@ -14,7 +14,6 @@ var crown = Crown({
 
 var polyptychContainer = d3.select('#polyptych-container');
 var polyptychRoot = d3.select('#polyptych-root');
-var compareDescShipped = curry(compareDescWithSortKey)('shippedDate');
 
 function RenderPolyptych() {
   return renderPolyptych;
@@ -23,7 +22,7 @@ function RenderPolyptych() {
     var projectSizeBucketBoundaries = getProjectSizeBucketBoundaries(
       projectData
     );
-    projectData.sort(compareDescShipped);
+    projectData.sort(compareDescShippedAndFeaturedStatus);
 
     d3.selectAll('.view-root:not(#polyptych-container)').classed(
       'hidden',
@@ -139,7 +138,12 @@ function RenderPolyptych() {
           sizeClass = 'big-tych';
         }
       }
-      return 'tych centered-col ' + sizeClass;
+
+      var classString = 'tych centered-col ' + sizeClass;
+      if (project.featuredStatus === 'featured') {
+        classString += ' featured';
+      }
+      return classString;
     }
   }
 }

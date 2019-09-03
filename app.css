@@ -582,6 +582,10 @@ hr {
   grid-column-end: span 4;
   grid-row-end: span 2;
 }
+
+.tych.featured {
+  background-color: #ffc;
+}
   
 @media all and (max-height: 320px) {
   .details-box {
