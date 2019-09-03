@@ -1,5 +1,5 @@
 var d3 = require('d3-selection');
-var accessor = require('accessor')();
+var accessor = require('accessor');
 var {
   compareDescWithSortKey,
   compareByDeedCountAsc
@@ -54,6 +54,32 @@ function RenderPolyptych() {
       .classed('project-window', true);
     newTychs.append('div').classed('description', true);
     newTychs.append('ul').classed('links-root', true);
+    var newStats = newTychs.append('ul').classed('stats', true);
+    appendItemWithLabelAndValue({
+      parentSel: newStats,
+      className: 'last-updated-date',
+      label: 'Last updated'
+    });
+    appendItemWithLabelAndValue({
+      parentSel: newStats,
+      className: 'shipped-date',
+      label: 'Date shipped'
+    });
+    appendItemWithLabelAndValue({
+      parentSel: newStats,
+      className: 'start-date',
+      label: 'Date started'
+    });
+    appendItemWithLabelAndValue({
+      parentSel: newStats,
+      className: 'project-age',
+      label: 'Project age'
+    });
+    appendItemWithLabelAndValue({
+      parentSel: newStats,
+      className: 'activity-count',
+      label: 'Activities'
+    });
 
     var currentTychs = newTychs.merge(tychs);
     currentTychs.attr('class', getClassStringForTych);
@@ -79,6 +105,24 @@ function RenderPolyptych() {
       .attr('href', accessor('0'))
       .attr('target', '_blank')
       .text(accessor('1'));
+
+    // Consider pre-currying these, if there's any noticeable
+    // performance impact.
+    currentTychs
+      .select('.start-date .value')
+      .text(curry(getReadableDate)('startDate'));
+    currentTychs
+      .select('.shipped-date .value')
+      .text(curry(getReadableDate)('shippedDate'));
+    currentTychs
+      .select('.last-updated-date .value')
+      .text(curry(getReadableDate)('lastActiveDate'));
+    currentTychs
+      .select('.project-age .value')
+      .text(accessor('activitySpanInDays'));
+    currentTychs
+      .select('.activity-count .value')
+      .text(accessor({ path: 'activities/length' }));
 
     function getClassStringForTych(project) {
       var sizeClass = 'small-tych';
@@ -171,6 +215,22 @@ function getLinkArraySafely(linkArray) {
     }
   }
   return [];
+}
+
+function appendItemWithLabelAndValue({ parentSel, className, label }) {
+  var item = parentSel.append('li').classed(className, true);
+  item
+    .append('span')
+    .classed('label', true)
+    .text(label + ': ');
+  item.append('span').classed('value', true);
+}
+
+function getReadableDate(prop, project) {
+  if (project[prop]) {
+    return project[prop].toLocaleDateString();
+  }
+  return 'Never';
 }
 
 module.exports = RenderPolyptych;

@@ -1,5 +1,5 @@
 var d3 = require('d3-selection');
-var accessor = require('accessor')();
+var accessor = require('accessor');
 var arrangeProjectDataByYear = require('../arrange-project-data-by-year');
 var mergeYearKits = require('../merge-year-kits');
 var findWhere = require('lodash.findwhere');

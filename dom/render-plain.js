@@ -1,5 +1,5 @@
 var d3 = require('d3-selection');
-var accessor = require('accessor')();
+var accessor = require('accessor');
 var GetPropertySafely = require('get-property-safely');
 var renderDetailInnards = require('./render-detail-innards');
 var comparators = require('../comparators');
