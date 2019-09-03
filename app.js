@@ -13,8 +13,8 @@ var routeDefaults = {
 };
 
 var visibleRouteDefaults = {
-  view: 'polyptych',
-  filterCriteriaNames: 'featured'
+  view: 'polyptych'
+  //filterCriteriaNames: 'featured'
   //sortCriterionName: undefined,
   //groupByCriterionName: undefined
 };
@@ -56,9 +56,6 @@ function followRoute(routeOpts) {
 
 function changeView(newViewname) {
   var routeAdditions = { view: newViewname };
-  if (newViewname === 'polyptych') {
-    routeAdditions.filterCriteriaNames = 'featured';
-  }
   routeState.addToRoute(routeAdditions);
 }
 
