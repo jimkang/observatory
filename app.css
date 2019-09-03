@@ -602,6 +602,19 @@ hr {
   }
 }
 
+@media all and (max-width: 1280px) {
+  #polyptych-root {
+    grid-template-columns: 33% 34% 33%;
+  }
+}
+
+
+@media all and (max-width: 568px) {
+  #polyptych-root {
+    grid-template-columns: 50% 50%;
+  }
+}
+
 @media all and (max-height: 568px) {
   body {
     font-size: 18px;
