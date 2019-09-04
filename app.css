@@ -551,11 +551,12 @@ hr {
 }
 
 .tych {
-  border: solid 1px #333;
+  border: double 8px #333;
   padding: 1em;
   overflow: auto;
   cursor: pointer;
   word-break: break-word;
+  /*! margin-bottom: 2em; */
 }
 
 .small-tych {
@@ -585,6 +586,27 @@ hr {
 
 .tych.featured {
   background-color: #ffc;
+}
+
+.tych .links-root {
+  list-style-type: none;
+  padding-left: 0;
+  margin-top: 2em;
+}
+
+.tych .links-root li {
+  text-align: center;
+  font-size: 1.2em;
+  margin-bottom: 0.5em;
+  font-weight: 700;
+}
+
+.tych .description {
+  text-align: center;
+}
+
+.tych .title {
+  margin-bottom: 1em;
 }
   
 @media all and (max-height: 320px) {
