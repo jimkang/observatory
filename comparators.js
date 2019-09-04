@@ -46,27 +46,37 @@ function compareDescWithSortKey(sortBy, objectA, objectB) {
   }
 }
 
-// Put featured projects at the top.
-function compareDescShippedAndFeaturedStatus(objectA, objectB) {
-  if (
-    objectA.featuredStatus === 'featured' &&
-    objectB.featuredStatus !== 'featured'
-  ) {
-    return -1;
-  }
-  if (
-    objectA.featuredStatus !== 'featured' &&
-    objectB.featuredStatus === 'featured'
-  ) {
-    return 1;
+// Put featured, important projects at the top.
+function compareDescForPolyptych(objectA, objectB) {
+  const scoreA = scoreProjectForPolyptchSort(objectA);
+  const scoreB = scoreProjectForPolyptchSort(objectB);
+
+  if (scoreA === scoreB) {
+    if (objectA.shippedDate < objectB.shippedDate) {
+      return 1;
+    } else {
+      return -1;
+    }
   }
 
-  if (objectA.shippedDate < objectB.shippedDate) {
-    return 1;
-  } else {
+  if (scoreA > scoreB) {
     return -1;
   }
+  return 1;
 }
+
+// Higher score => earlier in list.
+function scoreProjectForPolyptchSort(project) {
+  var score = 0;
+  if (project.featuredStatus === 'featured') {
+    score += 100000;
+  }
+  if (!isNaN(project.importance)) {
+    score += project.importance * 10;
+  }
+  return score;
+}
+
 // A little biased in favor of projectB.
 function compareByDeedCountAsc(projectA, projectB) {
   if (
@@ -86,5 +96,5 @@ module.exports = {
   compareDesc,
   compareDescWithSortKey,
   compareByDeedCountAsc,
-  compareDescShippedAndFeaturedStatus
+  compareDescForPolyptych
 };

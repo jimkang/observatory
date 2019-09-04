@@ -1,7 +1,7 @@
 var d3 = require('d3-selection');
 var accessor = require('accessor');
 var {
-  compareDescShippedAndFeaturedStatus,
+  compareDescForPolyptych,
   compareByDeedCountAsc
 } = require('../comparators');
 var curry = require('lodash.curry');
@@ -23,7 +23,7 @@ function RenderPolyptych() {
     var projectSizeBucketBoundaries = getProjectSizeBucketBoundaries(
       projectData
     );
-    projectData.sort(compareDescShippedAndFeaturedStatus);
+    projectData.sort(compareDescForPolyptych);
 
     d3.selectAll('.view-root:not(#polyptych-container)').classed(
       'hidden',
