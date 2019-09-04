@@ -585,8 +585,8 @@ hr {
   border-width: 16px;
 }
 
-.tych.featured {
-  background-color: #ffc;
+.tych.featured .title {
+  font-weight: 700;
 }
 
 .tych .links-root {
