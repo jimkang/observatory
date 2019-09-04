@@ -2,15 +2,11 @@ var d3 = require('d3-selection');
 var GetPropertySafely = require('get-property-safely');
 var hierarchy = require('d3-hierarchy');
 var countDeedsInProjects = require('../count-deeds-in-projects');
-var GetEvenIndexForString = require('../get-even-index-for-string');
+var getGardenColorForProject = require('./get-garden-color-for-project');
 
 const widthLimit = 800;
 var deedsKey = GetPropertySafely('deeds', []);
 // TODO: This shuffling should be done in the build step, or in Megaswatch.
-var gardenColors = reorderByBucket(require('./garden-colors.json'), 9);
-var getColorIndexForString = GetEvenIndexForString({
-  arrayLength: gardenColors.length
-});
 
 const cellLength = 40;
 const squarePixelAreaPerDeed = cellLength * cellLength;
@@ -128,16 +124,8 @@ function RenderGarden({ onDeedClick }) {
       }
     }
 
-    function projectColor(d) {
-      if (d.data.id) {
-        return gardenColors[getColorIndexForString(d.data.id)];
-      } else {
-        return '#fff';
-      }
-    }
-
     function deedColor(d) {
-      return projectColor(d.parent);
+      return getGardenColorForProject(d.parent);
     }
   }
 
@@ -241,23 +229,6 @@ function getRegionHeight(d) {
 function getLabelTransform(d) {
   return `translate(${d.labelDisplayDetails.center.x} ${d.labelDisplayDetails.center.y})
     rotate(${d.labelDisplayDetails.rotation})`;
-}
-
-// Reordering the color array by buckets is a way of making sure adjacent hues
-// are separated.
-function reorderByBucket(array, numberOfBuckets) {
-  var reconstituted = [];
-  const bucketSize = ~~(array.length / numberOfBuckets);
-  for (var i = 0; i < array.length; ++i) {
-    var reconstitutedIndex =
-      (i % numberOfBuckets) * bucketSize + ~~(i / numberOfBuckets);
-    if (reconstitutedIndex >= array.length) {
-      break;
-    } else {
-      reconstituted[reconstitutedIndex] = array[i];
-    }
-  }
-  return reconstituted;
 }
 
 function TrackingColorer() {

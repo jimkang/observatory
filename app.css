@@ -13,8 +13,6 @@ body {
   font-size: 24px;
   margin-bottom: 4em;
   width: 100%;
-  background: linear-gradient(hsla(0, 0%, 100%, 0.7), hsla(0, 0%, 100%, 0.9)), url(noise.svg);
-  background-repeat: repeat;
 }
 
 .form-pair {
@@ -542,6 +540,11 @@ hr {
 
 #polyptych-container {
   width: 100%;
+  color: #333;
+}
+
+#polyptych-container a {
+  color: #333;
 }
 
 #polyptych-root {

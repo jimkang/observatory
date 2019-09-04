@@ -7,6 +7,7 @@ var {
 var curry = require('lodash.curry');
 var pick = require('probable').pick;
 var Crown = require('csscrown');
+var getGardenColorForProject = require('./get-garden-color-for-project');
 
 var crown = Crown({
   crownClass: 'selected-tych'
@@ -85,7 +86,8 @@ function RenderPolyptych() {
     currentTychs
       .select('.title-link')
       .text(accessor('name'))
-      .attr('href', getMainLinkHref);
+      .attr('href', getMainLinkHref)
+      .style('text-decoration-color', getGardenColorForProject);
     currentTychs.select('.project-window-link').attr('href', getMainLinkHref);
     var projectWindows = currentTychs.select('.project-window');
     projectWindows.classed('hidden', doesNotHaveProfileImage);
@@ -122,6 +124,8 @@ function RenderPolyptych() {
     currentTychs
       .select('.activity-count .value')
       .text(accessor({ path: 'activities/length' }));
+
+    currentTychs.style('border-color', getGardenColorForProject);
 
     function getClassStringForTych(project) {
       var sizeClass = 'small-tych';
