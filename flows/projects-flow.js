@@ -4,6 +4,7 @@ var RenderGarden = require('../dom/render-garden');
 var renderHeader = require('../dom/render-header');
 var RenderDeedDetails = require('../dom/render-deed-details');
 var RenderYearView = require('../dom/render-year-view');
+var RenderPolyptych = require('../dom/render-polyptych');
 var values = require('lodash.values');
 var omit = require('lodash.omit');
 var addDeedToProject = require('add-deed-to-project');
@@ -35,7 +36,8 @@ function ProjectsFlow({
   sortCriterionName,
   groupByCriterionName,
   filterMode,
-  showControls
+  showControls,
+  commitSourceURL
 }) {
   // These should be passed to the render function on a re-render.
   // When the route changes, app will call updateOpts to update
@@ -70,7 +72,8 @@ function ProjectsFlow({
     }),
     year: RenderYearView({
       onDeedClick: renderDetailsOnYearsView
-    })
+    }),
+    polyptych: RenderPolyptych({})
   };
 
   var throttledCallRender = EaseThrottle({ fn: callRender });
@@ -86,7 +89,8 @@ function ProjectsFlow({
       {
         request,
         onRepo: collectProject,
-        onCommit: collectDeed
+        onCommit: collectDeed,
+        commitSourceURL
       },
       onStreamEnd
     );

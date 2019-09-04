@@ -1,4 +1,4 @@
-<html>
+<html class="centered-col">
   <head>
     <title>Observatory</title>
     <meta charset="utf-8" />
@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="https://use.typekit.net/dhg1sys.css" />
   </head>
-  <body>
+  <body class="centered-col">
     <pre id="status-message" class="hidden"></pre>
 
     <header>
@@ -20,6 +20,13 @@
       </div>
 
       <div class="view-nav">
+        <a
+          id="polyptych-view-button"
+          class="view-button"
+          data-viewname="polyptych"
+          >Polyptych</a
+        >
+        |
         <a id="garden-view-button" class="view-button" data-viewname="garden"
           >Garden</a
         >
@@ -40,9 +47,9 @@
       </div>
     </header>
 
-    <div class="arrangement-controls-container">
+    <div class="centered-col arrangement-controls-container">
       <a class="show-arrangement-controls-button">Filters</a>
-      <div class="arrangement-controls hidden">
+      <div class="centered-col arrangement-controls hidden">
         <div class="mode-controls">
           Show projects that match:
           <input
@@ -60,7 +67,7 @@
           />
           <label for="filter-every-option"><strong>All</strong> criteria</label>
         </div>
-        <div class="control-container filters-container">
+        <div class="centered-col control-container filters-container">
           <div class="filter-list"></div>
           <a class="hide-arrangement-controls-button">Hide filters</a>
         </div>
@@ -77,11 +84,11 @@
         details about the deed and project.
       </div>
 
-      <div class="zoom-protect-container">
+      <div class="zoom-protect-container centered-col">
         <div id="garden-details-layer" class="details-layer destroyed"></div>
       </div>
 
-      <div class="canvases-container">
+      <div class="centered-col canvases-container">
         <canvas id="garden-board" width="800" height="0"></canvas>
         <svg id="garden-board-labels">
           <g class="field-label-layer" transform="translate(4, 15)"></g>
@@ -93,7 +100,7 @@
     <div id="year-container" class="view-root hidden">
       <div class="instruction">Click on a project to see details about it.</div>
 
-      <div id="years-root"></div>
+      <div id="years-root" class="centered-col"></div>
 
       <div class="explanation">
         <strong>*</strong>When a project is listed as <em>Grown</em> in a month,
@@ -108,6 +115,11 @@
       <div id="years-details-layer" class="details-layer destroyed"></div>
     </div>
 
+    <div id="polyptych-container" class="view-root hidden">
+      <div id="polyptych-root"></div>
+      <div id="polyptych-details-layer" class="details-layer destroyed"></div>
+    </div>
+
     <hr />
 
     <div class="explanation">
@@ -117,7 +129,7 @@
       </p>
     </div>
 
-    <section class="github-info">
+    <section class="github-info centered-col">
       <div class="title">Want to see your own projects?</div>
 
       <a href="mailto:jimkang@gmail.com">Email me if you're interested!</a>

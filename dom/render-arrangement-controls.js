@@ -1,6 +1,6 @@
 var d3 = require('d3-selection');
 var curry = require('lodash.curry');
-var accessor = require('accessor')();
+var accessor = require('accessor');
 var groupBy = require('lodash.groupby');
 var listParser = require('../route-list-parser');
 var criteria = require('../criteria');

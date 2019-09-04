@@ -1,4 +1,4 @@
-var accessor = require('accessor')();
+var accessor = require('accessor');
 
 function renderDeedDetailInnards({ parent, deed, project, user }) {
   var projectDetails = parent.select('.project-details');

@@ -1,5 +1,6 @@
 var RouteState = require('route-state');
 var ProjectsFlow = require('./flows/projects-flow');
+var handleError = require('handle-error-web');
 
 var routeState;
 var projectsFlow;
@@ -8,14 +9,18 @@ var routeDefaults = {
   user: 'jimkang',
   userEmail: 'jimkang@gmail.com',
   verbose: false,
-  view: 'garden',
-  sortBy: 'lastActive',
-  filterCriteriaNames: '',
-  sortCriterionName: undefined,
-  groupByCriterionName: undefined
+  commitSourceURL: 'https://smidgeo.com/observatory-cache/jimkang-cache.json'
+};
+
+var visibleRouteDefaults = {
+  view: 'polyptych'
+  //filterCriteriaNames: 'featured'
+  //sortCriterionName: undefined,
+  //groupByCriterionName: undefined
 };
 
 (function go() {
+  window.onerror = reportTopLevelError;
   routeState = RouteState({
     followRoute,
     windowObject: window
@@ -24,7 +29,18 @@ var routeDefaults = {
 })();
 
 function followRoute(routeOpts) {
+  if (
+    !defaultsCovered({
+      dictToCover: visibleRouteDefaults,
+      dictToCheck: routeOpts
+    })
+  ) {
+    routeState.addToRoute(Object.assign(visibleRouteDefaults, routeOpts));
+    return;
+  }
+
   var opts = Object.assign({ routeState }, routeDefaults, routeOpts);
+
   if (!projectsFlow) {
     projectsFlow = ProjectsFlow(opts);
     projectsFlow.start();
@@ -39,5 +55,19 @@ function followRoute(routeOpts) {
 }
 
 function changeView(newViewname) {
-  routeState.addToRoute({ view: newViewname });
+  var routeAdditions = { view: newViewname };
+  routeState.addToRoute(routeAdditions);
+}
+
+function defaultsCovered({ dictToCover, dictToCheck }) {
+  for (var key in dictToCover) {
+    if (!(key in dictToCheck)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function reportTopLevelError(msg, url, lineNo, columnNo, error) {
+  handleError(error);
 }

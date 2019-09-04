@@ -1,12 +1,15 @@
 var ndjson = require('ndjson');
 
-function getUserCommitsFromServer({ request, onRepo, onCommit }, done) {
+function getUserCommitsFromServer(
+  { request, onRepo, onCommit, commitSourceURL },
+  done
+) {
   var ndjsonParsingStream = ndjson.parse();
   ndjsonParsingStream.on('data', emitObject);
   ndjsonParsingStream.on('error', done);
 
   var reqOpts = {
-    url: 'https://smidgeo.com/observatory-cache/jimkang-cache.json',
+    url: commitSourceURL,
     method: 'GET',
     onData: writeToStream
   };

@@ -46,10 +46,45 @@ function compareDescWithSortKey(sortBy, objectA, objectB) {
   }
 }
 
+// Put featured projects at the top.
+function compareDescShippedAndFeaturedStatus(objectA, objectB) {
+  if (
+    objectA.featuredStatus === 'featured' &&
+    objectB.featuredStatus !== 'featured'
+  ) {
+    return -1;
+  }
+  if (
+    objectA.featuredStatus !== 'featured' &&
+    objectB.featuredStatus === 'featured'
+  ) {
+    return 1;
+  }
+
+  if (objectA.shippedDate < objectB.shippedDate) {
+    return 1;
+  } else {
+    return -1;
+  }
+}
+// A little biased in favor of projectB.
+function compareByDeedCountAsc(projectA, projectB) {
+  if (
+    projectA.deeds &&
+    projectB.deeds &&
+    projectA.deeds.length < projectB.deeds.length
+  ) {
+    return -1;
+  }
+  return 1;
+}
+
 module.exports = {
   compareLastUpdatedDesc,
   compareActivityGroupStartDateDesc,
   compareActivityGroupStartDateAsc,
   compareDesc,
-  compareDescWithSortKey
+  compareDescWithSortKey,
+  compareByDeedCountAsc,
+  compareDescShippedAndFeaturedStatus
 };

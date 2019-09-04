@@ -1,7 +1,10 @@
-html {
+.centered-col {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+html {
   width: 100%;
 }
 
@@ -9,27 +12,7 @@ body {
   font-family: museo-sans, sans-serif;
   font-size: 24px;
   margin-bottom: 4em;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   width: 100%;
-}
-
-.project-editor {
-  display: flex;
-  flex-direction: column;
-  width: 50%;
-}
-
-div[contenteditable] {
-  border: 2px dashed #777;
-  border-radius: 0.2em;
-  padding: 0.2em;
-  margin-top: 0.2em;
-  margin-bottom: 0.2em;
-  font-size: 0.9em;
-  font-family: "Helvetica Neue", sans-serif;
-  flex-grow: 1;
 }
 
 .form-pair {
@@ -63,11 +46,8 @@ div[contenteditable] {
 }
 
 .zoom-protect-container {
-  display: flex;
   width: 100%;
-  flex-direction: column;
   position: relative;
-  align-items: center;
 }
 
 .gutter {
@@ -97,6 +77,7 @@ header {
 
 .title {
   font-size: 2em;
+  margin-bottom: 0.5em;
 }
 
 .view-nav {
@@ -118,9 +99,6 @@ header {
 .github-info {
   margin-top: 2em;
   margin-bottom: 2em;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .github-info input {
@@ -128,10 +106,6 @@ header {
   height: 2em;
   margin-left: 1em;
   /* padding is not accepted by Firefox here. */
-}
-
-.github-info label {
-  /* text-align: right; */
 }
 
 .github-info button {
@@ -142,7 +116,6 @@ header {
   border-color: #333;
   font-size: 1.2em;
   font-weight: bold;
-  /* height: 2.4em; */
   margin-top: 1em;
   cursor: pointer;
   text-transform: uppercase;
@@ -164,11 +137,8 @@ a {
 }
 
 .canvases-container {
-  display: flex;
   width: 100%;
-  flex-direction: column;
   position: relative;
-  align-items: center;
 }
 
 #garden-board {
@@ -235,7 +205,6 @@ a {
 }
 
 .deed-details {
-  /*border: 1px dotted;*/
   background-color: #444;
   color: white;
   padding: 0.75em;
@@ -264,7 +233,6 @@ a {
   cursor: pointer;
   background-color: white;
   padding: 0.5em;
-  /*! border-radius: 1em; */
   border-width: 1px;
   border-color: #333;
   margin-bottom: 1.5em;
@@ -317,7 +285,6 @@ a {
 
 #basic-project-list {
   padding-left: 4em;
-  /*padding-right: 2em;*/
 }
 
 #list-container {
@@ -389,56 +356,9 @@ a {
   font-size: 0.5em;
 }
 
-@media all and (max-height: 568px) {
-  body {
-    font-size: 18px;
-  }
-
-  header {
-    margin-bottom: 0;
-  }
-
-  #basic-project-list {
-    padding-left: 3em;
-    padding-right: 2em;
-  }
-
-  #list-container {
-    max-width: 100%;
-  }
-
-  .name-link {
-    font-size: 1.2em;
-  }
-
-  .details-box {
-    height: 568px;
-    padding: 0;
-  }
-}
-
-#years-root {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.year {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .year-title {
-  font-size: 2em;
+  font-size: 10em;
   font-weight: 500;
-  margin-bottom: 0.5em;
-}
-
-.month {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .month-root {
@@ -500,22 +420,11 @@ a {
   cursor: pointer;
 }
 
-.arrangement-controls {
-  /*! display: flex; */
-  /*! flex-wrap: wrap; */
-}
-
 .arrangement-controls .control-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   margin: 1em;
   /* Specifying width here will make this element the width 
  * without the margin added, seemingly even with box-sizing: border-box. */
-  /*! max-width: 33%; */
-  flex-basis: 0;
   flex-grow: 1;
-  /*! width: 10em; */
   margin-top: 0;
 }
 
@@ -524,15 +433,11 @@ a {
   width: 100%;
   margin-top: 0;
   margin-bottom: 0.5em;
-  /*! font-weight: normal; */
-  /*! font-size: larger; */
-  /*! font-style: italic; */
 }
 
 .arrangement-controls ul {
   margin: 0;
   list-style-type: none;
-  /*! text-align: center; */
   width: 100%;
   padding: 0;
 }
@@ -541,13 +446,6 @@ a {
   padding: 0.25em;
   cursor: pointer;
   text-decoration: underline;
-}
-
-#year-container .arrangement-controls {
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1em;
-  justify-content: center;
 }
 
 .filters-container {
@@ -572,8 +470,6 @@ a {
 }
 
 .arrangement-controls .category-title {
-  /*! text-align: center; */
-  /*! padding-top: 0; */
   margin-top: 0;
   font-size: 1em;
   padding-left: 0.2em;
@@ -597,7 +493,6 @@ a {
 #progress-message {
   text-align: center;
   padding: 0.25em;
-  /*! width: 100%; */
   border-radius: 0.25em;
 }
 
@@ -620,12 +515,6 @@ a {
   margin-bottom: 1em;
 }
 
-.arrangement-controls-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 hr {
   border: none;
   border-top: 3px double #333;
@@ -641,6 +530,90 @@ hr {
   margin-bottom: 1em;
 }
 
+.project-window {
+  box-shadow: #333 4px 4px;
+  border: solid 1px #666;
+  max-width: 100%;
+  /* Chrome needs this explicitly to fit it in a grid item. */
+  margin-bottom: 1em;
+}
+
+#polyptych-container {
+  width: 100%;
+  color: #333;
+}
+
+#polyptych-container a {
+  color: #333;
+}
+
+#polyptych-root {
+  display: grid;
+  grid-template-columns: 25% 25% 25% 25%;
+  grid-auto-rows: 15em;
+  grid-auto-flow: dense;
+  justify-content: stretch;
+}
+
+.tych {
+  border: double 8px #333;
+  padding: 1em;
+  overflow: auto;
+  cursor: pointer;
+  word-break: break-word;
+}
+
+.small-tych {
+  grid-column-end: span 1;
+  grid-row-end: span 1;
+}
+
+.wide-tych {
+  grid-column-end: span 2;
+  grid-row-end: span 1;
+}
+
+.tall-tych {
+  grid-column-end: span 1;
+  grid-row-end: span 2;
+}
+
+.big-tych {
+  grid-column-end: span 2;
+  grid-row-end: span 2;
+}
+
+.selected-tych {
+  grid-column-end: span 4;
+  grid-row-end: span 2;
+  border-width: 16px;
+}
+
+.tych.featured .title {
+  font-weight: 700;
+}
+
+.tych .links-root {
+  list-style-type: none;
+  padding-left: 0;
+  margin-top: 2em;
+}
+
+.tych .links-root li {
+  text-align: center;
+  font-size: 1.2em;
+  margin-bottom: 0.5em;
+  font-weight: 700;
+}
+
+.tych .description {
+  text-align: center;
+}
+
+.tych .title {
+  margin-bottom: 1em;
+}
+  
 @media all and (max-height: 320px) {
   .details-box {
     max-height: 240px;
@@ -650,10 +623,74 @@ hr {
     border-radius: 0.4em;
     overflow: scroll;
   }
+
+  .project-window {
+    height: 10em;
+  }
+}
+
+@media all and (max-width: 1280px) {
+  #polyptych-root {
+    grid-template-columns: 33% 34% 33%;
+  }
+}
+
+
+@media all and (max-width: 568px) {
+  #polyptych-root {
+    grid-template-columns: 100%;
+  }
+
+  .tych {
+    border-width: 4px;
+  }
+
+  /* A little deceptive to make wide-tych
+ * tall, but there's no other way to give
+ * it its due visual weight here. */
+  .wide-tych {
+    grid-column-end: span 1;
+    grid-row-end: span 2;
+  }
+
+  .big-tych {
+    grid-column-end: span 1;
+    grid-row-end: span 2;
+  }
+
+  .selected-tych {
+    grid-column-end: span 1;
+    grid-row-end: span 2;
+    border-width: 8px;
+  }
+
 }
 
 @media all and (max-height: 568px) {
+  body {
+    font-size: 18px;
+  }
+
+  header {
+    margin-bottom: 0;
+  }
+
+  #basic-project-list {
+    padding-left: 3em;
+    padding-right: 2em;
+  }
+
+  #list-container {
+    max-width: 100%;
+  }
+
+  .name-link {
+    font-size: 1.2em;
+  }
+
   .details-box {
+    height: 568px;
+    padding: 0;
     max-height: 568px;
     overflow: scroll;
   }
