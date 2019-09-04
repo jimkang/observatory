@@ -77,7 +77,7 @@ function RenderPolyptych() {
     appendItemWithLabelAndValue({
       parentSel: newStats,
       className: 'activity-count',
-      label: 'Activities'
+      label: 'Activity count'
     });
 
     var currentTychs = newTychs.merge(tychs);
@@ -90,7 +90,7 @@ function RenderPolyptych() {
     var projectWindows = currentTychs.select('.project-window');
     projectWindows.classed('hidden', doesNotHaveProfileImage);
     projectWindows.attr('src', accessor('profileImage'));
-    currentTychs.select('.description').text(accessor('description'));
+    currentTychs.select('.description').html(accessor('description'));
 
     var linksRoots = currentTychs.selectAll('.links-root');
 
