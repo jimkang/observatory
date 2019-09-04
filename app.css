@@ -547,6 +547,10 @@ hr {
   color: #333;
 }
 
+#polyptych-container .value {
+  font-weight: 700;
+}
+
 #polyptych-root {
   display: grid;
   grid-template-columns: 25% 25% 25% 25%;
@@ -556,11 +560,12 @@ hr {
 }
 
 .tych {
-  border: double 8px #333;
+  border: double 4px #333;
   padding: 1em;
   overflow: auto;
   cursor: pointer;
   word-break: break-word;
+  border-radius: 2px;
 }
 
 .small-tych {
@@ -594,13 +599,12 @@ hr {
 }
 
 .tych .links-root {
-  list-style-type: none;
-  padding-left: 0;
+  /*! padding-left: 0; */
   margin-top: 2em;
 }
 
 .tych .links-root li {
-  text-align: center;
+  /*! text-align: center; */
   font-size: 1.2em;
   margin-bottom: 0.5em;
   font-weight: 700;
@@ -613,7 +617,13 @@ hr {
 .tych .title {
   margin-bottom: 1em;
 }
-  
+
+.tych .stats {
+  list-style-type: none;
+  /*! text-align: center; */
+  padding-left: 0;
+}
+ 
 @media all and (max-height: 320px) {
   .details-box {
     max-height: 240px;
