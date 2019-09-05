@@ -536,6 +536,7 @@ hr {
   max-width: 100%;
   /* Chrome needs this explicitly to fit it in a grid item. */
   margin-bottom: 1em;
+  border-radius: 4px;
 }
 
 #polyptych-container {
