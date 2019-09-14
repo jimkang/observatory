@@ -8,6 +8,7 @@ var curry = require('lodash.curry');
 var pick = require('probable').pick;
 var Crown = require('csscrown');
 var getGardenColorForProject = require('./get-garden-color-for-project');
+var { hsl } = require('d3-color');
 
 var crown = Crown({
   crownClass: 'selected-tych'
@@ -126,6 +127,7 @@ function RenderPolyptych() {
       .text(accessor({ path: 'activities/length' }));
 
     currentTychs.style('border-color', getGardenColorForProject);
+    currentTychs.style('scrollbar-color', getColorsForScrollBar);
 
     function getClassStringForTych(project) {
       var sizeClass = 'small-tych';
@@ -239,6 +241,17 @@ function getReadableDate(prop, project) {
     return project[prop].toLocaleDateString();
   }
   return 'Never';
+}
+
+function getColorsForScrollBar(project) {
+  var baseColor = hsl(getGardenColorForProject(project));
+  baseColor.opacity = 0.4;
+  var thumbColor = baseColor.copy();
+  thumbColor.s += 0.2;
+  thumbColor.opacity = 0.4;
+  var trackColor = baseColor.darker(1);
+  trackColor.opacity = 0.25;
+  return thumbColor.formatHsl() + ' ' + trackColor.formatHsl();
 }
 
 module.exports = RenderPolyptych;
