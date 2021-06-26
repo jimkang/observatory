@@ -13,7 +13,7 @@ var routeDefaults = {
 };
 
 var visibleRouteDefaults = {
-  view: 'polyptych',
+  view: 'garden',
   filterMode: 'some'
   //filterCriteriaNames: 'featured'
   //sortCriterionName: undefined,
