@@ -2,7 +2,7 @@ var d3 = require('d3-selection');
 var accessor = require('accessor');
 var {
   compareDescForPolyptych,
-  compareByDeedCountAsc
+  compareByDeedCountAsc,
 } = require('../comparators');
 var curry = require('lodash.curry');
 var pick = require('probable').pick;
@@ -11,7 +11,7 @@ var getGardenColorForProject = require('./get-garden-color-for-project');
 var { hsl } = require('d3-color');
 
 var crown = Crown({
-  crownClass: 'selected-tych'
+  crownClass: 'selected-tych',
 });
 
 var polyptychContainer = d3.select('#polyptych-container');
@@ -59,27 +59,27 @@ function RenderPolyptych() {
     appendItemWithLabelAndValue({
       parentSel: newStats,
       className: 'last-updated-date',
-      label: 'Last updated'
+      label: 'Last updated',
     });
     appendItemWithLabelAndValue({
       parentSel: newStats,
       className: 'shipped-date',
-      label: 'Date shipped'
+      label: 'Date shipped',
     });
     appendItemWithLabelAndValue({
       parentSel: newStats,
       className: 'start-date',
-      label: 'Date started'
+      label: 'Date started',
     });
     appendItemWithLabelAndValue({
       parentSel: newStats,
       className: 'project-age',
-      label: 'Project age'
+      label: 'Project age',
     });
     appendItemWithLabelAndValue({
       parentSel: newStats,
       className: 'activity-count',
-      label: 'Activity count'
+      label: 'Activity count',
     });
 
     var currentTychs = newTychs.merge(tychs);
@@ -145,10 +145,13 @@ function RenderPolyptych() {
         }
       }
 
-      var classString = 'tych centered-col ' + sizeClass;
+      var classString = 'tych centered-col ';
       if (project.featuredStatus === 'featured') {
         classString += ' featured';
+        sizeClass = 'big-tych';
       }
+
+      classString += ' ' + sizeClass;
       return classString;
     }
   }
@@ -174,7 +177,7 @@ function getProjectSizeBucketBoundaries(projects) {
   projects.sort(compareByDeedCountAsc);
   return [
     getDeedCount(projects[~~(projects.length / 3)]),
-    getDeedCount(projects[~~((2 * projects.length) / 3)])
+    getDeedCount(projects[~~((2 * projects.length) / 3)]),
   ];
 }
 

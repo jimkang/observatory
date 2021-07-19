@@ -65,7 +65,7 @@ body {
 
 .plant-layer rect {
   stroke: hsla(0, 0%, 100%, 0.5);
-  stroke-width: 1; 
+  stroke-width: 1;
 }
 
 .plant-layer rect.plant-backing {
@@ -377,7 +377,7 @@ a {
   flex-direction: column;
   align-items: start;
   margin: 1em;
-  /* Specifying width here will make this element the width 
+  /* Specifying width here will make this element the width
  * without the margin added, seemingly even with box-sizing: border-box. */
   max-width: 33%;
   flex-basis: 0;
@@ -422,7 +422,7 @@ a {
 
 .arrangement-controls .control-container {
   margin: 1em;
-  /* Specifying width here will make this element the width 
+  /* Specifying width here will make this element the width
  * without the margin added, seemingly even with box-sizing: border-box. */
   flex-grow: 1;
   margin-top: 0;
@@ -590,6 +590,10 @@ hr {
   grid-row-end: span 2;
 }
 
+.big-tych.featured {
+  grid-column-end: span 3;
+}
+
 .selected-tych {
   grid-column-end: span 4;
   grid-row-end: span 2;
@@ -626,7 +630,7 @@ hr {
   /*! text-align: center; */
   padding-left: 0;
 }
- 
+
 @media all and (max-height: 320px) {
   .details-box {
     max-height: 240px;
@@ -713,7 +717,7 @@ hr {
       width: 528px;
       padding: 20px;
     }
-  }  
+  }
 
   @media all and (max-width: 480px) {
     .details-box {

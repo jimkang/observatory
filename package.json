@@ -25,6 +25,7 @@
     "babelify": "^10.0.0",
     "browserify": "^16.2.3",
     "d3-array": "^1.2.0",
+    "eslint": "^7.31.0",
     "lodash.compact": "^3.0.1",
     "lodash.defaults": "^4.2.0",
     "lodash.findwhere": "^3.1.0",
