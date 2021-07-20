@@ -6,3 +6,4 @@ test-config.js
 *.swp
 config.mk
 index.js.map
+index.js
