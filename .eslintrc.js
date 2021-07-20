@@ -2,7 +2,7 @@ module.exports = {
   env: {
     browser: true,
     commonjs: true,
-    es6: true
+    es6: true,
   },
   extends: 'eslint:recommended',
   rules: {
@@ -10,6 +10,9 @@ module.exports = {
     'linebreak-style': ['error', 'unix'],
     quotes: ['error', 'single', { avoidEscape: true }],
     semi: ['error', 'always'],
-    'no-console': 'off'
-  }
+    'no-console': 'off',
+  },
+  parserOptions: {
+    sourceType: 'module',
+  },
 };

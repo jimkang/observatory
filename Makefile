@@ -2,23 +2,13 @@ include config.mk
 
 HOMEDIR = $(shell pwd)
 APPDIR = $(HTMLDIR)/observatory
-BROWSERIFY = ./node_modules/.bin/browserify \
-	-t [ babelify --presets [ @babel/preset-env ] --plugins [ @babel/plugin-transform-runtime ] ]
-UGLIFY = ./node_modules/uglify-es/bin/uglifyjs
+rollup = ./node_modules/.bin/rollup
 
 run:
-	wzrd app.js:index.js -- \
-		-d
-
-# It needs to run at port 80 for the Github API auth token process to work.
-run-on-80:
-	sudo wzrd app.js:index.js \
-	--port 80 \
-	-- \
-	-d
+	$(rollup) -c -w
 
 build:
-	$(BROWSERIFY) app.js | $(UGLIFY) -c -m -o index.js
+	$(rollup) -c
 
 pushall: sync
 	git push origin master
@@ -32,4 +22,3 @@ test:
 sync:
 	rsync -a $(HOMEDIR)/ $(USER)@$(SERVER):/$(APPDIR) --exclude node_modules/ \
 		--omit-dir-times --no-perms
-
