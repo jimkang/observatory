@@ -543,11 +543,12 @@ hr {
 #polyptych-container {
   width: 100%;
   color: #333;
-  /*! max-width: 800px; */
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
 #polyptych-container a {
-  color: #333;
+  color: #ddd;
 }
 
 #polyptych-container .value {
@@ -556,22 +557,22 @@ hr {
 
 #polyptych-root {
   display: flex;
-  justify-content: stretch;
   flex-wrap: wrap;
 }
 
 .tych {
-  border: double 4px #333;
+  border-style: solid;
+  border-width: 2px;
+  border-color: hsla(0, 0%, 0%, 0.5);
   padding: 1em;
   overflow: auto;
   cursor: pointer;
   word-break: break-word;
-  border-radius: 8px;
-  margin: 0.5em;
   width: var(--tych-base-size);
   height: var(--tych-base-size);
   max-width: 100%;
   flex-grow: 1;
+  color: #bbb;
 }
 
 .selected-tych {

@@ -15,7 +15,7 @@ if (process.argv.length > 2) {
 }
 
 var probable = createProbable({
-  random: seedrandom(numberOfColors.toString())
+  random: seedrandom(numberOfColors.toString()),
 });
 
 const numberOfSegments = 5;
@@ -44,15 +44,16 @@ function interpolateInSegment(segmentIndex) {
   const startHue = segmentIndex * hueRangePerSegment;
   const endHue = (segmentIndex + 1) * hueRangePerSegment;
   const chroma = 30 + probable.roll(70);
-  const luminence = probable.roll(80) + 50;
+  const luminence = probable.roll(80) + 70;
   var interpolator = interpolate.interpolateHcl(
     color.hcl(startHue, chroma, luminence),
     color.hcl(endHue, chroma, luminence)
   );
-  return range(segmentSize).map(i => interpolator(i / segmentSize));
+  return range(segmentSize).map((i) => interpolator(i / segmentSize));
 }
 
 function swatchForColor(color, i) {
-  return `<rect width="${swatchWidth}" height="${swatchWidth}" fill="${color}" x="${i *
-    swatchWidth}"></rect>`;
+  return `<rect width="${swatchWidth}" height="${swatchWidth}" fill="${color}" x="${
+    i * swatchWidth
+  }"></rect>`;
 }

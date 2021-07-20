@@ -3,7 +3,7 @@ var GetEvenIndexForString = require('../get-even-index-for-string');
 var gardenColors = reorderByBucket(require('./garden-colors.json'), 9);
 
 var getColorIndexForString = GetEvenIndexForString({
-  arrayLength: gardenColors.length
+  arrayLength: gardenColors.length,
 });
 
 // Reordering the color array by buckets is a way of making sure adjacent hues

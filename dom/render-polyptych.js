@@ -80,8 +80,8 @@ function RenderPolyptych() {
     currentTychs
       .select('.title-link')
       .text(accessor('name'))
-      .attr('href', getMainLinkHref)
-      .style('text-decoration-color', getGardenColorForProject);
+      .attr('href', getMainLinkHref);
+    //.style('text-decoration-color', getGardenColorForProject);
     currentTychs.select('.project-window-link').attr('href', getMainLinkHref);
     var projectWindows = currentTychs.select('.project-window');
     projectWindows.classed('hidden', doesNotHaveProfileImage);
@@ -119,6 +119,7 @@ function RenderPolyptych() {
       .select('.activity-count .value')
       .text(accessor({ path: 'activities/length' }));
 
+    currentTychs.style('background-color', getTychColor);
     currentTychs.style('border-color', getGardenColorForProject);
     currentTychs.style('scrollbar-color', getColorsForScrollBar);
 
@@ -212,6 +213,11 @@ function getColorsForScrollBar(project) {
   var trackColor = baseColor.darker(1);
   trackColor.opacity = 0.25;
   return thumbColor.formatHsl() + ' ' + trackColor.formatHsl();
+}
+
+function getTychColor(project) {
+  var baseColor = hsl(getGardenColorForProject(project));
+  return baseColor.darker(6.5).formatHsl();
 }
 
 module.exports = RenderPolyptych;
