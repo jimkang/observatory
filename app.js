@@ -1,6 +1,7 @@
 var RouteState = require('route-state');
 var ProjectsFlow = require('./flows/projects-flow');
 var handleError = require('handle-error-web');
+var { version } = require('./package.json');
 
 var routeState;
 var projectsFlow;
@@ -9,12 +10,12 @@ var routeDefaults = {
   user: 'jimkang',
   userEmail: 'jimkang@gmail.com',
   verbose: false,
-  commitSourceURL: 'https://smidgeo.com/observatory-cache/jimkang-cache.json'
+  commitSourceURL: 'https://smidgeo.com/observatory-cache/jimkang-cache.json',
 };
 
 var visibleRouteDefaults = {
   view: 'garden',
-  filterMode: 'some'
+  filterMode: 'some',
   //filterCriteriaNames: 'featured'
   //sortCriterionName: undefined,
   //groupByCriterionName: undefined
@@ -22,9 +23,11 @@ var visibleRouteDefaults = {
 
 (function go() {
   window.onerror = reportTopLevelError;
+  renderVersion();
+
   routeState = RouteState({
     followRoute,
-    windowObject: window
+    windowObject: window,
   });
   routeState.routeFromHash();
 })();
@@ -33,7 +36,7 @@ function followRoute(routeOpts) {
   if (
     !defaultsCovered({
       dictToCover: visibleRouteDefaults,
-      dictToCheck: routeOpts
+      dictToCheck: routeOpts,
     })
   ) {
     routeState.addToRoute(Object.assign(visibleRouteDefaults, routeOpts));
@@ -51,7 +54,7 @@ function followRoute(routeOpts) {
 
   projectsFlow.changeRenderer({
     view: opts.view,
-    changeView
+    changeView,
   });
 }
 
@@ -71,4 +74,9 @@ function defaultsCovered({ dictToCover, dictToCheck }) {
 
 function reportTopLevelError(msg, url, lineNo, columnNo, error) {
   handleError(error);
+}
+
+function renderVersion() {
+  var versionInfo = document.getElementById('version-info');
+  versionInfo.textContent = version;
 }
