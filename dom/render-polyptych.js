@@ -1,11 +1,7 @@
 var d3 = require('d3-selection');
 var accessor = require('accessor');
-var {
-  compareDescForPolyptych,
-  compareByDeedCountAsc,
-} = require('../comparators');
+var { compareDescForPolyptych } = require('../comparators');
 var curry = require('lodash.curry');
-var pick = require('probable').pick;
 var Crown = require('csscrown');
 var getGardenColorForProject = require('./get-garden-color-for-project');
 var { hsl } = require('d3-color');
@@ -21,9 +17,6 @@ function RenderPolyptych() {
   return renderPolyptych;
 
   function renderPolyptych({ projectData }) {
-    var projectSizeBucketBoundaries = getProjectSizeBucketBoundaries(
-      projectData
-    );
     projectData.sort(compareDescForPolyptych);
 
     d3.selectAll('.view-root:not(#polyptych-container)').classed(
@@ -130,28 +123,11 @@ function RenderPolyptych() {
     currentTychs.style('scrollbar-color', getColorsForScrollBar);
 
     function getClassStringForTych(project) {
-      var sizeClass = 'small-tych';
-      if (
-        project.deeds &&
-        project.deeds.length > projectSizeBucketBoundaries[0]
-      ) {
-        if (project.profileImage) {
-          sizeClass = 'tall-tych';
-        } else {
-          sizeClass = pick(['wide-tych', 'tall-tych']);
-        }
-        if (project.deeds.length > projectSizeBucketBoundaries[1]) {
-          sizeClass = 'big-tych';
-        }
-      }
-
       var classString = 'tych centered-col ';
       if (project.featuredStatus === 'featured') {
         classString += ' featured';
-        sizeClass = 'big-tych';
       }
 
-      classString += ' ' + sizeClass;
       return classString;
     }
   }
@@ -167,25 +143,6 @@ function getMainLinkHref(project) {
 
 function doesNotHaveProfileImage(project) {
   return !project.profileImage;
-}
-
-function getProjectSizeBucketBoundaries(projects) {
-  if (projects.length < 1) {
-    return [0, 0];
-  }
-
-  projects.sort(compareByDeedCountAsc);
-  return [
-    getDeedCount(projects[~~(projects.length / 3)]),
-    getDeedCount(projects[~~((2 * projects.length) / 3)]),
-  ];
-}
-
-function getDeedCount(project) {
-  if (project && project.deeds) {
-    return project.deeds.length;
-  }
-  return 0;
 }
 
 function focusOnTych(project) {

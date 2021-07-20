@@ -1,9 +1,3 @@
-.centered-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 html {
   width: 100%;
 }
@@ -13,6 +7,13 @@ body {
   font-size: 24px;
   margin-bottom: 4em;
   width: 100%;
+  --tych-base-size: 320px;
+}
+
+.centered-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .form-pair {
@@ -542,6 +543,7 @@ hr {
 #polyptych-container {
   width: 100%;
   color: #333;
+  /*! max-width: 800px; */
 }
 
 #polyptych-container a {
@@ -553,11 +555,9 @@ hr {
 }
 
 #polyptych-root {
-  display: grid;
-  grid-template-columns: 25% 25% 25% 25%;
-  grid-auto-rows: 15em;
-  grid-auto-flow: dense;
+  display: flex;
   justify-content: stretch;
+  flex-wrap: wrap;
 }
 
 .tych {
@@ -568,36 +568,16 @@ hr {
   word-break: break-word;
   border-radius: 8px;
   margin: 0.5em;
-}
-
-.small-tych {
-  grid-column-end: span 1;
-  grid-row-end: span 1;
-}
-
-.wide-tych {
-  grid-column-end: span 2;
-  grid-row-end: span 1;
-}
-
-.tall-tych {
-  grid-column-end: span 1;
-  grid-row-end: span 2;
-}
-
-.big-tych {
-  grid-column-end: span 2;
-  grid-row-end: span 2;
-}
-
-.big-tych.featured {
-  grid-column-end: span 3;
+  width: var(--tych-base-size);
+  height: var(--tych-base-size);
+  max-width: 100%;
+  flex-grow: 1;
 }
 
 .selected-tych {
-  grid-column-end: span 4;
-  grid-row-end: span 2;
   border-width: 16px;
+  width: 100%;
+  height: initial;
 }
 
 .tych.featured .title {
@@ -648,36 +628,16 @@ hr {
 
 @media all and (max-width: 1280px) {
   #polyptych-root {
-    grid-template-columns: 33% 34% 33%;
   }
 }
 
 
 @media all and (max-width: 568px) {
-  #polyptych-root {
-    grid-template-columns: 100%;
-  }
-
   .tych {
     border-width: 4px;
   }
 
-  /* A little deceptive to make wide-tych
- * tall, but there's no other way to give
- * it its due visual weight here. */
-  .wide-tych {
-    grid-column-end: span 1;
-    grid-row-end: span 2;
-  }
-
-  .big-tych {
-    grid-column-end: span 1;
-    grid-row-end: span 2;
-  }
-
   .selected-tych {
-    grid-column-end: span 1;
-    grid-row-end: span 2;
     border-width: 8px;
   }
 
