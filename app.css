@@ -546,6 +546,11 @@ hr {
   /*! max-width: 800px; */
 }
 
+#polyptych-container .explanation {
+  font-style: italic;
+  text-align: center;
+}
+
 #polyptych-container a {
   color: #333;
 }
@@ -561,7 +566,7 @@ hr {
 }
 
 .tych {
-  border: double 4px #333;
+  border: solid 2px #333;
   padding: 1em;
   overflow: auto;
   cursor: pointer;
