@@ -89,6 +89,11 @@ module.exports = [
     roles: ['filter']
   },
   {
+    category: 'purpose',
+    name: 'music',
+    roles: ['filter']
+  },
+  {
     category: 'environment',
     name: 'environment',
     roles: ['groupBy']
@@ -183,6 +188,16 @@ module.exports = [
   {
     category: 'form',
     name: 'document',
+    roles: ['filter']
+  },
+  {
+    category: 'form',
+    name: 'talk',
+    roles: ['filter']
+  },
+  {
+    category: 'form',
+    name: 'song',
     roles: ['filter']
   }
   /*
