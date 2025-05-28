@@ -2,7 +2,7 @@
   "name": "observatory",
   "version": "1.0.4",
   "description": "Observes the work you've done; kind of an anti-planner.",
-  "main": "index.js",
+  "main": "dist-electron/main.js",
   "scripts": {
     "test": "make test"
   },
@@ -22,6 +22,8 @@
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.2",
     "assert-no-error": "^1.0.0",
+    "electron": "^24.4.0",
+    "electron-builder": "^23.6.0",
     "d3-array": "^1.2.0",
     "eslint": "^7.31.0",
     "lodash.compact": "^3.0.1",
@@ -36,7 +38,10 @@
     "rollup-plugin-terser": "^7.0.2",
     "sirv-cli": "^1.0.12",
     "tap-closer": "^1.0.0",
-    "tape": "^4.6.3"
+    "tape": "^4.6.3",
+    "vite": "^4.3.9",
+    "vite-plugin-electron": "^0.11.2",
+    "vite-plugin-electron-renderer": "^0.14.5"
   },
   "dependencies": {
     "accessor": "^3.0.0",

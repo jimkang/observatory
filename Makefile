@@ -3,9 +3,13 @@ include config.mk
 HOMEDIR = $(shell pwd)
 APPDIR = $(HTMLDIR)/observatory
 rollup = ./node_modules/.bin/rollup
+vite = ./node_modules/.bin/vite --force
 
 run:
 	$(rollup) -c -w
+
+run-app:
+	$(vite)
 
 build:
 	$(rollup) -c
