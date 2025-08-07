@@ -4,7 +4,7 @@ var RenderGarden = require('../dom/render-garden');
 var renderHeader = require('../dom/render-header');
 var RenderDeedDetails = require('../dom/render-deed-details');
 var RenderYearView = require('../dom/render-year-view');
-var RenderPolyptych = require('../dom/render-polyptych');
+var RenderPortfolio = require('../dom/render-portfolio');
 var values = require('lodash.values');
 var omit = require('lodash.omit');
 var addDeedToProject = require('add-deed-to-project');
@@ -73,7 +73,7 @@ function ProjectsFlow({
     year: RenderYearView({
       onDeedClick: renderDetailsOnYearsView
     }),
-    polyptych: RenderPolyptych({})
+    portfolio: RenderPortfolio({})
   };
 
   var throttledCallRender = EaseThrottle({ fn: callRender });

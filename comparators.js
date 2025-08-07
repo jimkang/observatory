@@ -47,7 +47,7 @@ function compareDescWithSortKey(sortBy, objectA, objectB) {
 }
 
 // Put featured, important projects at the top.
-function compareDescForPolyptych(objectA, objectB) {
+function compareDescForPortfolio(objectA, objectB) {
   const scoreA = scoreProjectForPolyptchSort(objectA);
   const scoreB = scoreProjectForPolyptchSort(objectB);
 
@@ -96,5 +96,5 @@ module.exports = {
   compareDesc,
   compareDescWithSortKey,
   compareByDeedCountAsc,
-  compareDescForPolyptych
+  compareDescForPortfolio
 };

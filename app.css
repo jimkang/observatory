@@ -540,26 +540,26 @@ hr {
   border-radius: 4px;
 }
 
-#polyptych-container {
+#portfolio-container {
   width: 100%;
   color: #333;
   /*! max-width: 800px; */
 }
 
-#polyptych-container .explanation {
+#portfolio-container .explanation {
   font-style: italic;
   text-align: center;
 }
 
-#polyptych-container a {
+#portfolio-container a {
   color: #333;
 }
 
-#polyptych-container .value {
+#portfolio-container .value {
   font-weight: 700;
 }
 
-#polyptych-root {
+#portfolio-root {
   display: flex;
   justify-content: stretch;
   flex-wrap: wrap;
@@ -640,7 +640,7 @@ hr {
 }
 
 @media all and (max-width: 1280px) {
-  #polyptych-root {
+  #portfolio-root {
   }
 }
 

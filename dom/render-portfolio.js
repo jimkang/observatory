@@ -1,6 +1,6 @@
 var d3 = require('d3-selection');
 var accessor = require('accessor');
-var { compareDescForPolyptych } = require('../comparators');
+var { compareDescForPortfolio } = require('../comparators');
 var curry = require('lodash.curry');
 var Crown = require('csscrown');
 var getGardenColorForProject = require('./get-garden-color-for-project');
@@ -10,22 +10,22 @@ var crown = Crown({
   crownClass: 'selected-tych',
 });
 
-var polyptychContainer = d3.select('#polyptych-container');
-var polyptychRoot = d3.select('#polyptych-root');
+var portfolioContainer = d3.select('#portfolio-container');
+var portfolioRoot = d3.select('#portfolio-root');
 
-function RenderPolyptych() {
-  return renderPolyptych;
+function RenderPortfolio() {
+  return renderPortfolio;
 
-  function renderPolyptych({ projectData }) {
-    projectData.sort(compareDescForPolyptych);
+  function renderPortfolio({ projectData }) {
+    projectData.sort(compareDescForPortfolio);
 
-    d3.selectAll('.view-root:not(#polyptych-container)').classed(
+    d3.selectAll('.view-root:not(#portfolio-container)').classed(
       'hidden',
       true
     );
-    polyptychContainer.classed('hidden', false);
+    portfolioContainer.classed('hidden', false);
 
-    var tychs = polyptychRoot.selectAll('.tych').data(projectData, accessor());
+    var tychs = portfolioRoot.selectAll('.tych').data(projectData, accessor());
     tychs.exit().remove();
     var newTychs = tychs
       .enter()
@@ -214,4 +214,4 @@ function getColorsForScrollBar(project) {
   return thumbColor.formatHsl() + ' ' + trackColor.formatHsl();
 }
 
-module.exports = RenderPolyptych;
+module.exports = RenderPortfolio;
