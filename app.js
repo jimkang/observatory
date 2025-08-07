@@ -14,7 +14,7 @@ var routeDefaults = {
 };
 
 var visibleRouteDefaults = {
-  view: 'garden',
+  view: 'portfolio',
   filterMode: 'some',
   //filterCriteriaNames: 'featured'
   //sortCriterionName: undefined,
