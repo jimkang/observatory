@@ -1,6 +1,6 @@
 {
   "name": "observatory",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Observes the work you've done; kind of an anti-planner.",
   "main": "index.js",
   "scripts": {
